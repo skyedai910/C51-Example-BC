@@ -1,0 +1,58 @@
+C51 COMPILER V8.02   DA                                                                    07/16/2010 19:14:06 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE DA
+OBJECT MODULE PLACED IN da.OBJ
+COMPILER INVOKED BY: D:\软件\学习软件\keil3\C51\BIN\C51.EXE da.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /**************************************************************************
+   2                                                  “天祥电子”            倾情奉献
+   3                                                                  www.txmcu.com
+   4                                                                  www.txmcu.cn
+   5          ***************************************************************************
+   6          程序功能：      将一数字量不断自加后输给DA芯片，将数字量转化为模拟量，
+   7                                  并通过小灯的亮灭程度显示出来。
+   8                                  下载程序后可观察到DA芯片下面的D12发光二极管由暗变亮再熄灭过程，
+   9          *************************************************************************/
+  10          #include<reg51.h>
+  11          sbit wela=P2^7;
+  12          sbit dula=P2^6;
+  13          sbit dawr=P3^6;
+  14          sbit csda=P3^2;
+  15          unsigned char a,j,k;
+  16          void delay(unsigned char i)
+  17          {
+  18   1        for(j=i;j>0;j--)
+  19   1          for(k=125;k>0;k--);
+  20   1      }
+  21          void main()
+  22          {
+  23   1        wela=0;
+  24   1        dula=0;
+  25   1        csda=0;
+  26   1        a=0;
+  27   1        dawr=0;
+  28   1        while(1)
+  29   1        {
+  30   2      
+  31   2        P0=a;
+  32   2        delay(50);
+  33   2        a++;
+  34   2        }
+  35   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     43    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

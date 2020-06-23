@@ -1,0 +1,3300 @@
+,,,;4 FUNCTION CALCULATOR PROGRAM
+,,,;Assumes 1.2MHz Clock for scan timing.
+,,,
+,,,
+,,,
+,,,; TODO : Custom Character for the 'M' sign
+,,,;        Check instances of multiple decimal point presses ( all covered ?)
+,,,
+,,,;Reset vector
+,,,                org 0000h
+0000,02 01 00,,                jmp start
+,,,
+,,,;Start of the program
+,,,                org 0100h
+,,,
+0100,74 30,start,start:          mov A,#030h                     ;1 line, 8 bits
+0102,12 08 A9,,                call wrcmd
+0105,74 0C,,                mov A,#LCD_SETVISIBLE + 4
+0107,12 08 A9,,                call wrcmd
+010A,74 8F,,                mov A,#LCD_SETDDADDR+15         ; Start at right hand side of the display
+010C,12 08 A9,,                call wrcmd
+010F,74 07,,                mov A,#LCD_SETMODE + 3          ; Automatic Increment - Display shift left.
+0111,12 08 A9,,                call wrcmd
+,,,
+0114,75 25 00,,                mov 025h,#00h                   ; Set output mode (floating point).
+,,,
+0117,12 10 9C,,                call boundsbuffer               ; Initialise the bounds buffer - used for error chec
+011A,75 6E 04,,                mov mode,#4                     ; Initialise the constant buffer to 100. Primarily u
+011D,75 6D 31,,                mov digitcode,#031h
+0120,12 0E EA,,                call storedigit
+0123,75 6D 30,,                mov digitcode,#030h
+0126,12 0E EA,,                call storedigit
+0129,75 6D 30,,                mov digitcode,#030h
+012C,12 0E EA,,                call storedigit
+,,,
+012F,75 67 00,,                mov status,#00h                 ; variable used to determine the first key press aft
+0132,75 6B 00,,                mov bufferctr,#00h
+0135,75 6C 00,,                mov opcounter,#00h
+0138,75 73 00,,                mov decimalcnt,#00h
+013B,12 09 83,,                call waitkey
+,,,
+013E,75 87 01,halt,halt:           mov PCON,#1                     ;Halt
+,,,
+,,,
+,,,;***********************************************************
+,,,;**** Floating Point Package ****
+,,,;********************************
+,,,
+,,,$INCLUDE (FP52.ASM)
+,,,; This is a complete BCD floating point package for the 8051 micro-
+,,,; controller. It provides 8 digits of accuracy with exponents that
+,,,; range from +127 to -127. The mantissa is in packed BCD, while the
+,,,; exponent is expressed in pseudo-twos complement. A ZERO exponent
+,,,; is used to express the number ZERO. An exponent value of 80H or
+,,,; greater than means the exponent is positive, i.e. 80H = E 0,
+,,,; 81H = E+1, 82H = E+2 and so on. If the exponent is 7FH or less,
+,,,; the exponent is negative, 7FH = E-1, 7EH = E-2, and so on.
+,,,; ALL NUMBERS ARE ASSUMED TO BE NORMALIZED and all results are
+,,,; normalized after calculation. A normalized mantissa is >=.10 and
+,,,; <=.99999999.
+,,,;
+,,,; The numbers in memory assumed to be stored as follows:
+,,,;
+,,,; EXPONENT OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE
+,,,; SIGN OF ARGUMENT 2       =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-1
+,,,; DIGIT 78 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-2
+,,,; DIGIT 56 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-3
+,,,; DIGIT 34 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-4
+,,,; DIGIT 12 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-5
+,,,;
+,,,; EXPONENT OF ARGUMENT 1   =   VALUE OF ARG_STACK
+,,,; SIGN OF ARGUMENT 1       =   VALUE OF ARG_STACK-1
+,,,; DIGIT 78 OF ARGUMENT 1   =   VALUE OF ARG_STACK-2
+,,,; DIGIT 56 OF ARGUMENT 1   =   VALUE OF ARG_STACK-3
+,,,; DIGIT 34 OF ARGUMENT 1   =   VALUE OF ARG_STACK-4
+,,,; DIGIT 12 OF ARGUMENT 1   =   VALUE OF ARG_STACK-5
+,,,;
+,,,; The operations are performed thusly:
+,,,;
+,,,; ARG_STACK+FP_NUMBER_SIZE = ARG_STACK+FP_NUMBER_SIZE # ARG_STACK
+,,,;
+,,,; Which is ARGUMENT 2 = ARGUMENT 2 # ARGUMENT 1
+,,,;
+,,,; Where # can be ADD, SUBTRACT, MULTIPLY OR DIVIDE.
+,,,;
+,,,; Note that the stack gets popped after an operation.
+,,,;
+,,,; The FP_COMP instruction POPS the ARG_STACK TWICE and returns status.
+,,,;
+,,,;**********************************************************************
+,,,;
+,,,$EJECT
+,,,;**********************************************************************
+,,,;
+,,,; STATUS ON RETURN - After performing an operation (+, -, *, /)
+,,,;                    the accumulator contains the following status
+,,,;
+,,,; ACCUMULATOR - BIT 0 - FLOATING POINT UNDERFLOW OCCURED
+,,,;
+,,,;             - BIT 1 - FLOATING POINT OVERFLOW OCCURED
+,,,;
+,,,;             - BIT 2 - RESULT WAS ZER0
+,,,;
+,,,;             - BIT 3 - DIVIDE BY ZERO ATTEMPTED
+,,,;
+,,,;             - BIT 4 - NOT USED, 0 RETURNED
+,,,;
+,,,;             - BIT 5 - NOT USED, 0 RETURNED
+,,,;
+,,,;             - BIT 6 - NOT USED, 0 RETURNED
+,,,;
+,,,;             - BIT 7 - NOT USED, 0 RETURNED
+,,,;
+,,,; NOTE: When underflow occures, a ZERO result is returned.
+,,,;       When overflow or divide by zero occures, a result of
+,,,;       .99999999 E+127 is returned and it is up to the user
+,,,;       to handle these conditions as needed in the program.
+,,,;
+,,,; NOTE: The Compare instruction returns F0 = 0 if ARG 1 = ARG 2
+,,,;       and returns a CARRY FLAG = 1 if ARG 1 is > ARG 2
+,,,;
+,,,;***********************************************************************
+,,,;
+,,,$EJECT
+,,,;***********************************************************************
+,,,;
+,,,; The following values MUST be provided by the user
+,,,;
+,,,;***********************************************************************
+,,,;
+,,,ARG_STACK_PAGE  EQU     01h     ;External memory page for arg stack
+,,,ARG_STACK       EQU     24H     ;ARGUMENT STACK POINTER
+,,,FORMAT          EQU     25H     ;LOCATION OF OUTPUT FORMAT BYTE
+,,,;OUTPUT         EQU     R5OUT   ;CALL LOCATION TO OUTPUT A CHARACTER in R5
+,,,CONVT           EQU     0048H   ;String addr TO CONVERT NUMBERS
+000B,,,INTGRC          BIT     26H.1   ;BIT SET IF INTEGER ERROR
+000B,,,ADD_IN          BIT     26H.3   ;DCMPXZ IN BASIC BACKAGE
+000B,,,ZSURP           BIT     26H.6   ;ZERO SUPRESSION FOR HEX PRINT
+,,,;
+,,,;***********************************************************************
+,,,;
+,,,; The following equates are used internally
+,,,;
+,,,;***********************************************************************
+,,,;
+,,,FP_NUMBER_SIZE  EQU     6
+,,,DIGIT           EQU     FP_NUMBER_SIZE-2
+,,,R0B0            EQU     0
+,,,R1B0            EQU     1
+,,,UNDERFLOW       EQU     0
+,,,OVERFLOW        EQU     1
+,,,ZERO            EQU     2
+,,,ZERO_DIVIDE     EQU     3
+,,,;
+,,,;***********************************************************************
+,,,$EJECT
+,,,        ;**************************************************************
+,,,        ;
+,,,        ; The following internal locations are used by the math pack
+,,,        ; ordering is important and the FP_DIGITS must be bit
+,,,        ; addressable
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+,,,FP_STATUS       EQU     28H             ;NOT used data pointer me
+,,,FP_TEMP         EQU     FP_STATUS+1     ;NOT USED
+,,,FP_CARRY        EQU     FP_STATUS+2     ;USED FOR BITS
+,,,FP_DIG12        EQU     FP_CARRY+1
+,,,FP_DIG34        EQU     FP_CARRY+2
+,,,FP_DIG56        EQU     FP_CARRY+3
+,,,FP_DIG78        EQU     FP_CARRY+4
+,,,FP_SIGN         EQU     FP_CARRY+5
+,,,FP_EXP          EQU     FP_CARRY+6
+000B,,,MSIGN           BIT     FP_SIGN.0
+000B,,,XSIGN           BIT     FP_CARRY.0
+000B,,,FOUND_RADIX     BIT     FP_CARRY.1
+000B,,,FIRST_RADIX     BIT     FP_CARRY.2
+000B,,,DONE_LOAD       BIT     FP_CARRY.3
+,,,FP_NIB1         EQU     FP_DIG12
+,,,FP_NIB2         EQU     FP_NIB1+1
+,,,FP_NIB3         EQU     FP_NIB1+2
+,,,FP_NIB4         EQU     FP_NIB1+3
+,,,FP_NIB5         EQU     FP_NIB1+4
+,,,FP_NIB6         EQU     FP_NIB1+5
+,,,FP_NIB7         EQU     FP_NIB1+6
+,,,FP_NIB8         EQU     FP_NIB1+7
+,,,FP_ACCX         EQU     FP_NIB1+8
+,,,FP_ACCC         EQU     FP_NIB1+9
+,,,FP_ACC1         EQU     FP_NIB1+10
+,,,FP_ACC2         EQU     FP_NIB1+11
+,,,FP_ACC3         EQU     FP_NIB1+12
+,,,FP_ACC4         EQU     FP_NIB1+13
+,,,FP_ACC5         EQU     FP_NIB1+14
+,,,FP_ACC6         EQU     FP_NIB1+15
+,,,FP_ACC7         EQU     FP_NIB1+16
+,,,FP_ACC8         EQU     FP_NIB1+17
+,,,FP_ACCS         EQU     FP_NIB1+18
+,,,        ;
+,,,$EJECT
+,,,
+000C,,,FP_BASE         EQU     $
+,,,
+,,,        ;**************************************************************
+,,,        ;
+,,,        ; The floating point entry points and jump table
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+0141,21 71,,        AJMP    FLOATING_ADD
+0143,21 67,,        AJMP    FLOATING_SUB
+0145,41 24,,        AJMP    FLOATING_COMP
+0147,41 55,,        AJMP    FLOATING_MUL
+0149,41 8A,,        AJMP    FLOATING_DIV
+014B,81 51,,        AJMP    HEXSCAN
+014D,81 8A,,        AJMP    FLOATING_POINT_INPUT
+014F,A1 42,,        AJMP    FLOATING_POINT_OUTPUT
+0151,C1 BF,,        AJMP    CONVERT_BINARY_TO_ASCII_STRING
+0153,C1 66,,        AJMP    CONVERT_ASCII_STRING_TO_BINARY
+0155,C1 9B,,        AJMP    MULNUM10
+0157,E1 07,,        AJMP    HEXOUT
+,,,;
+,,,; the remaining jump to routines were extracted from basic52
+,,,; by me to make the floating point software stand alone
+,,,;
+0159,81 7E,,        AJMP    PUSHR2R0                        ; INTEGER to FLOAT
+015B,E1 4C,,        AJMP    IFIX                            ; FLOAT to INTEGER
+015D,E1 8D,,        AJMP    PUSHAS                          ; PUSH R2:R0 TO ARGUMENT
+015F,E1 89,,        AJMP    POPAS                           ; POP ARGUMENT TO R3:R1
+0161,E1 AA,,        AJMP    MOVAS                           ; COPY ARGUMENT
+0163,E1 CE,,        AJMP    AINT                            ; INT FUNCTION
+0165,E1 F6,,        AJMP    PUSHC                           ; PUSH ARG IN DPTR TO STACK
+,,,        ;
+,,,$EJECT
+,,,        ;
+0167,,FLOATING_SUB,FLOATING_SUB:
+,,,        ;
+0167,75 A0 01,,        MOV     P2,#ARG_STACK_PAGE
+016A,A8 24,,        MOV     R0,ARG_STACK
+016C,18,,        DEC     R0              ;POINT TO SIGN
+016D,E2,,        MOVX    A,@R0           ;READ SIGN
+016E,B2 E0,,        CPL     ACC.0
+0170,F2,,        MOVX    @R0,A
+,,,        ;
+,,,        ;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+,,,        ;
+0171,,FLOATING_ADD,FLOATING_ADD:
+,,,        ;
+,,,        ;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+,,,        ;
+,,,        ;
+0171,91 32,,        ACALL   MDES1           ;R7=TOS EXP, R6=TOS-1 EXP, R4=TOS SIGN
+,,,                                ;R3=TOS-1 SIGN, OPERATION IS R1 # R0
+,,,        ;
+0173,EF,,        MOV     A,R7            ;GET TOS EXPONENT
+0174,60 0D,,        JZ      POP_AND_EXIT    ;IF TOS=0 THEN POP AND EXIT
+0176,BE 00 12,,        CJNE    R6,#0,LOAD1     ;CLEAR CARRY EXIT IF ZERO
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+0179,,SWAP_AND_EXIT,SWAP_AND_EXIT:  ; Swap external args and return
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+0179,91 26,,        ACALL   LOAD_POINTERS
+017B,7F 06,,        MOV     R7,#FP_NUMBER_SIZE
+,,,        ;
+017D,E2,SE1,SE1:    MOVX    A,@R0           ;SWAP THE ARGUMENTS
+017E,F3,,        MOVX    @R1,A
+017F,18,,        DEC     R0
+0180,19,,        DEC     R1
+0181,DF FA,,        DJNZ    R7,SE1
+,,,        ;
+0183,,POP_AND_EXIT,POP_AND_EXIT:
+,,,        ;
+0183,E5 24,,        MOV     A,ARG_STACK     ;POP THE STACK
+0185,24 06,,        ADD     A,#FP_NUMBER_SIZE
+0187,F5 24,,        MOV     ARG_STACK,A
+0189,E4,,        CLR     A
+018A,22,,        RET
+,,,        ;
+,,,        ;
+018B,9E,LOAD1,LOAD1:  SUBB    A,R6            ;A = ARG 1 EXP - ARG 2 EXP
+018C,8F 30,,        MOV     FP_EXP,R7       ;SAVE EXPONENT AND SIGN
+018E,8C 2F,,        MOV     FP_SIGN,R4
+0190,50 09,,        JNC     LOAD2           ;ARG1 EXPONENT IS LARGER OR SAME
+0192,8E 30,,        MOV     FP_EXP,R6
+0194,8B 2F,,        MOV     FP_SIGN,R3
+0196,F4,,        CPL     A
+0197,04,,        INC     A               ;COMPENSATE FOR EXP DELTA
+0198,C8,,        XCH     A,R0            ;FORCE R0 TO POINT AT THE LARGEST
+0199,C9,,        XCH     A,R1            ;EXPONENT
+019A,C8,,        XCH     A,R0
+,,,        ;
+019B,FF,LOAD2,LOAD2:  MOV     R7,A            ;SAVE THE EXPONENT DELTA IN R7
+019C,C2 33,,        CLR     ADD_IN
+019E,BD 00 02,,        CJNE    R5,#0,$+5
+01A1,D2 33,,        SETB    ADD_IN
+,,,        ;
+,,,$EJECT
+,,,        ; Load the R1 mantissa
+,,,        ;
+01A3,91 43,,        ACALL   LOADR1_MANTISSA ;LOAD THE SMALLEST NUMBER
+,,,        ;
+,,,        ; Now align the number to the delta exponent
+,,,        ; R4 points to the string of the last digits lost
+,,,        ;
+01A5,BF 0B 00,,        CJNE    R7,#DIGIT+DIGIT+3,$+3
+01A8,40 02,,        JC      $+4
+01AA,7F 0A,,        MOV     R7,#DIGIT+DIGIT+2
+,,,        ;
+01AC,75 2A 00,,        MOV     FP_CARRY,#00    ;CLEAR THE CARRY
+01AF,71 83,,        ACALL   RIGHT           ;SHIFT THE NUMBER
+,,,        ;
+,,,        ; Set up for addition and subtraction
+,,,        ;
+01B1,7F 04,,        MOV     R7,#DIGIT       ;LOOP COUNT
+01B3,79 2E,,        MOV     R1,#FP_DIG78
+01B5,74 9E,,        MOV     A,#9EH
+01B7,C3,,        CLR     C
+01B8,9C,,        SUBB    A,R4
+01B9,D4,,        DA      A
+01BA,CC,,        XCH     A,R4
+01BB,70 01,,        JNZ     $+3
+01BD,FC,,        MOV     R4,A
+01BE,B4 50 00,,        CJNE    A,#50H,$+3      ;TEST FOR SUBTRACTION
+01C1,30 33 18,,        JNB     ADD_IN,SUBLP    ;DO SUBTRACTION IF NO ADD_IN
+01C4,B3,,        CPL     C               ;FLIP CARRY FOR ADDITION
+01C5,31 D3,,        ACALL   ADDLP           ;DO ADDITION
+,,,        ;
+01C7,50 08,,        JNC     ADD_R
+01C9,05 2A,,        INC     FP_CARRY
+01CB,7F 01,,        MOV     R7,#1
+01CD,71 83,,        ACALL   RIGHT
+01CF,71 3A,,        ACALL   INC_FP_EXP      ;SHIFT AND BUMP EXPONENT
+,,,        ;
+01D1,61 2B,ADD_R,ADD_R:  AJMP    STORE_ALIGN_TEST_AND_EXIT
+,,,        ;
+01D3,E2,ADDLP,ADDLP:  MOVX    A,@R0
+01D4,37,,        ADDC    A,@R1
+01D5,D4,,        DA      A
+01D6,F7,,        MOV     @R1,A
+01D7,18,,        DEC     R0
+01D8,19,,        DEC     R1
+01D9,DF F8,,        DJNZ    R7,ADDLP        ;LOOP UNTIL DONE
+01DB,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;
+01DC,E2,SUBLP,SUBLP:  MOVX    A,@R0           ;NOW DO SUBTRACTION
+01DD,FE,,        MOV     R6,A
+01DE,E4,,        CLR     A
+01DF,34 99,,        ADDC    A,#99H
+01E1,97,,        SUBB    A,@R1
+01E2,2E,,        ADD     A,R6
+01E3,D4,,        DA      A
+01E4,F7,,        MOV     @R1,A
+01E5,18,,        DEC     R0
+01E6,19,,        DEC     R1
+01E7,DF F3,,        DJNZ    R7,SUBLP
+01E9,40 11,,        JC      FSUB6
+,,,        ;
+,,,$EJECT
+,,,        ;
+,,,        ; Need to complement the result and sign because the floating
+,,,        ; point accumulator mantissa was larger than the external
+,,,        ; memory and their signs were equal.
+,,,        ;
+01EB,B2 78,,        CPL     FP_SIGN.0
+01ED,79 2E,,        MOV     R1,#FP_DIG78
+01EF,7F 04,,        MOV     R7,#DIGIT       ;LOOP COUNT
+,,,        ;
+01F1,74 9A,FSUB5,FSUB5:  MOV     A,#9AH
+01F3,97,,        SUBB    A,@R1
+01F4,24 00,,        ADD     A,#0
+01F6,D4,,        DA      A
+01F7,F7,,        MOV     @R1,A
+01F8,19,,        DEC     R1
+01F9,B3,,        CPL     C
+01FA,DF F5,,        DJNZ    R7,FSUB5        ;LOOP
+,,,        ;
+,,,        ; Now see how many zeros their are
+,,,        ;
+01FC,78 2B,FSUB6,FSUB6:  MOV     R0,#FP_DIG12
+01FE,7F 00,,        MOV     R7,#0
+,,,        ;
+0200,E6,FSUB7,FSUB7:  MOV     A,@R0
+0201,70 08,,        JNZ     FSUB8
+0203,0F,,        INC     R7
+0204,0F,,        INC     R7
+0205,08,,        INC     R0
+0206,B8 2F F7,,        CJNE    R0,#FP_SIGN,FSUB7
+0209,61 73,,        AJMP    ZERO_AND_EXIT
+,,,        ;
+020B,B4 10 00,FSUB8,FSUB8:  CJNE    A,#10H,$+3
+020E,50 01,,        JNC     FSUB9
+0210,0F,,        INC     R7
+,,,        ;
+,,,        ; Now R7 has the number of leading zeros in the FP ACC
+,,,        ;
+0211,E5 30,FSUB9,FSUB9:  MOV     A,FP_EXP        ;GET THE OLD EXPONENT
+0213,C3,,        CLR     C
+0214,9F,,        SUBB    A,R7            ;SUBTRACT FROM THE NUMBER OF ZEROS
+0215,60 0B,,        JZ      FSUB10
+0217,40 09,,        JC      FSUB10
+,,,        ;
+0219,F5 30,,        MOV     FP_EXP,A        ;SAVE THE NEW EXPONENT
+,,,        ;
+021B,71 BD,,        ACALL   LEFT1           ;SHIFT THE FP ACC
+021D,75 2A 00,,        MOV     FP_CARRY,#0
+0220,61 2B,,        AJMP    STORE_ALIGN_TEST_AND_EXIT
+,,,        ;
+0222,61 6D,FSUB10,FSUB10: AJMP    UNDERFLOW_AND_EXIT
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+0224,,FLOATING_COMP,FLOATING_COMP:  ; Compare two floating point numbers
+,,,                ; used for relational operations and is faster
+,,,                ; than subtraction. ON RETURN, The carry is set
+,,,                ; if ARG1 is > ARG2, else carry is not set
+,,,                ; if ARG1 = ARG2, F0 gets set
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+0224,91 32,,        ACALL   MDES1           ;SET UP THE REGISTERS
+0226,E5 24,,        MOV     A,ARG_STACK
+0228,24 0C,,        ADD     A,#FP_NUMBER_SIZE+FP_NUMBER_SIZE
+022A,F5 24,,        MOV     ARG_STACK,A     ;POP THE STACK TWICE, CLEAR THE CARRY
+022C,EE,,        MOV     A,R6            ;CHECK OUT EXPONENTS
+022D,C2 D5,,        CLR     F0
+022F,C3,,        CLR     C
+0230,9F,,        SUBB    A,R7
+0231,60 0A,,        JZ      EXPONENTS_EQUAL
+0233,40 03,,        JC      ARG1_EXP_IS_LARGER
+,,,        ;
+,,,        ; Now the ARG2 EXPONENT is > ARG1 EXPONENT
+,,,        ;
+0235,,SIGNS_DIFFERENT,SIGNS_DIFFERENT:
+,,,        ;
+0235,EB,,        MOV     A,R3            ;SEE IF SIGN OF ARG2 IS POSITIVE
+0236,80 01,,        SJMP    $+3
+,,,        ;
+0238,,ARG1_EXP_IS_LARGER,ARG1_EXP_IS_LARGER:
+,,,        ;
+0238,EC,,        MOV     A,R4            ;GET THE SIGN OF ARG1 EXPONENT
+0239,60 01,,        JZ      $+3
+023B,B3,,        CPL     C
+023C,22,,        RET
+,,,        ;
+023D,,EXPONENTS_EQUAL,EXPONENTS_EQUAL:
+,,,        ;
+,,,        ; First, test the sign, then the mantissa
+,,,        ;
+023D,BD 00 F5,,        CJNE    R5,#0,SIGNS_DIFFERENT
+,,,        ;
+0240,,BOTH_PLUS,BOTH_PLUS:
+,,,        ;
+0240,7F 04,,        MOV     R7,#DIGIT       ;POINT AT MS DIGIT
+0242,18,,        DEC     R0
+0243,18,,        DEC     R0
+0244,18,,        DEC     R0
+0245,19,,        DEC     R1
+0246,19,,        DEC     R1
+0247,19,,        DEC     R1
+,,,        ;
+,,,        ; Now do the compare
+,,,        ;
+0248,E2,CLOOP,CLOOP:  MOVX    A,@R0
+0249,FE,,        MOV     R6,A
+024A,E3,,        MOVX    A,@R1
+024B,9E,,        SUBB    A,R6
+024C,70 EA,,        JNZ     ARG1_EXP_IS_LARGER
+024E,08,,        INC     R0
+024F,09,,        INC     R1
+0250,DF F6,,        DJNZ    R7,CLOOP
+,,,        ;
+,,,        ; If here, the numbers are the same, the carry is cleared
+,,,        ;
+0252,D2 D5,,        SETB    F0
+0254,22,,        RET                     ;EXIT WITH EQUAL
+,,,        ;
+,,,$EJECT
+,,,;MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+,,,;
+0255,,FLOATING_MUL,FLOATING_MUL:   ; Floating point multiply
+,,,;
+,,,;MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+,,,;
+0255,91 30,,        ACALL   MUL_DIV_EXP_AND_SIGN
+,,,        ;
+,,,        ; check for zero exponents
+,,,        ;
+0257,BE 00 02,,        CJNE    R6,#00,$+5      ;ARG 2 EXP ZERO?
+025A,61 73,,        AJMP    ZERO_AND_EXIT
+,,,        ;
+,,,        ; calculate the exponent
+,,,        ;
+025C,8D 2F,FMUL1,FMUL1:  MOV     FP_SIGN,R5      ;SAVE THE SIGN, IN CASE OF FAILURE
+,,,        ;
+025E,EF,,        MOV     A,R7
+025F,60 F9,,        JZ      FMUL1-2
+0261,2E,,        ADD     A,R6            ;ADD THE EXPONENTS
+0262,20 E7 05,,        JB      ACC.7,FMUL_OVER
+0265,10 D7 06,,        JBC     CY,FMUL2        ;SEE IF CARRY IS SET
+,,,        ;
+0268,61 6D,,        AJMP    UNDERFLOW_AND_EXIT
+,,,        ;
+026A,,FMUL_OVER,FMUL_OVER:
+,,,        ;
+026A,50 02,,        JNC     FMUL2           ;OK IF SET
+,,,        ;
+026C,61 5C,FOV,FOV:    AJMP    OVERFLOW_AND_EXIT
+,,,        ;
+026E,94 81,FMUL2,FMUL2:  SUBB    A,#129          ;SUBTRACT THE EXPONENT BIAS
+0270,FE,,        MOV     R6,A            ;SAVE IT FOR LATER
+,,,        ;
+,,,        ; Unpack and load R0
+,,,        ;
+0271,71 46,,        ACALL   UNPACK_R0
+,,,        ;
+,,,        ; Now set up for loop multiply
+,,,        ;
+0273,7B 04,,        MOV     R3,#DIGIT
+0275,AC 01,,        MOV     R4,R1B0
+,,,        ;
+,,,$EJECT
+,,,        ;
+,,,        ; Now, do the multiply and accumulate the product
+,,,        ;
+0277,8C 01,FMUL3,FMUL3:  MOV     R1B0,R4
+0279,E3,,        MOVX    A,@R1
+027A,FA,,        MOV     R2,A
+027B,71 F3,,        ACALL   MUL_NIBBLE
+,,,        ;
+027D,EA,,        MOV     A,R2
+027E,C4,,        SWAP    A
+027F,71 F3,,        ACALL   MUL_NIBBLE
+0281,1C,,        DEC     R4
+0282,DB F3,,        DJNZ    R3,FMUL3
+,,,        ;
+,,,        ; Now, pack and restore the sign
+,,,        ;
+0284,8E 30,,        MOV     FP_EXP,R6
+0286,8D 2F,,        MOV     FP_SIGN,R5
+0288,41 EB,,        AJMP    PACK            ;FINISH IT OFF
+,,,        ;
+,,,$EJECT
+,,,        ;DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+,,,        ;
+028A,,FLOATING_DIV,FLOATING_DIV:
+,,,        ;
+,,,        ;DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+,,,        ;
+028A,91 32,,        ACALL   MDES1
+,,,        ;
+,,,        ; Check the exponents
+,,,        ;
+028C,8D 2F,,        MOV     FP_SIGN,R5      ;SAVE THE SIGN
+028E,BF 00 06,,        CJNE    R7,#0,DIV0      ;CLEARS THE CARRY
+0291,71 5C,,        ACALL   OVERFLOW_AND_EXIT
+0293,E4,,        CLR     A
+0294,D2 E3,,        SETB    ACC.ZERO_DIVIDE
+0296,22,,        RET
+,,,        ;
+0297,EE,DIV0,DIV0:   MOV     A,R6            ;GET EXPONENT
+0298,60 C0,,        JZ      FMUL1-2         ;EXIT IF ZERO
+029A,9F,,        SUBB    A,R7            ;DELTA EXPONENT
+029B,20 E7 04,,        JB      ACC.7,D_UNDER
+029E,50 04,,        JNC     DIV3
+02A0,61 6D,,        AJMP    UNDERFLOW_AND_EXIT
+,,,        ;
+02A2,50 C8,D_UNDER,D_UNDER:JNC     FOV
+,,,        ;
+02A4,24 81,DIV3,DIV3:   ADD     A,#129          ;CORRECTLY BIAS THE EXPONENT
+02A6,F5 30,,        MOV     FP_EXP,A        ;SAVE THE EXPONENT
+02A8,91 43,,        ACALL   LOADR1_MANTISSA ;LOAD THE DIVIDED
+,,,        ;
+02AA,7A 34,,        MOV     R2,#FP_ACCC     ;SAVE LOCATION
+02AC,AB 00,,        MOV     R3,R0B0         ;SAVE POINTER IN R3
+02AE,75 2A 00,,        MOV     FP_CARRY,#0     ;ZERO CARRY BYTE
+,,,        ;
+02B1,7D FF,DIV4,DIV4:   MOV     R5,#0FFH        ;LOOP COUNT
+02B3,D3,,        SETB    C
+,,,        ;
+02B4,8B 00,DIV5,DIV5:   MOV     R0B0,R3         ;RESTORE THE EXTERNAL POINTER
+02B6,79 2E,,        MOV     R1,#FP_DIG78    ;SET UP INTERNAL POINTER
+02B8,7F 04,,        MOV     R7,#DIGIT       ;LOOP COUNT
+02BA,50 17,,        JNC     DIV7            ;EXIT IF NO CARRY
+,,,        ;
+02BC,E2,DIV6,DIV6:   MOVX    A,@R0           ;DO ACCUMLATION
+02BD,FE,,        MOV     R6,A
+02BE,E4,,        CLR     A
+02BF,34 99,,        ADDC    A,#99H
+02C1,9E,,        SUBB    A,R6
+02C2,27,,        ADD     A,@R1
+02C3,D4,,        DA      A
+02C4,F7,,        MOV     @R1,A
+02C5,18,,        DEC     R0
+02C6,19,,        DEC     R1
+02C7,DF F3,,        DJNZ    R7,DIV6         ;LOOP
+,,,        ;
+02C9,0D,,        INC     R5              ;SUBTRACT COUNTER
+02CA,40 E8,,        JC      DIV5            ;KEEP LOOPING IF CARRY
+02CC,E7,,        MOV     A,@R1           ;GET CARRY
+02CD,94 01,,        SUBB    A,#1            ;CARRY IS CLEARED
+02CF,F7,,        MOV     @R1,A           ;SAVE CARRY DIGIT
+02D0,B3,,        CPL     C
+02D1,80 E1,,        SJMP    DIV5            ;LOOP
+,,,        ;
+,,,        ; Restore the result if carry was found
+,,,        ;
+02D3,31 D3,DIV7,DIV7:   ACALL   ADDLP           ;ADD NUMBER BACK
+02D5,77 00,,        MOV     @R1,#0          ;CLEAR CARRY
+02D7,8A 00,,        MOV     R0B0,R2         ;GET SAVE COUNTER
+02D9,A6 05,,        MOV     @R0,5           ;SAVE COUNT BYTE
+,,,        ;
+02DB,0A,,        INC     R2              ;ADJUST SAVE COUNTER
+02DC,7F 01,,        MOV     R7,#1           ;BUMP DIVIDEND
+02DE,71 BB,,        ACALL   LEFT
+02E0,BA 3E CE,,        CJNE    R2,#FP_ACC8+2,DIV4
+,,,        ;
+02E3,D5 30 02,,        DJNZ    FP_EXP,DIV8
+02E6,61 6D,,        AJMP    UNDERFLOW_AND_EXIT
+,,,        ;
+02E8,75 2A 00,DIV8,DIV8:   MOV     FP_CARRY,#0
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+02EB,,PACK,PACK:   ; Pack the mantissa
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+,,,        ; First, set up the pointers
+,,,        ;
+02EB,78 34,,        MOV     R0,#FP_ACCC
+02ED,E6,,        MOV     A,@R0           ;GET FP_ACCC
+02EE,FE,,        MOV     R6,A            ;SAVE FOR ZERO COUNT
+02EF,60 03,,        JZ      PACK0           ;JUMP OVER IF ZERO
+02F1,71 3A,,        ACALL   INC_FP_EXP      ;BUMP THE EXPONENT
+02F3,18,,        DEC     R0
+,,,        ;
+02F4,08,PACK0,PACK0:  INC     R0              ;POINT AT FP_ACC1
+,,,        ;
+02F5,74 08,PACK1,PACK1:  MOV     A,#8            ;ADJUST NIBBLE POINTER
+02F7,F9,,        MOV     R1,A
+02F8,28,,        ADD     A,R0
+02F9,F8,,        MOV     R0,A
+02FA,B6 05 00,,        CJNE    @R0,#5,$+3      ;SEE IF ADJUSTING NEEDED
+02FD,40 13,,        JC      PACK3+1
+,,,        ;
+02FF,D3,PACK2,PACK2:  SETB    C
+0300,E4,,        CLR     A
+0301,18,,        DEC     R0
+0302,36,,        ADDC    A,@R0
+0303,D4,,        DA      A
+0304,D6,,        XCHD    A,@R0           ;SAVE THE VALUE
+0305,30 E4 09,,        JNB     ACC.4,PACK3
+0308,D9 F5,,        DJNZ    R1,PACK2
+,,,        ;
+030A,18,,        DEC     R0
+030B,76 01,,        MOV     @R0,#1
+030D,71 3A,,        ACALL   INC_FP_EXP
+030F,80 06,,        SJMP    PACK4
+,,,        ;
+0311,19,PACK3,PACK3:  DEC     R1
+0312,E9,,        MOV     A,R1
+0313,C3,,        CLR     C
+0314,C8,,        XCH     A,R0
+0315,98,,        SUBB    A,R0
+0316,F8,,        MOV     R0,A
+,,,        ;
+0317,79 2B,PACK4,PACK4:  MOV     R1,#FP_DIG12
+,,,        ;
+,,,        ; Now, pack
+,,,        ;
+0319,E6,PLOOP,PLOOP:  MOV     A,@R0
+031A,C4,,        SWAP    A               ;FLIP THE DIGITS
+031B,08,,        INC     R0
+031C,D6,,        XCHD    A,@R0
+031D,42 06,,        ORL     6,A             ;ACCUMULATE THE OR'ED DIGITS
+031F,F7,,        MOV     @R1,A
+0320,08,,        INC     R0
+0321,09,,        INC     R1
+0322,B9 2F F4,,        CJNE    R1,#FP_SIGN,PLOOP
+0325,EE,,        MOV     A,R6
+0326,70 03,,        JNZ     STORE_ALIGN_TEST_AND_EXIT
+0328,75 30 00,,        MOV     FP_EXP,#0       ;ZERO EXPONENT
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+032B,,STORE_ALIGN_TEST_AND_EXIT,STORE_ALIGN_TEST_AND_EXIT:      ;Save the number align carry and exit
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+032B,91 26,,        ACALL   LOAD_POINTERS
+032D,89 24,,        MOV     ARG_STACK,R1    ;SET UP THE NEW STACK
+032F,78 30,,        MOV     R0,#FP_EXP
+,,,        ;
+,,,        ; Now load the numbers
+,,,        ;
+0331,E6,STORE2,STORE2: MOV     A,@R0
+0332,F3,,        MOVX    @R1,A           ;SAVE THE NUMBER
+0333,18,,        DEC     R0
+0334,19,,        DEC     R1
+0335,B8 2A F9,,        CJNE    R0,#FP_CARRY,STORE2
+,,,        ;
+0338,E4,,        CLR     A               ;NO ERRORS
+,,,        ;
+0339,22,PRET,PRET:   RET                     ;EXIT
+,,,        ;
+,,,$EJECT
+033A,,INC_FP_EXP,INC_FP_EXP:
+,,,        ;
+033A,05 30,,        INC     FP_EXP
+033C,E5 30,,        MOV     A,FP_EXP
+033E,70 F9,,        JNZ     PRET            ;EXIT IF NOT ZERO
+0340,D0 E0,,        POP     ACC             ;WASTE THE CALLING STACK
+0342,D0 E0,,        POP     ACC
+0344,61 5C,,        AJMP    OVERFLOW_AND_EXIT
+,,,        ;
+,,,;***********************************************************************
+,,,;
+0346,,UNPACK_R0,UNPACK_R0:      ; Unpack BCD digits and load into nibble locations
+,,,;
+,,,;***********************************************************************
+,,,        ;
+0346,C0 01,,        PUSH    R1B0
+0348,79 32,,        MOV     R1,#FP_NIB8
+,,,        ;
+034A,E2,ULOOP,ULOOP:  MOVX    A,@R0
+034B,54 0F,,        ANL     A,#0FH
+034D,F7,,        MOV     @R1,A           ;SAVE THE NIBBLE
+034E,E2,,        MOVX    A,@R0
+034F,C4,,        SWAP    A
+0350,54 0F,,        ANL     A,#0FH
+0352,19,,        DEC     R1
+0353,F7,,        MOV     @R1,A           ;SAVE THE NIBBLE AGAIN
+0354,18,,        DEC     R0
+0355,19,,        DEC     R1
+0356,B9 2A F1,,        CJNE    R1,#FP_NIB1-1,ULOOP
+,,,        ;
+0359,D0 01,,        POP     R1B0
+,,,        ;
+035B,22,LOAD7,LOAD7:  RET
+,,,        ;
+,,,$EJECT
+,,,        ;**************************************************************
+,,,        ;
+035C,,OVERFLOW_AND_EXIT,OVERFLOW_AND_EXIT:      ;LOAD 99999999 E+127,  SET OV BIT, AND EXIT
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+035C,78 2E,,        MOV     R0,#FP_DIG78
+035E,74 99,,        MOV     A,#99H
+,,,        ;
+0360,F6,OVE1,OVE1:   MOV     @R0,A
+0361,18,,        DEC     R0
+0362,B8 2A FB,,        CJNE    R0,#FP_CARRY,OVE1
+,,,        ;
+0365,75 30 FF,,        MOV     FP_EXP,#0FFH
+0368,71 2B,,        ACALL   STORE_ALIGN_TEST_AND_EXIT
+,,,        ;
+036A,D2 E1,,        SETB    ACC.OVERFLOW
+036C,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;**************************************************************
+,,,        ;
+036D,,UNDERFLOW_AND_EXIT,UNDERFLOW_AND_EXIT:     ;LOAD 0, SET UF BIT, AND EXIT
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+036D,71 73,,        ACALL   ZERO_AND_EXIT
+036F,E4,,        CLR     A
+0370,D2 E0,,        SETB    ACC.UNDERFLOW
+0372,22,,        RET
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+0373,,ZERO_AND_EXIT,ZERO_AND_EXIT:          ;LOAD 0, SET ZERO BIT, AND EXIT
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+0373,71 7A,,        ACALL   FP_CLEAR
+0375,71 2B,,        ACALL   STORE_ALIGN_TEST_AND_EXIT
+0377,D2 E2,,        SETB    ACC.ZERO
+0379,22,,        RET                     ;EXIT
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+037A,,FP_CLEAR,FP_CLEAR:
+,,,        ;
+,,,        ; Clear internal storage
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+037A,E4,,        CLR     A
+037B,78 3D,,        MOV     R0,#FP_ACC8+1
+,,,        ;
+037D,F6,FPC1,FPC1:   MOV     @R0,A
+037E,18,,        DEC     R0
+037F,B8 29 FB,,        CJNE    R0,#FP_TEMP,FPC1
+0382,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;**************************************************************
+,,,        ;
+0383,,RIGHT,RIGHT:  ; Shift ACCUMULATOR RIGHT the number of nibbles in R7
+,,,        ; Save the shifted values in R4 if SAVE_ROUND is set
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+0383,7C 00,,        MOV     R4,#0           ;IN CASE OF NO SHIFT
+,,,        ;
+0385,C3,RIGHT1,RIGHT1: CLR     C
+0386,EF,,        MOV     A,R7            ;GET THE DIGITS TO SHIFT
+0387,60 22,,        JZ      RIGHT5-1        ;EXIT IF ZERO
+0389,94 02,,        SUBB    A,#2            ;TWO TO DO?
+038B,50 1F,,        JNC     RIGHT5          ;SHIFT TWO NIBBLES
+,,,        ;
+,,,        ; Swap one nibble then exit
+,,,        ;
+038D,C0 00,RIGHT3,RIGHT3: PUSH    R0B0            ;SAVE POINTER REGISTER
+038F,C0 01,,        PUSH    R1B0
+,,,        ;
+0391,79 2E,,        MOV     R1,#FP_DIG78    ;LOAD THE POINTERS
+0393,78 2D,,        MOV     R0,#FP_DIG56
+0395,EC,,        MOV     A,R4            ;GET THE OVERFLOW REGISTER
+0396,D7,,        XCHD    A,@R1           ;GET DIGIT 8
+0397,C4,,        SWAP    A               ;FLIP FOR LOAD
+0398,FC,,        MOV     R4,A
+,,,        ;
+0399,E7,RIGHTL,RIGHTL: MOV     A,@R1           ;GET THE LOW ORDER BYTE
+039A,D6,,        XCHD    A,@R0           ;SWAP NIBBLES
+039B,C4,,        SWAP    A               ;FLIP FOR STORE
+039C,F7,,        MOV     @R1,A           ;SAVE THE DIGITS
+039D,18,,        DEC     R0              ;BUMP THE POINTERS
+039E,19,,        DEC     R1
+039F,B9 2A F7,,        CJNE    R1,#FP_DIG12-1,RIGHTL   ;LOOP
+,,,        ;
+03A2,E7,,        MOV     A,@R1           ;ACC = CH8
+03A3,C4,,        SWAP    A               ;ACC = 8CH
+03A4,54 0F,,        ANL     A,#0FH          ;ACC = 0CH
+03A6,F7,,        MOV     @R1,A           ;CARRY DONE
+03A7,D0 01,,        POP     R1B0            ;EXIT
+03A9,D0 00,,        POP     R0B0            ;RESTORE REGISTER
+03AB,22,,        RET
+,,,        ;
+03AC,FF,RIGHT5,RIGHT5: MOV     R7,A            ;SAVE THE NEW SHIFT NUMBER
+03AD,E4,,        CLR     A
+03AE,C5 2A,,        XCH     A,FP_CARRY      ;SWAP THE NIBBLES
+03B0,C5 2B,,        XCH     A,FP_DIG12
+03B2,C5 2C,,        XCH     A,FP_DIG34
+03B4,C5 2D,,        XCH     A,FP_DIG56
+03B6,C5 2E,,        XCH     A,FP_DIG78
+03B8,FC,,        MOV     R4,A            ;SAVE THE LAST DIGIT SHIFTED
+03B9,80 CB,,        SJMP    RIGHT1+1
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+03BB,,LEFT,LEFT:   ; Shift ACCUMULATOR LEFT the number of nibbles in R7
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+03BB,7C 00,,        MOV     R4,#00H         ;CLEAR FOR SOME ENTRYS
+,,,        ;
+03BD,C3,LEFT1,LEFT1:  CLR     C
+03BE,EF,,        MOV     A,R7            ;GET SHIFT VALUE
+03BF,60 22,,        JZ      LEFT5-1         ;EXIT IF ZERO
+03C1,94 02,,        SUBB    A,#2            ;SEE HOW MANY BYTES TO SHIFT
+03C3,50 1F,,        JNC     LEFT5
+,,,        ;
+03C5,C0 00,LEFT3,LEFT3:  PUSH    R0B0            ;SAVE POINTER
+03C7,C0 01,,        PUSH    R1B0
+03C9,78 2A,,        MOV     R0,#FP_CARRY
+03CB,79 2B,,        MOV     R1,#FP_DIG12
+,,,        ;
+03CD,E6,,        MOV     A,@R0           ;ACC=CHCL
+03CE,C4,,        SWAP    A               ;ACC = CLCH
+03CF,F6,,        MOV     @R0,A           ;ACC = CLCH, @R0 = CLCH
+,,,        ;
+03D0,E7,LEFTL,LEFTL:  MOV     A,@R1           ;DIG 12
+03D1,C4,,        SWAP    A               ;DIG 21
+03D2,D6,,        XCHD    A,@R0
+03D3,F7,,        MOV     @R1,A           ;SAVE IT
+03D4,08,,        INC     R0              ;BUMP POINTERS
+03D5,09,,        INC     R1
+03D6,B8 2E F7,,        CJNE    R0,#FP_DIG78,LEFTL
+,,,        ;
+03D9,EC,,        MOV     A,R4
+03DA,C4,,        SWAP    A
+03DB,D6,,        XCHD    A,@R0
+03DC,54 F0,,        ANL     A,#0F0H
+03DE,FC,,        MOV     R4,A
+,,,        ;
+03DF,D0 01,,        POP     R1B0
+03E1,D0 00,,        POP     R0B0            ;RESTORE
+03E3,22,,        RET                     ;DONE
+,,,        ;
+03E4,FF,LEFT5,LEFT5:  MOV     R7,A            ;RESTORE COUNT
+03E5,E4,,        CLR     A
+03E6,CC,,        XCH     A,R4            ;GET THE RESTORATION BYTE
+03E7,C5 2E,,        XCH     A,FP_DIG78      ;DO THE SWAP
+03E9,C5 2D,,        XCH     A,FP_DIG56
+03EB,C5 2C,,        XCH     A,FP_DIG34
+03ED,C5 2B,,        XCH     A,FP_DIG12
+03EF,C5 2A,,        XCH     A,FP_CARRY
+03F1,80 CB,,        SJMP    LEFT1+1
+,,,        ;
+,,,$EJECT
+03F3,,MUL_NIBBLE,MUL_NIBBLE:
+,,,        ;
+,,,        ; Multiply the nibble in R7 by the FP_NIB locations
+,,,        ; accumulate the product in FP_ACC
+,,,        ;
+,,,        ; Set up the pointers for multiplication
+,,,        ;
+03F3,54 0F,,        ANL     A,#0FH          ;STRIP OFF MS NIBBLE
+03F5,FF,,        MOV     R7,A
+03F6,78 3C,,        MOV     R0,#FP_ACC8
+03F8,79 32,,        MOV     R1,#FP_NIB8
+03FA,E4,,        CLR     A
+03FB,F5 33,,        MOV     FP_ACCX,A
+,,,        ;
+03FD,18,MNLOOP,MNLOOP: DEC     R0              ;BUMP POINTER TO PROPAGATE CARRY
+03FE,26,,        ADD     A,@R0           ;ATTEMPT TO FORCE CARRY
+03FF,D4,,        DA      A               ;BCD ADJUST
+0400,30 E4 03,,        JNB     ACC.4,MNL0      ;DON'T ADJUST IF NO NEED
+0403,18,,        DEC     R0              ;PROPAGATE CARRY TO THE NEXT DIGIT
+0404,06,,        INC     @R0             ;DO THE ADJUSTING
+0405,08,,        INC     R0              ;RESTORE R0
+,,,        ;
+0406,D6,MNL0,MNL0:   XCHD    A,@R0           ;RESTORE INITIAL NUMBER
+0407,8F F0,,        MOV     B,R7            ;GET THE NUBBLE TO MULTIPLY
+0409,E7,,        MOV     A,@R1           ;GET THE OTHER NIBBLE
+040A,A4,,        MUL     AB              ;DO THE MULTIPLY
+040B,75 F0 0A,,        MOV     B,#10           ;NOW BCD ADJUST
+040E,84,,        DIV     AB
+040F,C5 F0,,        XCH     A,B             ;GET THE REMAINDER
+0411,26,,        ADD     A,@R0           ;PROPAGATE THE PARTIAL PRODUCTS
+0412,D4,,        DA      A               ;BCD ADJUST
+0413,30 E4 02,,        JNB     ACC.4,MNL1      ;PROPAGATE PARTIAL PRODUCT CARRY
+0416,05 F0,,        INC     B
+,,,        ;
+0418,08,MNL1,MNL1:   INC     R0
+0419,D6,,        XCHD    A,@R0           ;SAVE THE NEW PRODUCT
+041A,18,,        DEC     R0
+041B,E5 F0,,        MOV     A,B             ;GET BACK THE QUOTIENT
+041D,19,,        DEC     R1
+041E,B9 2A DC,,        CJNE    R1,#FP_NIB1-1,MNLOOP
+,,,        ;
+0421,25 33,,        ADD     A,FP_ACCX       ;GET THE OVERFLOW
+0423,D4,,        DA      A               ;ADJUST
+0424,F6,,        MOV     @R0,A           ;SAVE IT
+0425,22,,        RET                     ;EXIT
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+0426,,LOAD_POINTERS,LOAD_POINTERS:  ; Load the ARG_STACK into R0 and bump R1
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+0426,75 A0 01,,        MOV     P2,#ARG_STACK_PAGE
+0429,A8 24,,        MOV     R0,ARG_STACK
+042B,74 06,,        MOV     A,#FP_NUMBER_SIZE
+042D,28,,        ADD     A,R0
+042E,F9,,        MOV     R1,A
+042F,22,,        RET
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+0430,,MUL_DIV_EXP_AND_SIGN,MUL_DIV_EXP_AND_SIGN:
+,,,        ;
+,,,        ; Load the sign into R7, R6. R5 gets the sign for
+,,,        ; multiply and divide.
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+0430,71 7A,,        ACALL   FP_CLEAR        ;CLEAR INTERNAL MEMORY
+,,,        ;
+0432,91 26,MDES1,MDES1:  ACALL   LOAD_POINTERS   ;LOAD REGISTERS
+0434,E2,,        MOVX    A,@R0           ;ARG 1 EXP
+0435,FF,,        MOV     R7,A            ;SAVED IN R7
+0436,E3,,        MOVX    A,@R1           ;ARG 2 EXP
+0437,FE,,        MOV     R6,A            ;SAVED IN R6
+0438,18,,        DEC     R0              ;BUMP POINTERS TO SIGN
+0439,19,,        DEC     R1
+043A,E2,,        MOVX    A,@R0           ;GET THE SIGN
+043B,FC,,        MOV     R4,A            ;SIGN OF ARG1
+043C,E3,,        MOVX    A,@R1           ;GET SIGN OF NEXT ARG
+043D,FB,,        MOV     R3,A            ;SIGN OF ARG2
+043E,6C,,        XRL     A,R4            ;ACC GETS THE NEW SIGN
+043F,FD,,        MOV     R5,A            ;R5 GETS THE NEW SIGN
+,,,        ;
+,,,        ; Bump the pointers to point at the LS digit
+,,,        ;
+0440,18,,        DEC     R0
+0441,19,,        DEC     R1
+,,,        ;
+0442,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+0443,,LOADR1_MANTISSA,LOADR1_MANTISSA:
+,,,        ;
+,,,        ; Load the mantissa of R0 into FP_Digits
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+0443,C0 00,,        PUSH    R0B0            ;SAVE REGISTER 1
+0445,78 2E,,        MOV     R0,#FP_DIG78    ;SET UP THE POINTER
+,,,        ;
+0447,E3,LOADR1,LOADR1: MOVX    A,@R1
+0448,F6,,        MOV     @R0,A
+0449,19,,        DEC     R1
+044A,18,,        DEC     R0
+044B,B8 2A F9,,        CJNE    R0,#FP_CARRY,LOADR1
+,,,        ;
+044E,D0 00,,        POP     R0B0
+0450,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+0451,,HEXSCAN,HEXSCAN:        ; Scan a string to determine if it is a hex number
+,,,                ; set carry if hex, else carry = 0
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+0451,B1 27,,        ACALL   GET_DPTR_CHARACTER
+0453,C0 83,,        PUSH    DPH
+0455,C0 82,,        PUSH    DPL             ;SAVE THE POINTER
+,,,        ;
+0457,E0,HEXSC1,HEXSC1: MOVX    A,@DPTR         ;GET THE CHARACTER
+0458,F1 35,,        ACALL   DIGIT_CHECK     ;SEE IF A DIGIT
+045A,40 12,,        JC      HS1             ;CONTINUE IF A DIGIT
+045C,91 71,,        ACALL   HEX_CHECK       ;SEE IF HEX
+045E,40 0E,,        JC      HS1
+,,,        ;
+0460,C2 E5,,        CLR     ACC.5           ;NO LOWER CASE
+0462,B4 48 03,,        CJNE    A,#'H',HEXDON
+0465,D3,,        SETB    C
+0466,80 01,,        SJMP    HEXDO1          ;NUMBER IS VALID HEX, MAYBE
+,,,        ;
+0468,C3,HEXDON,HEXDON: CLR     C
+,,,        ;
+0469,D0 82,HEXDO1,HEXDO1: POP     DPL             ;RESTORE POINTER
+046B,D0 83,,        POP     DPH
+046D,22,,        RET
+,,,        ;
+046E,A3,HS1,HS1:    INC     DPTR            ;BUMP TO NEXT CHARACTER
+046F,80 E6,,        SJMP    HEXSC1          ;LOOP
+,,,        ;
+0471,,HEX_CHECK,HEX_CHECK:      ;CHECK FOR A VALID ASCII HEX, SET CARRY IF FOUND
+,,,        ;
+0471,C2 E5,,        CLR     ACC.5           ;WASTE LOWER CASE
+0473,B4 47 00,,        CJNE    A,#'F'+1,$+3    ;SEE IF F OR LESS
+0476,40 01,,        JC      HC1
+0478,22,,        RET
+,,,        ;
+0479,B4 41 00,HC1,HC1:    CJNE    A,#'A',$+3      ;SEE IF A OR GREATER
+047C,B3,,        CPL     C
+047D,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;
+047E,,PUSHR2R0,PUSHR2R0:
+,,,        ;
+047E,7B 00,,        MOV     R3,#HIGH CONVT  ;CONVERSION LOCATION
+0480,79 48,,        MOV     R1,#LOW CONVT
+0482,D1 BF,,        ACALL   CONVERT_BINARY_TO_ASCII_STRING
+0484,74 0D,,        MOV     A,#0DH          ;A CR TO TERMINATE
+0486,F3,,        MOVX    @R1,A           ;SAVE THE CR
+0487,90 00 48,,        MOV     DPTR,#CONVT
+,,,        ;
+,,,        ; Falls thru to FLOATING INPUT
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+048A,,FLOATING_POINT_INPUT,FLOATING_POINT_INPUT:   ; Input a floating point number pointed to by
+,,,                        ; the DPTR
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+048A,71 7A,,        ACALL   FP_CLEAR        ;CLEAR EVERYTHING
+048C,B1 27,,        ACALL   GET_DPTR_CHARACTER
+048E,B1 2D,,        ACALL   PLUS_MINUS_TEST
+0490,92 78,,        MOV     MSIGN,C         ;SAVE THE MANTISSA SIGN
+,,,        ;
+,,,        ; Now, set up for input loop
+,,,        ;
+0492,78 34,,        MOV     R0,#FP_ACCC
+0494,7E 7F,,        MOV     R6,#7FH         ;BASE EXPONENT
+0496,D2 D5,,        SETB    F0              ;SET INITIAL FLAG
+,,,        ;
+0498,F1 33,INLOOP,INLOOP: ACALL   GET_DIGIT_CHECK
+049A,50 07,,        JNC     GTEST           ;IF NOT A CHARACTER, WHAT IS IT?
+049C,54 0F,,        ANL     A,#0FH          ;STRIP ASCII
+049E,B1 00,,        ACALL   STDIG           ;STORE THE DIGITS
+,,,        ;
+04A0,A3,INLPIK,INLPIK: INC     DPTR            ;BUMP POINTER FOR LOOP
+04A1,80 F5,,        SJMP    INLOOP          ;LOOP FOR INPUT
+,,,        ;
+04A3,B4 2E 0C,GTEST,GTEST:  CJNE    A,#'.',GT1      ;SEE IF A RADIX
+04A6,20 51 63,,        JB      FOUND_RADIX,INERR
+04A9,D2 51,,        SETB    FOUND_RADIX
+04AB,B8 34 F2,,        CJNE    R0,#FP_ACCC,INLPIK
+04AE,D2 52,,        SETB    FIRST_RADIX     ;SET IF FIRST RADIX
+04B0,80 EE,,        SJMP    INLPIK          ;GET ADDITIONAL DIGITS
+,,,        ;
+04B2,20 D5 57,GT1,GT1:    JB      F0,INERR        ;ERROR IF NOT CLEARED
+04B5,B4 65 02,,        CJNE    A,#'e',$+5      ;CHECK FOR LOWER CASE
+04B8,80 03,,        SJMP    $+5
+04BA,B4 45 33,,        CJNE    A,#'E',FINISH_UP
+04BD,B1 26,,        ACALL   INC_AND_GET_DPTR_CHARACTER
+04BF,B1 2D,,        ACALL   PLUS_MINUS_TEST
+04C1,92 50,,        MOV     XSIGN,C         ;SAVE SIGN STATUS
+04C3,F1 33,,        ACALL   GET_DIGIT_CHECK
+04C5,50 45,,        JNC     INERR
+,,,        ;
+04C7,54 0F,,        ANL     A,#0FH          ;STRIP ASCII BIAS OFF THE CHARACTER
+04C9,FD,,        MOV     R5,A            ;SAVE THE CHARACTER IN R5
+,,,        ;
+04CA,A3,GT2,GT2:    INC     DPTR
+04CB,F1 33,,        ACALL   GET_DIGIT_CHECK
+04CD,50 0D,,        JNC     FINISH1
+04CF,54 0F,,        ANL     A,#0FH          ;STRIP OFF BIAS
+04D1,CD,,        XCH     A,R5            ;GET THE LAST DIGIT
+04D2,75 F0 0A,,        MOV     B,#10           ;MULTIPLY BY TEN
+04D5,A4,,        MUL     AB
+04D6,2D,,        ADD     A,R5            ;ADD TO ORIGINAL VALUE
+04D7,FD,,        MOV     R5,A            ;SAVE IN R5
+04D8,50 F0,,        JNC     GT2             ;LOOP IF NO CARRY
+04DA,7D FF,,        MOV     R5,#0FFH        ;FORCE AN ERROR
+,,,        ;
+04DC,ED,FINISH1,FINISH1:MOV     A,R5            ;GET THE SIGN
+04DD,30 50 09,,        JNB     XSIGN,POSNUM    ;SEE IF EXPONENT IS POS OR NEG
+04E0,C3,,        CLR     C
+04E1,9E,,        SUBB    A,R6
+04E2,F4,,        CPL     A
+04E3,04,,        INC     A
+04E4,40 09,,        JC      FINISH2
+04E6,74 01,,        MOV     A,#01H
+04E8,22,,        RET
+,,,        ;
+04E9,2E,POSNUM,POSNUM: ADD     A,R6            ;ADD TO EXPONENT
+04EA,50 03,,        JNC     FINISH2
+,,,        ;
+04EC,74 02,POSNM1,POSNM1: MOV     A,#02H
+04EE,22,,        RET
+,,,        ;
+04EF,CE,FINISH2,FINISH2:XCH     A,R6            ;SAVE THE EXPONENT
+,,,        ;
+04F0,,FINISH_UP,FINISH_UP:
+,,,        ;
+04F0,8E 30,,        MOV     FP_EXP,R6       ;SAVE EXPONENT
+04F2,B8 34 02,,        CJNE    R0,#FP_ACCC,$+5
+04F5,71 7A,,        ACALL   FP_CLEAR        ;CLEAR THE MEMORY IF 0
+04F7,E5 24,,        MOV     A,ARG_STACK     ;GET THE ARG STACK
+04F9,C3,,        CLR     C
+04FA,94 0C,,        SUBB    A,#FP_NUMBER_SIZE+FP_NUMBER_SIZE
+04FC,F5 24,,        MOV     ARG_STACK,A     ;ADJUST FOR STORE
+04FE,41 EB,,        AJMP    PACK
+,,,        ;
+0500,C2 D5,STDIG,STDIG:  CLR     F0              ;CLEAR INITIAL DESIGNATOR
+0502,70 0B,,        JNZ     STDIG1          ;CONTINUE IF NOT ZERO
+0504,B8 34 08,,        CJNE    R0,#FP_ACCC,STDIG1
+0507,30 52 04,,        JNB     FIRST_RADIX,RET_X
+,,,        ;
+050A,DE 02,DECX,DECX:   DJNZ    R6,RET_X
+,,,        ;
+050C,74 FF,INERR,INERR:  MOV     A,#0FFH
+,,,        ;
+050E,22,RET_X,RET_X:  RET
+,,,        ;
+050F,20 53 02,STDIG1,STDIG1: JB      DONE_LOAD,FRTEST
+0512,C2 52,,        CLR     FIRST_RADIX
+,,,        ;
+0514,20 52 F3,FRTEST,FRTEST: JB      FIRST_RADIX,DECX
+,,,        ;
+0517,20 51 01,FDTEST,FDTEST: JB      FOUND_RADIX,FDT1
+051A,0E,,        INC     R6
+,,,        ;
+051B,20 53 F0,FDT1,FDT1:   JB      DONE_LOAD,RET_X
+051E,B8 3D 02,,        CJNE    R0,#FP_ACC8+1,FDT2
+0521,D2 53,,        SETB    DONE_LOAD
+,,,        ;
+0523,F6,FDT2,FDT2:   MOV     @R0,A           ;SAVE THE STRIPPED ACCUMULATOR
+0524,08,,        INC     R0              ;BUMP THE POINTER
+0525,22,,        RET                     ;EXIT
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+,,,        ; I/O utilities
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+0526,,INC_AND_GET_DPTR_CHARACTER,INC_AND_GET_DPTR_CHARACTER:
+,,,        ;
+0526,A3,,        INC     DPTR
+,,,        ;
+0527,,GET_DPTR_CHARACTER,GET_DPTR_CHARACTER:
+,,,        ;
+0527,E0,,        MOVX    A,@DPTR         ;GET THE CHARACTER
+0528,B4 20 16,,        CJNE    A,#' ',PMT1     ;SEE IF A SPACE
+,,,        ;
+,,,        ; Kill spaces
+,,,        ;
+052B,80 F9,,        SJMP    INC_AND_GET_DPTR_CHARACTER
+,,,        ;
+052D,,PLUS_MINUS_TEST,PLUS_MINUS_TEST:
+,,,        ;
+052D,B4 E3 02,,        CJNE    A,#0E3H,$+5     ;SEE IF A PLUS, PLUS TOKEN FROM BASIC
+0530,80 0E,,        SJMP    PMT3
+0532,B4 2B 02,,        CJNE    A,#'+',$+5
+0535,80 09,,        SJMP    PMT3
+0537,B4 E5 02,,        CJNE    A,#0E5H,$+5     ;SEE IF MINUS, MINUS TOKEN FROM BASIC
+053A,80 03,,        SJMP    PMT2
+053C,B4 2D 02,,        CJNE    A,#'-',PMT1
+,,,        ;
+053F,D3,PMT2,PMT2:   SETB    C
+,,,        ;
+0540,A3,PMT3,PMT3:   INC     DPTR
+,,,        ;
+0541,22,PMT1,PMT1:   RET
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+0542,,FLOATING_POINT_OUTPUT,FLOATING_POINT_OUTPUT:  ; Output the number, format is in location 25
+,,,        ;
+,,,        ; IF FORMAT = 00 - FREE FLOATING
+,,,        ;           = FX - EXPONENTIAL (X IS THE NUMBER OF SIG DIGITS)
+,,,        ;           = NX - N = NUM BEFORE RADIX, X = NUM AFTER RADIX
+,,,        ;                  N + X = 8 MAX
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+0542,91 32,,        ACALL   MDES1           ;GET THE NUMBER TO OUTPUT, R0 IS POINTER
+0544,31 83,,        ACALL   POP_AND_EXIT    ;OUTPUT POPS THE STACK
+0546,EF,,        MOV     A,R7
+0547,FE,,        MOV     R6,A            ;PUT THE EXPONENT IN R6
+0548,71 46,,        ACALL   UNPACK_R0       ;UNPACK THE NUMBER
+054A,78 2B,,        MOV     R0,#FP_NIB1     ;POINT AT THE NUMBER
+054C,E5 25,,        MOV     A,FORMAT        ;GET THE FORMAT
+054E,FB,,        MOV     R3,A            ;SAVE IN CASE OF EXP FORMAT
+054F,60 49,,        JZ      FREE            ;FREE FLOATING?
+0551,B4 F0 00,,        CJNE    A,#0F0H,$+3     ;SEE IF EXPONENTIAL
+0554,50 73,,        JNC     EXPOUT
+,,,        ;
+,,,        ; If here, must be integer USING format
+,,,        ;
+0556,EE,,        MOV     A,R6            ;GET THE EXPONENT
+0557,70 02,,        JNZ     $+4
+0559,7E 80,,        MOV     R6,#80H
+055B,EB,,        MOV     A,R3            ;GET THE FORMAT
+055C,C4,,        SWAP    A               ;SPLIT INTEGER AND FRACTION
+055D,54 0F,,        ANL     A,#0FH
+055F,FA,,        MOV     R2,A            ;SAVE INTEGER
+0560,D1 2F,,        ACALL   NUM_LT          ;GET THE NUMBER OF INTEGERS
+0562,CA,,        XCH     A,R2            ;FLIP FOR SUBB
+0563,C3,,        CLR     C
+0564,9A,,        SUBB    A,R2
+0565,FF,,        MOV     R7,A
+0566,50 06,,        JNC     $+8
+0568,7D 3F,,        MOV     R5,#'?'         ;OUTPUT A QUESTION MARK
+056A,D1 64,,        ACALL   SOUT1           ;NUMBER IS TOO LARGE FOR FORMAT
+056C,A1 9A,,        AJMP    FREE
+056E,BA 00 07,,        CJNE    R2,#00,USING0   ;SEE IF ZERO
+0571,1F,,        DEC     R7
+0572,D1 51,,        ACALL   SS7
+0574,D1 5E,,        ACALL   ZOUT            ;OUTPUT A ZERO
+0576,80 06,,        SJMP    USING1
+,,,        ;
+0578,D1 51,USING0,USING0: ACALL   SS7             ;OUTPUT SPACES, IF NEED TO
+057A,EA,,        MOV     A,R2            ;OUTPUT DIGITS
+057B,FF,,        MOV     R7,A
+057C,D1 13,,        ACALL   OUTR0
+,,,        ;
+057E,EB,USING1,USING1: MOV     A,R3
+057F,54 0F,,        ANL     A,#0FH          ;GET THE NUMBER RIGHT OF DP
+0581,FA,,        MOV     R2,A            ;SAVE IT
+0582,60 BD,,        JZ      PMT1            ;EXIT IF ZERO
+0584,D1 5A,,        ACALL   ROUT            ;OUTPUT DP
+0586,D1 38,,        ACALL   NUM_RT
+0588,B5 02 03,,        CJNE    A,2,USINGX      ;COMPARE A TO R2
+,,,        ;
+058B,EA,USINGY,USINGY: MOV     A,R2
+058C,C1 48,,        AJMP    Z7R7
+,,,        ;
+058E,50 FB,USINGX,USINGX: JNC     USINGY
+,,,        ;
+0590,CA,USING2,USING2: XCH     A,R2
+0591,C3,,        CLR     C
+0592,9A,,        SUBB    A,R2
+0593,CA,,        XCH     A,R2
+0594,D1 48,,        ACALL   Z7R7            ;OUTPUT ZEROS IF NEED TO
+0596,EA,,        MOV     A,R2
+0597,FF,,        MOV     R7,A
+0598,C1 13,,        AJMP    OUTR0
+,,,        ;
+,,,        ; First, force exponential output, if need to
+,,,        ;
+059A,EE,FREE,FREE:   MOV     A,R6            ;GET THE EXPONENT
+059B,70 04,,        JNZ     FREE1           ;IF ZERO, PRINT IT
+059D,D1 62,,        ACALL   SOUT
+059F,C1 5E,,        AJMP    ZOUT
+,,,        ;
+05A1,7B F0,FREE1,FREE1:  MOV     R3,#0F0H        ;IN CASE EXP NEEDED
+05A3,74 77,,        MOV     A,#80H-DIGIT-DIGIT-1
+05A5,2E,,        ADD     A,R6
+05A6,40 21,,        JC      EXPOUT
+05A8,94 F7,,        SUBB    A,#0F7H
+05AA,40 1D,,        JC      EXPOUT
+,,,        ;
+,,,        ; Now, just print the number
+,,,        ;
+05AC,D1 53,,        ACALL   SINOUT          ;PRINT THE SIGN OF THE NUMBER
+05AE,D1 2F,,        ACALL   NUM_LT          ;GET THE NUMBER LEFT OF DP
+05B0,B4 08 02,,        CJNE    A,#8,FREE4
+05B3,C1 13,,        AJMP    OUTR0
+,,,        ;
+05B5,D1 13,FREE4,FREE4:  ACALL   OUTR0
+05B7,D1 25,,        ACALL   ZTEST           ;TEST FOR TRAILING ZEROS
+05B9,60 57,,        JZ      U_RET           ;DONE IF ALL TRAILING ZEROS
+05BB,D1 5A,,        ACALL   ROUT            ;OUTPUT RADIX
+,,,        ;
+05BD,7F 01,FREE2,FREE2:  MOV     R7,#1           ;OUTPUT ONE DIGIT
+05BF,D1 13,,        ACALL   OUTR0
+05C1,70 4F,,        JNZ     U_RET
+05C3,D1 25,,        ACALL   ZTEST
+05C5,60 4B,,        JZ      U_RET
+05C7,80 F4,,        SJMP    FREE2           ;LOOP
+,,,        ;
+05C9,D1 53,EXPOUT,EXPOUT: ACALL   SINOUT          ;PRINT THE SIGN
+05CB,7F 01,,        MOV     R7,#1           ;OUTPUT ONE CHARACTER
+05CD,D1 13,,        ACALL   OUTR0
+05CF,D1 5A,,        ACALL   ROUT            ;OUTPUT RADIX
+05D1,EB,,        MOV     A,R3            ;GET FORMAT
+05D2,54 0F,,        ANL     A,#0FH          ;STRIP INDICATOR
+05D4,60 06,,        JZ      EXPOTX
+,,,        ;
+05D6,FF,,        MOV     R7,A            ;OUTPUT THE NUMBER OF DIGITS
+05D7,1F,,        DEC     R7              ;ADJUST BECAUSE ONE CHAR ALREADY OUT
+05D8,D1 13,,        ACALL   OUTR0
+05DA,80 02,,        SJMP    EXPOT4
+,,,        ;
+05DC,B1 BD,EXPOTX,EXPOTX: ACALL   FREE2           ;OUTPUT UNTIL TRAILING ZEROS
+,,,        ;
+05DE,D1 62,EXPOT4,EXPOT4: ACALL   SOUT            ;OUTPUT A SPACE
+05E0,7D 45,,        MOV     R5,#'E'
+05E2,D1 64,,        ACALL   SOUT1           ;OUTPUT AN E
+05E4,EE,,        MOV     A,R6            ;GET THE EXPONENT
+05E5,60 04,,        JZ      XOUT0           ;EXIT IF ZERO
+05E7,14,,        DEC     A               ;ADJUST FOR THE DIGIT ALREADY OUTPUT
+05E8,B4 80 05,,        CJNE    A,#80H,XOUT2    ;SEE WHAT IT IS
+,,,        ;
+05EB,D1 62,XOUT0,XOUT0:  ACALL   SOUT
+05ED,E4,,        CLR     A
+05EE,80 0C,,        SJMP    XOUT4
+,,,        ;
+05F0,40 06,XOUT2,XOUT2:  JC      XOUT3           ;NEGATIVE EXPONENT
+05F2,7D 2B,,        MOV     R5,#'+'         ;OUTPUT A PLUS SIGN
+05F4,D1 64,,        ACALL   SOUT1
+05F6,80 04,,        SJMP    XOUT4
+,,,        ;
+05F8,D1 56,XOUT3,XOUT3:  ACALL   MOUT
+05FA,F4,,        CPL     A               ;FLIP BITS
+05FB,04,,        INC     A               ;BUMP
+,,,        ;
+05FC,C2 E7,XOUT4,XOUT4:  CLR     ACC.7
+05FE,F8,,        MOV     R0,A
+05FF,7A 00,,        MOV     R2,#0
+0601,79 48,,        MOV     R1,#LOW CONVT   ;CONVERSION LOCATION
+0603,7B 00,,        MOV     R3,#HIGH CONVT
+0605,D1 BF,,        ACALL   CONVERT_BINARY_TO_ASCII_STRING
+0607,78 48,,        MOV     R0,#LOW CONVT   ;NOW, OUTPUT EXPONENT
+,,,        ;
+0609,E2,EXPOT5,EXPOT5: MOVX    A,@R0           ;GET THE CHARACTER
+060A,FD,,        MOV     R5,A            ;OUTPUT IT
+060B,D1 64,,        ACALL   SOUT1
+060D,08,,        INC     R0              ;BUMP THE POINTER
+060E,E8,,        MOV     A,R0            ;GET THE POINTER
+060F,B5 01 F7,,        CJNE    A,R1B0,EXPOT5   ;LOOP
+,,,        ;
+0612,22,U_RET,U_RET:  RET                     ;EXIT
+,,,        ;
+0613,,OUTR0,OUTR0:  ; Output the characters pointed to by R0, also bias ascii
+,,,        ;
+0613,EF,,        MOV     A,R7            ;GET THE COUNTER
+0614,60 0E,,        JZ      OUTR            ;EXIT IF DONE
+0616,E6,,        MOV     A,@R0           ;GET THE NUMBER
+0617,44 30,,        ORL     A,#30H          ;ASCII BIAS
+0619,08,,        INC     R0              ;BUMP POINTER AND COUNTER
+061A,1F,,        DEC     R7
+061B,FD,,        MOV     R5,A            ;PUT CHARACTER IN OUTPUT REGISTER
+061C,D1 64,,        ACALL   SOUT1           ;OUTPUT THE CHARACTER
+061E,E4,,        CLR     A               ;JUST FOR TEST
+061F,B8 33 F1,,        CJNE    R0,#FP_NIB8+1,OUTR0
+0622,74 55,,        MOV     A,#55H          ;KNOW WHERE EXIT OCCURED
+,,,        ;
+0624,22,OUTR,OUTR:   RET
+,,,        ;
+0625,A9 00,ZTEST,ZTEST:  MOV     R1,R0B0         ;GET POINTER REGISTER
+,,,        ;
+0627,E7,ZT0,ZT0:    MOV     A,@R1           ;GET THE VALUE
+0628,70 04,,        JNZ     ZT1
+062A,09,,        INC     R1              ;BUMP POINTER
+062B,B9 33 F9,,        CJNE    R1,#FP_NIB8+1,ZT0
+,,,        ;
+062E,22,ZT1,ZT1:    RET
+,,,        ;
+062F,EE,NUM_LT,NUM_LT: MOV     A,R6            ;GET EXPONENT
+0630,C3,,        CLR     C               ;GET READY FOR SUBB
+0631,94 80,,        SUBB    A,#80H          ;SUB EXPONENT BIAS
+0633,50 01,,        JNC     NL1             ;OK IF NO CARRY
+0635,E4,,        CLR     A               ;NO DIGITS LEFT
+,,,        ;
+0636,FF,NL1,NL1:    MOV     R7,A            ;SAVE THE COUNT
+0637,22,,        RET
+,,,        ;
+0638,C3,NUM_RT,NUM_RT: CLR     C               ;SUBB AGAIN
+0639,74 80,,        MOV     A,#80H          ;EXPONENT BIAS
+063B,9E,,        SUBB    A,R6            ;GET THE BIASED EXPONENT
+063C,50 01,,        JNC     NR1
+063E,E4,,        CLR     A
+,,,        ;
+063F,22,NR1,NR1:    RET                     ;EXIT
+,,,        ;
+0640,EF,SPACE7,SPACE7: MOV     A,R7            ;GET THE NUMBER OF SPACES
+0641,60 FC,,        JZ      NR1             ;EXIT IF ZERO
+0643,D1 62,,        ACALL   SOUT            ;OUTPUT A SPACE
+0645,1F,,        DEC     R7              ;BUMP COUNTER
+0646,80 F8,,        SJMP    SPACE7          ;LOOP
+,,,        ;
+0648,FF,Z7R7,Z7R7:   MOV     R7,A
+,,,        ;
+0649,EF,ZERO7,ZERO7:  MOV     A,R7            ;GET COUNTER
+064A,60 F3,,        JZ      NR1             ;EXIT IF ZERO
+064C,D1 5E,,        ACALL   ZOUT            ;OUTPUT A ZERO
+064E,1F,,        DEC     R7              ;BUMP COUNTER
+064F,80 F8,,        SJMP    ZERO7           ;LOOP
+,,,        ;
+0651,D1 40,SS7,SS7:    ACALL   SPACE7
+,,,        ;
+0653,EC,SINOUT,SINOUT: MOV     A,R4            ;GET THE SIGN
+0654,60 0C,,        JZ      SOUT            ;OUTPUT A SPACE IF ZERO
+,,,        ;
+0656,7D 2D,MOUT,MOUT:   MOV     R5,#'-'
+0658,80 0A,,        SJMP    SOUT1           ;OUTPUT A MINUS IF NOT
+,,,        ;
+065A,7D 2E,ROUT,ROUT:   MOV     R5,#'.'         ;OUTPUT A RADIX
+065C,80 06,,        SJMP    SOUT1
+,,,        ;
+065E,7D 30,ZOUT,ZOUT:   MOV     R5,#'0'         ;OUTPUT A ZERO
+0660,80 02,,        SJMP    SOUT1
+,,,        ;
+0662,7D 20,SOUT,SOUT:   MOV     R5,#' '         ;OUTPUT A SPACE
+,,,        ;
+0664,E1 40,SOUT1,SOUT1:  AJMP    R5OUT
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+0666,,CONVERT_ASCII_STRING_TO_BINARY,CONVERT_ASCII_STRING_TO_BINARY:
+,,,        ;
+,,,        ;DPTR POINTS TO ASCII STRING
+,,,        ;PUT THE BINARY NUMBER IN R2:R0, ERROR IF >64K
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+0666,91 51,CASB,CASB:   ACALL   HEXSCAN         ;SEE IF HEX NUMBER
+0668,92 33,,        MOV     ADD_IN,C        ;IF ADD_IN IS SET, THE NUMBER IS HEX
+066A,F1 33,,        ACALL   GET_DIGIT_CHECK
+066C,B3,,        CPL     C               ;FLIP FOR EXIT
+066D,40 28,,        JC      RCASB
+066F,7B 00,,        MOV     R3,#00H         ;ZERO R3:R1 FOR LOOP
+0671,79 00,,        MOV     R1,#00H
+0673,80 15,,        SJMP    CASB5
+,,,        ;
+0675,A3,CASB2,CASB2:  INC     DPTR
+0676,89 00,,        MOV     R0B0,R1         ;SAVE THE PRESENT CONVERTED VALUE
+0678,8B 02,,        MOV     R0B0+2,R3       ;IN R2:R0
+067A,F1 33,,        ACALL   GET_DIGIT_CHECK
+067C,40 0C,,        JC      CASB5
+067E,30 33 16,,        JNB     ADD_IN,RCASB    ;CONVERSION COMPLETE
+0681,91 71,,        ACALL   HEX_CHECK       ;SEE IF HEX NUMBER
+0683,40 03,,        JC      CASB4           ;PROCEED IF GOOD
+0685,A3,,        INC     DPTR            ;BUMP PAST H
+0686,80 0F,,        SJMP    RCASB
+,,,        ;
+0688,24 09,CASB4,CASB4:  ADD     A,#9            ;ADJUST HEX ASCII BIAS
+,,,        ;
+068A,75 F0 0A,CASB5,CASB5:  MOV     B,#10
+068D,30 33 03,,        JNB     ADD_IN,CASB6
+0690,75 F0 10,,        MOV     B,#16           ;HEX MODE
+,,,        ;
+0693,D1 9E,CASB6,CASB6:  ACALL   MULNUM          ;ACCUMULATE THE DIGITS
+0695,50 DE,,        JNC     CASB2           ;LOOP IF NO CARRY
+,,,        ;
+0697,E4,RCASB,RCASB:  CLR     A               ;RESET ACC
+0698,92 E1,,        MOV     ACC.OVERFLOW,C  ;IF OVERFLOW, SAY SO
+069A,22,,        RET                     ;EXIT
+,,,        ;
+,,,$EJECT
+,,,        ;
+069B,75 F0 0A,MULNUM10,MULNUM10:MOV    B,#10
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+069E,,MULNUM,MULNUM: ; Take the next digit in the acc (masked to 0FH)
+,,,        ; accumulate in R3:R1
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+069E,C0 E0,,        PUSH    ACC             ;SAVE ACC
+06A0,C0 F0,,        PUSH    B               ;SAVE MULTIPLIER
+06A2,E9,,        MOV     A,R1            ;PUT LOW ORDER BITS IN ACC
+06A3,A4,,        MUL     AB              ;DO THE MULTIPLY
+06A4,F9,,        MOV     R1,A            ;PUT THE RESULT BACK
+06A5,EB,,        MOV     A,R3            ;GET THE HIGH ORDER BYTE
+06A6,AB F0,,        MOV     R3,B            ;SAVE THE OVERFLOW
+06A8,D0 F0,,        POP     B               ;GET THE MULTIPLIER
+06AA,A4,,        MUL     AB              ;DO IT
+06AB,A2 D2,,        MOV     C,OV            ;SAVE OVERFLOW IN F0
+06AD,92 D5,,        MOV     F0,C
+06AF,2B,,        ADD     A,R3            ;ADD OVERFLOW TO HIGH RESULT
+06B0,FB,,        MOV     R3,A            ;PUT IT BACK
+06B1,D0 E0,,        POP     ACC             ;GET THE ORIGINAL ACC BACK
+06B3,72 D5,,        ORL     C,F0            ;OR CARRY AND OVERFLOW
+06B5,40 07,,        JC      MULX            ;NO GOOD IF THE CARRY IS SET
+,,,        ;
+06B7,54 0F,MUL11,MUL11:  ANL     A,#0FH          ;MASK OFF HIGH ORDER BITS
+06B9,29,,        ADD     A,R1            ;NOW ADD THE ACC
+06BA,F9,,        MOV     R1,A            ;PUT IT BACK
+06BB,E4,,        CLR     A               ;PROPAGATE THE CARRY
+06BC,3B,,        ADDC    A,R3
+06BD,FB,,        MOV     R3,A            ;PUT IT BACK
+,,,        ;
+06BE,22,MULX,MULX:   RET                     ;EXIT WITH OR WITHOUT CARRY
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+06BF,,CONVERT_BINARY_TO_ASCII_STRING,CONVERT_BINARY_TO_ASCII_STRING:
+,,,        ;
+,,,        ;R3:R1 contains the address of the string
+,,,        ;R2:R0 contains the value to convert
+,,,        ;DPTR, R7, R6, and ACC gets clobbered
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+06BF,E4,,        CLR     A               ;NO LEADING ZEROS
+06C0,90 27 10,,        MOV     DPTR,#10000     ;SUBTRACT 10000
+06C3,D1 DC,,        ACALL   RSUB            ;DO THE SUBTRACTION
+06C5,90 03 E8,,        MOV     DPTR,#1000      ;NOW 1000
+06C8,D1 DC,,        ACALL   RSUB
+06CA,90 00 64,,        MOV     DPTR,#100       ;NOW 100
+06CD,D1 DC,,        ACALL   RSUB
+06CF,90 00 0A,,        MOV     DPTR,#10        ;NOW 10
+06D2,D1 DC,,        ACALL   RSUB
+06D4,90 00 01,,        MOV     DPTR,#1         ;NOW 1
+06D7,D1 DC,,        ACALL   RSUB
+06D9,60 20,,        JZ      RSUB2           ;JUMP OVER RET
+,,,        ;
+06DB,22,RSUB_R,RSUB_R: RET
+,,,        ;
+06DC,7E FF,RSUB,RSUB:   MOV     R6,#-1          ;SET UP THE COUNTER
+,,,        ;
+06DE,0E,RSUB1,RSUB1:  INC     R6              ;BUMP THE COUNTER
+06DF,CA,,        XCH     A,R2            ;DO A FAST COMPARE
+06E0,B5 83 00,,        CJNE    A,DPH,$+3
+06E3,CA,,        XCH     A,R2
+06E4,40 12,,        JC      FAST_DONE
+06E6,C8,,        XCH     A,R0            ;GET LOW BYTE
+06E7,95 82,,        SUBB    A,DPL           ;SUBTRACT, CARRY IS CLEARED
+06E9,C8,,        XCH     A,R0            ;PUT IT BACK
+06EA,CA,,        XCH     A,R2            ;GET THE HIGH BYTE
+06EB,95 83,,        SUBB    A,DPH           ;ADD THE HIGH BYTE
+06ED,CA,,        XCH     A,R2            ;PUT IT BACK
+06EE,50 EE,,        JNC     RSUB1           ;LOOP UNTIL CARRY
+,,,        ;
+06F0,C8,,        XCH     A,R0
+06F1,25 82,,        ADD     A,DPL           ;RESTORE R2:R0
+06F3,C8,,        XCH     A,R0
+06F4,CA,,        XCH     A,R2
+06F5,35 83,,        ADDC    A,DPH
+06F7,CA,,        XCH     A,R2
+,,,        ;
+06F8,,FAST_DONE,FAST_DONE:
+,,,        ;
+06F8,4E,,        ORL     A,R6            ;OR THE COUNT VALUE
+06F9,60 E0,,        JZ      RSUB_R          ;RETURN IF ZERO
+,,,        ;
+06FB,74 30,RSUB2,RSUB2:  MOV     A,#'0'          ;GET THE ASCII BIAS
+06FD,2E,,        ADD     A,R6            ;ADD THE COUNT
+,,,        ;
+06FE,8B A0,RSUB4,RSUB4:  MOV     P2,R3           ;SET UP P2
+0700,F3,,        MOVX    @R1,A           ;PLACE THE VALUE IN MEMORY
+0701,09,,        INC     R1
+0702,B9 00 01,,        CJNE    R1,#00H,RSUB3   ;SEE IF RAPPED AROUND
+0705,0B,,        INC     R3              ;BUMP HIGH BYTE
+,,,        ;
+0706,22,RSUB3,RSUB3:  RET                     ;EXIT
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+0707,,HEXOUT,HEXOUT: ; Output the hex number in R3:R1, supress leading zeros, if set
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+0707,D1 62,,        ACALL   SOUT            ;OUTPUT A SPACE
+0709,A2 36,,        MOV     C,ZSURP         ;GET ZERO SUPPRESSION BIT
+070B,92 33,,        MOV     ADD_IN,C
+070D,EB,,        MOV     A,R3            ;GET HIGH NIBBLE AND PRINT IT
+070E,F1 2A,,        ACALL   HOUTHI
+0710,EB,,        MOV     A,R3
+0711,F1 2B,,        ACALL   HOUTLO
+,,,        ;
+0713,C2 33,HEX2X,HEX2X:  CLR     ADD_IN          ;DON'T SUPPRESS ZEROS
+0715,E9,,        MOV     A,R1            ;GET LOW NIBBLE AND PRINT IT
+0716,F1 2A,,        ACALL   HOUTHI
+0718,E9,,        MOV     A,R1
+0719,F1 2B,,        ACALL   HOUTLO
+071B,7D 48,,        MOV     R5,#'H'         ;OUTPUT H TO INDICATE HEX MODE
+,,,        ;
+071D,C1 64,SOUT_1,SOUT_1: AJMP    SOUT1
+,,,        ;
+071F,C2 33,HOUT1,HOUT1:  CLR     ADD_IN          ;PRINTED SOMETHING, SO CLEAR ADD_IN
+0721,24 90,,        ADD     A,#90H          ;CONVERT TO ASCII
+0723,D4,,        DA      A
+0724,34 40,,        ADDC    A,#40H
+0726,D4,,        DA      A               ;GOT IT HERE
+0727,FD,,        MOV     R5,A            ;OUTPUT THE BYTE
+0728,80 F3,,        SJMP    SOUT_1
+,,,        ;
+072A,C4,HOUTHI,HOUTHI: SWAP    A               ;SWAP TO OUTPUT HIGH NIBBLE
+,,,        ;
+072B,54 0F,HOUTLO,HOUTLO: ANL     A,#0FH          ;STRIP
+072D,70 F0,,        JNZ     HOUT1           ;PRINT IF NOT ZERO
+072F,30 33 ED,,        JNB     ADD_IN,HOUT1    ;OUTPUT A ZERO IF NOT SUPRESSED
+0732,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;
+0733,,GET_DIGIT_CHECK,GET_DIGIT_CHECK:        ; Get a character, then check for digit
+,,,        ;
+0733,B1 27,,        ACALL   GET_DPTR_CHARACTER
+,,,        ;
+0735,,DIGIT_CHECK,DIGIT_CHECK:    ;CHECK FOR A VALID ASCII DIGIT, SET CARRY IF FOUND
+,,,        ;
+0735,B4 3A 00,,        CJNE    A,#'9'+1,$+3    ;SEE IF ASCII 9 OR LESS
+0738,40 01,,        JC      DC1
+073A,22,,        RET
+,,,        ;
+073B,B4 30 00,DC1,DC1:    CJNE    A,#'0',$+3      ;SEE IF ASCII 0 OR GREATER
+073E,B3,,        CPL     C
+073F,22,,        RET
+,,,        ;
+,,,
+0740,C0 E0,r5out,r5out:  push    acc             ; me
+0742,ED,,        mov     a,r5            ; me
+0743,12 08 38,,        call    sndchr          ; me
+0746,D0 E0,,        pop     acc             ; me
+0748,22,,        ret                     ; me
+,,,;
+0749,02 08 4C,SQ_ERR,SQ_ERR: JMP     BADPRM          ; me
+,,,
+,,,        ;***************************************************************
+,,,        ;
+074C,,IFIX,IFIX:   ; Convert a floating point number to an integer, put in R3:R1
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+074C,E4,,        CLR     A               ;RESET THE START
+074D,FB,,        MOV     R3,A
+074E,F9,,        MOV     R1,A
+074F,A8 24,,        MOV     R0,ARG_STACK    ;GET THE ARG STACK
+0751,75 A0 01,,        MOV     P2,#ARG_STACK_PAGE
+0754,E2,,        MOVX    A,@R0           ;READ EXPONENT
+0755,C3,,        CLR     C
+0756,94 81,,        SUBB    A,#81H          ;BASE EXPONENT
+0758,FC,,        MOV     R4,A            ;SAVE IT
+0759,18,,        DEC     R0              ;POINT AT SIGN
+075A,E2,,        MOVX    A,@R0           ;GET THE SIGN
+075B,70 EC,,        JNZ     SQ_ERR          ;ERROR IF NEGATIVE
+075D,40 17,,        JC      INC_ASTKA       ;EXIT IF EXPONENT IS < 81H
+075F,0C,,        INC     R4              ;ADJUST LOOP COUNTER
+0760,E8,,        MOV     A,R0            ;BUMP THE POINTER REGISTER
+0761,94 05,,        SUBB    A,#FP_NUMBER_SIZE-1
+0763,F8,,        MOV     R0,A
+,,,        ;
+0764,08,I2,I2:     INC     R0              ;POINT AT DIGIT
+0765,E2,,        MOVX    A,@R0           ;GET DIGIT
+0766,C4,,        SWAP    A               ;FLIP
+0767,31 55,,        CALL    FP_BASE+20      ;ACCUMULATE
+0769,40 DE,,        JC      SQ_ERR
+076B,DC 02,,        DJNZ    R4,$+4
+076D,80 07,,        SJMP    INC_ASTKA
+076F,E2,,        MOVX    A,@R0           ;GET DIGIT
+0770,31 55,,        CALL    FP_BASE+20
+0772,40 D5,,        JC      SQ_ERR
+0774,DC EE,,        DJNZ    R4,I2
+,,,;
+,,,; Pop the ARG STACK and check for overflow
+0776,,INC_ASTKA,INC_ASTKA:
+0776,74 06,,        MOV     A,#FP_NUMBER_SIZE       ;number to pop
+0778,80 18,,        SJMP    SETREG+1
+,,,;
+,,,;Push ARG STACK and check for underflow
+077A,,DEC_ASTKA,DEC_ASTKA:
+077A,74 FA,,        MOV     A,#-FP_NUMBER_SIZE
+077C,25 24,,        ADD     A,ARG_STACK
+077E,B4 00 00,,        CJNE    A,#0,$+3
+0781,40 45,,        JC      E4YY
+0783,F5 24,,        MOV     ARG_STACK,A
+0785,F9,,        MOV     R1,A
+0786,7B 01,,        MOV     R3,#ARG_STACK_PAGE
+0788,22,SRT,SRT:    RET
+,,,;
+0789,F1 76,POPAS,POPAS:  ACALL   INC_ASTKA
+078B,E1 BB,,        AJMP    VARCOP          ;COPY THE VARIABLE
+,,,;
+078D,F1 7A,PUSHAS,PUSHAS: ACALL   DEC_ASTKA
+078F,E1 BB,,        AJMP    VARCOP
+,,,;
+0791,E4,SETREG,SETREG: CLR     A               ;DON'T POP ANYTHING
+0792,A8 24,,        MOV     R0,ARG_STACK
+0794,7A 01,,        MOV     R2,#ARG_STACK_PAGE
+0796,8A A0,,        MOV     P2,R2
+0798,28,,        ADD     A,R0
+0799,40 2D,,        JC      E4YY
+079B,F5 24,,        MOV     ARG_STACK,A
+079D,E2,,        MOVX    A,@R0
+079E,22,A_D,A_D:    RET
+,,,        ;
+079F,18,DEC3210,DEC3210:DEC     R0              ;BUMP THE POINTER
+07A0,B8 FF 01,,        CJNE    R0,#0FFH,$+4    ;SEE IF OVERFLOWED
+07A3,1A,,        DEC     R2              ;BUMP THE HIGH BYTE
+07A4,19,,        DEC     R1              ;BUMP THE POINTER
+07A5,B9 FF 01,,        CJNE    R1,#0FFH,DEC_R  ;SEE IF OVERFLOWED
+07A8,1B,,        DEC     R3              ;CHANGE THE HIGH BYTE
+07A9,22,DEC_R,DEC_R:  RET                     ;EXIT
+,,,;
+,,,
+,,,
+,,,;Routine to copy bottom arg on stack to address in DPTR.
+,,,;Does not work over page boundaries.
+,,,;Bugs fixed by JKJ/IRC
+07AA,F1 91,MOVAS,MOVAS:  ACALL   SETREG          ;SET UP R2:R0
+07AC,AB 83,,        MOV     R3,DPH
+07AE,A9 82,,        MOV     R1,DPL
+07B0,8A A0,M_C,M_C:    MOV     P2,R2           ;SET UP THE PORTS
+07B2,E2,,        MOVX    A,@R0           ;READ THE VALUE
+07B3,8B A0,,        MOV     P2,R3           ;PORT TIME AGAIN
+07B5,F3,,        MOVX    @R1,A           ;SAVE IT
+07B6,08,,        INC     R0
+07B7,09,,        INC     R1
+07B8,DC F6,,        DJNZ    R4,M_C          ;LOOP
+07BA,22,,        RET                     ;EXIT
+,,,
+,,,
+,,,; VARCOP - Copy a variable from R2:R0 to R3:R1
+07BB,7C 06,VARCOP,VARCOP: MOV     R4,#FP_NUMBER_SIZE      ;LOAD THE LOOP COUNTER
+07BD,8A A0,V_C,V_C:    MOV     P2,R2           ;SET UP THE PORTS
+07BF,E2,,        MOVX    A,@R0           ;READ THE VALUE
+07C0,8B A0,,        MOV     P2,R3           ;PORT TIME AGAIN
+07C2,F3,,        MOVX    @R1,A           ;SAVE IT
+07C3,F1 9F,,        ACALL   DEC3210
+07C5,DC F6,,        DJNZ    R4,V_C          ;LOOP
+07C7,22,,        RET                     ;EXIT
+,,,;
+07C8,90 08 04,E4YY,E4YY:   MOV     DPTR,#EXA
+07CB,02 08 49,,        JMP     PRTERR          ; me
+,,,
+,,,        ; integer operator - INT
+07CE,F1 91,AINT,AINT:   ACALL   SETREG          ;SET UP THE REGISTERS, CLEAR CARRY
+07D0,94 81,,        SUBB    A,#129          ;SUBTRACT EXPONENT BIAS
+07D2,50 0D,,        JNC     AI1             ;JUMP IF ACC > 81H
+,,,        ;
+,,,        ; Force the number to be a zero
+,,,        ;
+07D4,F1 76,,        ACALL   INC_ASTKA       ;BUMP THE STACK
+,,,        ;
+07D6,90 07 DB,P_Z,P_Z:    MOV     DPTR,#ZRO       ;PUT ZERO ON THE STACK
+07D9,E1 F6,,        AJMP    PUSHC
+07DB,00 00 00 00,ZRO,ZRO:    DB      0,0,0,0,0,0
+,,,        ;
+07E1,94 07,AI1,AI1:    SUBB    A,#7
+07E3,50 10,,        JNC     AI3
+07E5,F4,,        CPL     A
+07E6,04,,        INC     A
+07E7,FB,,        MOV     R3,A
+07E8,18,,        DEC     R0              ;POINT AT SIGN
+,,,        ;
+07E9,18,AI2,AI2:    DEC     R0              ;NOW AT LSB'S
+07EA,E2,,        MOVX    A,@R0           ;READ BYTE
+07EB,54 F0,,        ANL     A,#0F0H         ;STRIP NIBBLE
+07ED,F2,,        MOVX    @R0,A           ;WRITE BYTE
+07EE,DB 01,,        DJNZ    R3,$+3
+07F0,22,,        RET
+07F1,E4,,        CLR     A
+07F2,F2,,        MOVX    @R0,A           ;CLEAR THE LOCATION
+07F3,DB F4,,        DJNZ    R3,AI2
+07F5,22,AI3,AI3:    RET                     ;EXIT
+,,,        ;
+,,,        ; PUSHC - Push constant pointed by DPTR on to the arg stack
+07F6,F1 7A,PUSHC,PUSHC:  ACALL   DEC_ASTKA
+07F8,8B A0,,        MOV     P2,R3
+07FA,7B 06,,        MOV     R3,#FP_number_SIZe      ;LOOP COUNTER
+07FC,E4,PCL,PCL:    CLR     A               ;SET UP A
+07FD,93,,        MOVC    A,@A+DPTR       ;LOAD IT
+07FE,F3,,        MOVX    @R1,A           ;SAVE IT
+07FF,A3,,        INC     DPTR            ;BUMP POINTERS
+0800,19,,        DEC     R1
+0801,DB F9,,        DJNZ    R3,PCL          ;LOOP
+0803,22,,        RET                     ;EXIT
+,,,;
+,,,
+0804,41 2D 53 54,EXA,EXA:    DB      'A-STACK',0
+,,,
+,,,;Routine to peek arg at DPTR
+080C,78 06,argout,argout:         mov R0,#FP_NUMBER_SIZE
+080E,E0,aoloop,aoloop:         movx A,@DPTR
+080F,54 F0,,                anl A,#0F0h
+0811,03,,                rr a
+0812,03,,                rr a
+0813,03,,                rr a
+0814,03,,                rr a
+0815,24 10,,                add A,#aodata-$-3
+0817,83,,                movc A,@A+PC
+0818,12 08 38,,                call sndchr
+081B,E0,,                movx A,@DPTR
+081C,54 0F,,                anl A,#0Fh
+081E,24 07,,                add A,#aodata-$-3
+0820,83,,                movc A,@A+PC
+0821,12 08 38,,                call sndchr
+0824,A3,,                inc DPTR
+0825,D8 E7,,                djnz R0, aoloop
+0827,22,,                ret
+,,,
+0828,30 31 32 33,aodata,aodata: db '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
+,,,
+,,,;Routine to output character in A, preserving all but A.
+0838,C0 00,sndchr,sndchr:         push R0B0
+083A,C0 01,,                push R1B0
+083C,12 10 66,,                call getmode
+083F,F5 6D,,                mov digitcode,A
+0841,12 0E EA,,                call storedigit
+0844,D0 01,,                pop R1B0
+0846,D0 00,,                pop R0B0
+0848,22,,                ret
+,,,
+,,,;Routine to print error message at DPTR.
+0849,02 08 60,prterr,prterr:         jmp wrstr
+,,,
+,,,;Routine to handle input parameter error.
+084C,90 08 52,badprm,badprm:         mov DPTR,#bpmsg
+084F,02 08 60,,                jmp wrstr
+,,,
+0852,42 61 64 20,bpmsg,bpmsg:  db 'Bad Parameter',0
+,,,
+,,,
+,,,;***********************************************************
+,,,;**** LCD Display Routines ****
+,,,;******************************
+,,,
+,,,;LCD Registers addresses
+,,,LCD_CMD_WR      equ     00h
+,,,LCD_DATA_WR     equ     01h
+,,,LCD_BUSY_RD     equ     02h
+,,,LCD_DATA_RD     equ     03h
+,,,
+,,,LCD_PAGE        equ     80h
+,,,
+,,,;LCD Commands
+,,,LCD_CLS         equ     1
+,,,LCD_HOME        equ     2
+,,,LCD_SETMODE     equ     4
+,,,LCD_SETVISIBLE  equ     8
+,,,LCD_SHIFT       equ     16
+,,,LCD_SETFUNCTION equ     32
+,,,LCD_SETCGADDR   equ     64
+,,,LCD_SETDDADDR   equ     128
+,,,
+,,,
+,,,;Sub routine to write null terminated string at DPTR in program ram.
+0860,75 A0 80,wrstr,wrstr:          mov P2,#LCD_PAGE
+0863,78 01,,                mov R0,#LCD_DATA_WR
+0865,E4,wrstr1,wrstr1:         clr A
+0866,93,,                movc A,@A+DPTR
+0867,60 07,,                jz wrstr2
+0869,F2,,                movx @R0,A
+086A,12 08 B8,,                call wtbusy
+086D,A3,,                inc DPTR
+086E,80 F5,,                jmp wrstr1
+0870,22,wrstr2,wrstr2:         ret
+,,,
+,,,;Sub routine to write null terminated string at DPTR in program ram.
+0871,75 A0 80,wrstrslow,wrstrslow:      mov P2,#LCD_PAGE
+0874,78 01,,                mov R0,#LCD_DATA_WR
+0876,E4,wrstr1s,wrstr1s:        clr A
+0877,93,,                movc A,@A+DPTR
+0878,60 15,,                jz wrstr2s
+087A,F2,,                movx @R0,A
+087B,12 08 B8,,                call wtbusy
+087E,A3,,                inc DPTR
+087F,C0 82,,                push DPL
+0881,C0 83,,                push DPH
+0883,90 00 14,,                mov DPTR,#20
+0886,12 08 CA,,                call wtms
+0889,D0 83,,                pop DPH
+088B,D0 82,,                pop DPL
+088D,80 E7,,                jmp wrstr1s
+088F,22,wrstr2s,wrstr2s:        ret
+,,,
+,,,
+,,,;Sub routine to write custom character cell A
+,,,;with data at DPTR
+0890,75 A0 80,wrcgc,wrcgc:          mov P2,#LCD_PAGE
+0893,23,,                rl A
+0894,23,,                rl A
+0895,23,,                rl A
+0896,24 40,,                add A,#LCD_SETCGADDR
+0898,12 08 A9,,                call wrcmd
+,,,
+089B,78 01,,                mov R0,#LCD_DATA_WR
+089D,7A 08,,                mov R2,#8
+089F,E4,wrcgc1,wrcgc1:         clr A
+08A0,93,,                movc A,@A+DPTR
+08A1,F2,,                movx @R0,A
+08A2,12 08 B8,,                call wtbusy
+08A5,A3,,                inc DPTR
+08A6,DA F7,,                djnz R2, wrcgc1
+08A8,22,,                ret
+,,,
+,,,;Sub routine to write command:
+08A9,75 A0 80,wrcmd,wrcmd:          mov P2,#LCD_PAGE
+08AC,78 00,,                mov R0,#LCD_CMD_WR
+08AE,F2,,                movx @R0,A
+08AF,02 08 B8,,                jmp wtbusy
+,,,
+,,,
+,,,;Sub routine to write character:
+08B2,75 A0 80,wrdata,wrdata:         mov P2,#LCD_PAGE
+08B5,78 01,,                mov R0,#LCD_DATA_WR
+08B7,F2,,                movx @R0,A
+,,,
+,,,
+,,,;Subroutine to wait for busy clear
+08B8,79 02,wtbusy,wtbusy:         mov R1,#LCD_BUSY_RD
+08BA,E3,,                movx A,@r1
+08BB,20 E7 FA,,                jb ACC.7,wtbusy
+08BE,22,,                ret
+,,,
+,,,;Wait for number of seconds in A
+08BF,C0 E0,wtsec,wtsec:          push ACC
+08C1,12 08 CA,,                call wtms
+08C4,D0 E0,,                pop ACC
+08C6,14,,                dec A
+08C7,70 F6,,                jnz wtsec
+08C9,22,,                ret
+,,,
+,,,;Wait for number of milliseconds in DPTR
+08CA,63 82 FF,wtms,wtms:           xrl DPL,#0FFh                   ;Can't do DEC DPTR, so do the loop by forming 2's co
+08CD,63 83 FF,,                xrl DPH,#0FFh                   ;and incrementing instead.
+08D0,A3,,                inc DPTR
+08D1,75 8A 9C,wtms1,wtms1:          mov TL0,#09Ch                   ;100 ticks before overflow
+08D4,75 8C FF,,                mov TH0,#0FFh
+08D7,75 89 01,,                mov TMOD,#1                     ;Timer 0 mode 1
+08DA,D2 8C,,                setb TCON.4                     ;Timer 0 runs
+08DC,30 8D FD,wtms2,wtms2:          jnb TCON.5,wtms2
+08DF,C2 8C,,                clr TCON.4                      ;Timer 0 stops
+08E1,C2 8D,,                clr TCON.5
+08E3,A3,,                inc DPTR
+08E4,E5 82,,                mov A,DPL
+08E6,45 83,,                orl A,DPH
+08E8,70 E7,,                jnz wtms1
+08EA,22,,                ret
+,,,
+,,,;Subroutine to Center a String on one line of the Display ( 16 character Display )
+,,,
+08EB,7E 00,CentreString,CentreString:   mov R6,#0
+08ED,AC 75,,                mov R4,strlength
+08EF,74 10,,                mov A,#16                                       ; R4 holds the string length.
+08F1,9C,,                subb A,R4                                       ; A holds the total *spare* characte
+08F2,40 0A,,                jc ExitSub                                      ; Exit Routine if string is longer t
+08F4,13,,                rrc A                                           ; Shift right (Divide by 2)
+08F5,FE,,                mov R6,A                                        ; R6 now holds the CentreOffset.
+08F6,E4,,                clr A
+08F7,74 FE,CharBuff,CharBuff:       mov A,#CHAR_SPACE                               ; Write the *padding* to center the
+08F9,11 B2,,                call wrdata
+08FB,BE 00 F9,,                cjne R6,#0,CharBuff
+08FE,22,ExitSub,ExitSub:        ret
+,,,
+,,,
+,,,;Subroutine to determine the length of a null terminated string.
+,,,
+08FF,7C 00,StringLength,StringLength:   mov R4,#00
+0901,E4,loop,loop:           clr A
+0902,93,,                movc A,@A+DPTR
+0903,A3,,                inc dptr
+0904,0C,,                inc R4
+0905,70 FA,,                jnz loop
+0907,8C 75,,                mov strlength ,R4
+0909,22,,                ret                                             ; strlength includes the terminating
+,,,
+,,,;Subroutine to write a null terminated string *wrapped* around an offset.
+,,,
+090A,78 01,WriteString,WriteString:    mov R0,#LCD_DATA_WR
+090C,E4,,                clr A
+090D,E5 74,,                mov A,stroffset
+090F,FD,,                mov R5,A                                        ; R5 is the counter.
+0910,F5 F0,,                mov B,A                                         ; B is the counter for the djnz
+,,,                ;mov R7,#5
+0912,7E 10,,                mov R6,#16
+0914,93,loop1,loop1:          movc A,@A+DPTR                                  ; Loop1 goes from the offset to the
+0915,60 07,,                jz eos_found
+0917,F2,,                movx @R0,A
+0918,11 B8,,                call wtbusy
+091A,0D,,                inc R5
+091B,ED,,                mov A,R5
+091C,DE F6,,                djnz R6,loop1                                   ; R6 *holds* the string to 20 charac
+,,,
+091E,7D 00,eos_found,eos_found:      mov R5,#0
+0920,AA 74,,                mov R2,stroffset
+0922,BA 00 01,,                cjne R2,#0,loop2                                ; Check for case with no wrap.
+0925,22,,                ret
+,,,
+0926,ED,loop2,loop2:          mov A,R5                                        ; Loop2 wraps from the first charact
+0927,93,,                movc A,@A+DPTR
+0928,F2,,                movx @R0,A
+0929,11 B8,,                call wtbusy
+092B,0D,,                inc R5
+092C,D5 F0 F7,,                djnz B,loop2
+,,,
+092F,C0 82,,                push DPL                                        ; Pause after writing the string.
+0931,C0 83,,                push DPH
+0933,90 00 02,,                mov DPTR,#2
+0936,11 CA,,                call wtms
+0938,D0 83,,                pop DPH
+093A,D0 82,,                pop DPL
+093C,22,,                ret
+,,,
+,,,
+,,,;***********************************************************
+,,,;**** Keypad Routines ****
+,,,;*************************
+,,,
+,,,
+,,,XSEG                                            ; External Data Memeory - Access through DPTR.
+,,,
+,,,;**** BUFFERS *****
+,,,; Buffers are set up with byte 0 as the sign - the relevent number of digits - and the final bit for
+,,,; The exception to this is the Hundredbuffer which is *hardcoded* at 100. In practice this means tha
+,,,; buffer holds an 8 digit number (sign&number&terminator = 10 ).
+,,,
+0000,,KEYBUFFER,KEYBUFFER:    ds 10                             ; General I/O buffer.
+000A,,OLDNUMBUFFER,OLDNUMBUFFER: ds 10                             ; Holds the previous number ( used for repeat operat
+0014,,MEMORYBUFFER,MEMORYBUFFER: ds 10                             ; Holds the number in memory
+001E,,,HUNDREDBUFF : ds 5                              ; Holds the constant number 100
+0023,,BOUNDBUFFER,BOUNDBUFFER:  ds 10                             ; Holds 99999999 and is signed so both upper and low
+002D,,TEMPBUFFER,TEMPBUFFER:   ds 25                             ; Holds the operation result until compared with bou
+,,,
+,,,DSEG AT 060h                                    ; Data memory.
+,,,
+,,,;***** FLAGS *****
+,,,; Flags are used mainly because most of the operators have different functionality when consecutivel
+,,,; Status returns 1 after an operator press and 0 after a digit key press.
+,,,
+0060,,equalsflag,equalsflag:     ds 1                            ; Flag for the equals operator.
+0061,,memopflag,memopflag:      ds 1                            ; Flag for memory operations.
+0062,,arithopflag,arithopflag:    ds 1                            ; Flag for arithmetic operations.
+0063,,pctopflag,pctopflag:      ds 1                            ; Flag for the percentage operator.
+0064,,memocc,memocc:         ds 1                            ; Flag whether there is a value in the memory buffer
+,,,
+0065,,errorflag,errorflag:      ds 1                            ; Flag an error.
+0066,,signflag,signflag:       ds 1                            ; Boolean for the sign of the number ( default to +v
+0067,,status,status:         ds 1                            ; Flag the type of key pressed ( operator or digit )
+,,,
+,,,;***** VARIABLES *****
+,,,
+0068,,opcodehex,opcodehex:      ds 1                            ; Store the operation type.
+0069,,,oldopcode :     ds 1                            ; As above - must be able to store the last operatio
+,,,                                                ; one for cancel command and consecutive operator pr
+006A,,opcodeflag,opcodeflag:     ds 1
+006B,,bufferctr,bufferctr:      ds 1                            ; A counter ( incremented along the buffer on storin
+006C,,opcounter,opcounter:      ds 1                            ; Count the number of operations since a ( total ) C
+006D,,digitcode,digitcode:      ds 1                            ; Holds the ascii value of the key pressed.
+006E,,mode,mode:           ds 1                            ; Determines at which buffer the DTPR addresses.
+006F,,memcounter,memcounter:     ds 1                            ; Stores the length of the number currently in the m
+0070,,copyfrom,copyfrom:       ds 1                            ; Used to copy the contents of one buffer into anoth
+0071,,copyto,copyto:         ds 1                            ; As above.
+0072,,local1,local1:         ds 1                            ; Local1 variable
+0073,,decimalcnt,decimalcnt:     ds 1                            ; Counter for decimal points - don't allow more than
+0074,,stroffset,stroffset:      ds 1                            ; Holds the offset of a string ( for centering purpo
+0075,,strlength,strlength:      ds 1                            ; Holds the length of the string.
+000C,,,CSEG                                            ; Return to code segment.
+,,,
+,,,CHAR_SPACE  equ 0FEh
+,,,
+093D,45 72 72 6F,errorstr,errorstr: db 'Error!'
+0943,00,,          db 0
+0944,59 4F 55 27,string1,string1:  db "YOU'RE JOKING!"
+0952,00,,          db 0
+,,,
+0953,11,CGC1,CGC1:   db 010001b                              ; Memory only.
+0954,1B,,        db 011011b
+0955,15,,        db 010101b
+0956,00,,        db 000000b
+0957,00,,        db 000000b
+0958,00,,        db 000000b
+0959,00,,        db 000000b
+095A,00,,        db 000000b
+,,,
+095B,11,CGC2,CGC2:   db 010001b                              ; Memory and error.
+095C,1B,,        db 011011b
+095D,15,,        db 010101b
+095E,1F,,        db 011111b
+095F,10,,        db 010000b
+0960,1E,,        db 011110b
+0961,10,,        db 010000b
+0962,1F,,        db 011111b
+,,,
+0963,00,CGC3,CGC3:   db 000000b                              ; Error only.
+0964,00,,        db 000000b
+0965,00,,        db 000000b
+0966,1F,,        db 011111b
+0967,10,,        db 010000b
+0968,1F,,        db 011111b
+0969,10,,        db 010000b
+096A,1F,,        db 011111b
+,,,
+,,,
+,,,
+,,,;Keycodes returned for function keys:
+,,,ON              equ     1
+,,,SGN             equ     2
+,,,PCT             equ     3
+,,,SQR             equ     4
+,,,MRC             equ     5
+,,,MADD            equ     6
+,,,MSUB            equ     7
+,,,
+,,,KEY_ROW1        equ     0EFh
+,,,KEY_ROW2        equ     0DFh
+,,,KEY_ROW3        equ     0BFh
+,,,KEY_ROW4        equ     07Fh
+,,,
+,,,keyflags        equ     040h
+,,,
+,,,;Data tables for returned row bits
+,,,
+,,,
+096B,01 37 38 39,keycodes,keycodes:       db      ON,  '7','8','9', '*', '/'
+0971,02 34 35 36,,                db      SGN, '4','5','6', '-', MRC
+0977,03 31 32 33,,                db      PCT, '1','2','3', 0,   MSUB
+097D,04 30 2E 3D,,                db      SQR, '0','.','=', '+', MADD
+,,,
+,,,
+,,,;-----------------------------------------------------------------------------------------
+,,,; WAITKEY - Wait for a keypress, lift the key and display it on screen.
+,,,;-----------------------------------------------------------------------------------------
+,,,
+0983,C0 83,waitkey,waitkey:        push DPH                        ; Preserve DPTR
+0985,C0 82,,                push DPL                        ;
+,,,
+0987,12 10 29,,                call initialize                 ; Initialise the keybuffer and the LCD display scree
+098A,12 09 BE,wk_keyscan,wk_keyscan:     call keyscan                    ; Wait for key press
+098D,70 0F,,                jnz wk_wrchar                   ; Handle a pressed key
+098F,C0 83,,                push DPH                        ; don't allow DPTR to be changed
+0991,C0 82,,                push DPL
+0993,90 00 0A,,                mov DPTR,#10                    ; Time delay to wait
+0996,11 CA,,                call wtms                       ; Wait set time
+0998,D0 82,,                pop DPL
+099A,D0 83,,                pop DPH
+099C,80 EC,,                jmp wk_keyscan                  ; Check again
+,,,
+,,,
+099E,12 09 FE,wk_wrchar,wk_wrchar:      call keytest                    ; Test the type of key pressed
+09A1,AD 6A,,                mov R5,opcodeflag
+09A3,BD 00 0B,,                cjne R5,#0,wk_ophandle          ; Test whether key pressed is a digit or an operator
+,,,
+,,,;*DIGIT PRESS*:
+09A6,12 0F 2A,,                call statuscheck                ; Determine whether this is the first digit pressed
+09A9,12 0E EA,,                call storedigit                 ; Store the digit and inc bufferctr along the buffer
+09AC,12 0F 6C,,                call bufferoutput               ; Output the number to the LCD display.
+09AF,80 D9,,                jmp wk_keyscan                  ; loop back to scan for next entry.
+,,,
+,,,
+,,,;*OPERATOR PRESS*:
+,,,
+09B1,12 10 66,wk_ophandle,wk_ophandle:    call getmode                    ; Determine at which buffer the DPTR addresses.
+09B4,12 0A 89,,                call handleop                   ; Deal with the operator logic.
+09B7,80 D1,,                jmp wk_keyscan                  ; loop back and start again.
+,,,
+09B9,D0 82,wk_done,wk_done:        pop DPL                         ; Restore DPTR
+09BB,D0 83,,                pop DPH
+09BD,22,,                ret
+,,,
+,,,
+,,,;============================================
+,,,;********** KEYPRESS FUNCTIONS **************
+,,,;============================================
+,,,
+,,,
+,,,;-----------------------------------------------------------------------------------------
+,,,; KEYSCAN - Function to return current keypad state in A.
+,,,;-----------------------------------------------------------------------------------------
+,,,
+,,,
+09BE,C0 83,keyscan,keyscan:        push DPH
+09C0,C0 82,,                push DPL
+,,,
+09C2,78 40,,                mov R0,#keyflags                ; R0 addresses the key toggle bytes
+09C4,79 EF,,                mov R1,#KEY_ROW1                ; R1 address the keyboard row address
+09C6,7A 04,,                mov R2,#4                       ; R2 counts rows
+09C8,89 A0,ksrow,ksrow:          mov P2,R1                       ; Set row address to port P2
+09CA,00,,                nop
+09CB,E5 90,,                mov A,P1                        ; Read column data from port P1
+09CD,7B 06,,                mov R3,#6                       ; R3 counts keys per row
+09CF,54 3F,,                anl A,#3Fh
+09D1,13,ks0,ks0:            rrc A                           ; Move next bit into carry
+09D2,FC,,                mov R4,A                        ; R4 preserves the row data
+09D3,40 08,,                jc ks1                          ; Jump if key not pressed
+09D5,E6,,                mov A,@R0                       ; Test if key already pressed
+09D6,76 01,,                mov @R0,#1                      ; Flag pressed anyway
+09D8,60 12,,                jz ksnew                        ; Jump if key newly pressed
+09DA,02 09 DF,,                jmp ks2
+09DD,76 00,ks1,ks1:            mov @R0,#0                      ; Flag key as not pressed
+09DF,08,ks2,ks2:            inc R0                          ; Loop for next key in this row
+09E0,EC,,                mov A,R4
+09E1,DB EE,,                djnz R3,ks0
+,,,
+09E3,E9,,                mov A,R1                        ; Jiggle R1 to address next row
+09E4,23,,                rl A
+09E5,F9,,                mov R1,A
+09E6,DA E0,,                djnz R2,ksrow
+,,,
+09E8,E4,,                clr A                           ; Return zero - no (new) key press.
+09E9,02 09 F6,,                jmp ksend
+,,,
+,,,
+09EC,90 09 6B,ksnew,ksnew:          mov DPTR,#keycodes              ; We've found a new key since last time:
+09EF,E8,,                mov A,R0                        ; The key flag address (ordinal) is in R0
+09F0,C3,,                clr C
+09F1,94 40,,                subb A,#keyflags
+09F3,93,,                movc A,@A+DPTR
+09F4,F5 6D,,                mov digitcode,A                 ; digitcode now holds the ascii value of the key in
+09F6,75 A0 FF,ksend,ksend:          mov P2,#0FFh
+09F9,D0 82,,                pop DPL
+09FB,D0 83,,                pop DPH
+09FD,22,,                ret
+,,,
+,,,
+,,,;---------------------------------------------------------------------------------------------------
+,,,; KEYTEST - Function to test which type of key is pressed. digitcode holds the key information.
+,,,;           The digit range holding ascii 0 -> 9 is 030h -> 039h.
+,,,;           Opcodeflag designated as the flag for *key type*.
+,,,;---------------------------------------------------------------------------------------------------
+,,,
+09FE,AC 6D,keytest,keytest:        mov R4,digitcode
+,,,
+0A00,BC 30 03,,                cjne R4,#030h,kt_testlower      ; Test lower boundary of the *digit range*. carry is
+0A03,02 0A 82,,                jmp kt_isdigit                  ; key is 030h so is a digit
+0A06,40 08,kt_testlower,kt_testlower:   jc kt_decimalpt                 ; Test the carry flag - if set then key is not a dig
+0A08,BC 39 03,,                cjne R4,#039h,kt_testupper      ; Test upper boundary of *digit range*. carry is set
+0A0B,02 0A 82,,                jmp kt_isdigit                  ; key is 039h so is digit.
+0A0E,40 72,kt_testupper,kt_testupper:   jc kt_isdigit                   ; if carry set then within *digit range* so jump to
+0A10,BC 2E 03,kt_decimalpt,kt_decimalpt:   cjne R4,#2Eh,kt_addtest         ; allow decimal points.
+0A13,02 0A 82,,                jmp kt_isdigit
+,,,
+0A16,BC 2B 06,kt_addtest,kt_addtest:     cjne R4,#02Bh,kt_subtest        ; Test the key info against ascii '+'
+0A19,75 6A 01,,                mov opcodeflag,#1               ; Key is the addition operator.
+0A1C,02 0A 88,,                jmp kt_done
+0A1F,BC 2D 06,kt_subtest,kt_subtest:     cjne R4,#02Dh,kt_multest        ; Test the key against ascii '-'
+0A22,75 6A 02,,                mov opcodeflag,#2               ; Key is the subtraction operator.
+0A25,02 0A 88,,                jmp kt_done
+0A28,BC 2A 06,kt_multest,kt_multest:     cjne R4,#02Ah,kt_divtest        ; Test the key against ascii '*'
+0A2B,75 6A 03,,                mov opcodeflag,#3               ; Key is the multiply operator.
+0A2E,02 0A 88,,                jmp kt_done
+0A31,BC 2F 06,kt_divtest,kt_divtest:     cjne R4,#02Fh,kt_cancel         ; Test the key against ascii '/'
+0A34,75 6A 04,,                mov opcodeflag,#4               ; Key is the divide operator.
+0A37,02 0A 88,,                jmp kt_done
+0A3A,BC 01 06,kt_cancel,kt_cancel:      cjne R4,#ON,kt_equals           ; Test the key against the assigned value for the ca
+0A3D,75 6A 05,,                mov opcodeflag,#5               ; Key is the Cancel operator
+0A40,02 0A 88,,                jmp kt_done
+0A43,BC 3D 06,kt_equals,kt_equals:      cjne R4,#03Dh,kt_sign           ; Test the key against ascii '='
+0A46,75 6A 06,,                mov opcodeflag,#6               ; Key is the equals operator.
+0A49,02 0A 88,,                jmp kt_done
+0A4C,BC 02 06,kt_sign,kt_sign:        cjne R4,#SGN,kt_mrc             ; Test the key against ascii '='
+0A4F,75 6A 07,,                mov opcodeflag,#7               ; Key is the Sign operator.
+0A52,02 0A 88,,                jmp kt_done
+0A55,BC 05 06,kt_mrc,kt_mrc:         cjne R4,#MRC,kt_mplus           ; Test the key against ascii '='
+0A58,75 6A 08,,                mov opcodeflag,#8               ; Key is the MRC operator.
+0A5B,02 0A 88,,                jmp kt_done
+0A5E,BC 06 06,kt_mplus,kt_mplus:       cjne R4,#MADD,kt_msub           ; Test the key against ascii '='
+0A61,75 6A 09,,                mov opcodeflag,#9               ; Key is the M+ operator.
+0A64,02 0A 88,,                jmp kt_done
+0A67,BC 07 06,kt_msub,kt_msub:        cjne R4,#MSUB,kt_pcnt           ; Test the key against ascii '='
+0A6A,75 6A 0A,,                mov opcodeflag,#10              ; Key is the M- operator.
+0A6D,02 0A 88,,                jmp kt_done
+0A70,BC 03 06,kt_pcnt,kt_pcnt:        cjne R4,#PCT,kt_sqr             ; Test the key against ascii '='
+0A73,75 6A 0B,,                mov opcodeflag,#11              ; Key is the Percentage operator.
+0A76,02 0A 88,,                jmp kt_done
+0A79,BC 04 0C,kt_sqr,kt_sqr:         cjne R4,#SQR,kt_done
+0A7C,75 6A 0C,,                mov opcodeflag,#12
+0A7F,02 0A 88,,                jmp kt_done
+0A82,75 6A 00,kt_isdigit,kt_isdigit:     mov opcodeflag,#0               ; Key is a digit.
+0A85,02 0A 88,,                jmp kt_done
+0A88,22,kt_done,kt_done:        ret
+,,,
+,,,
+,,,
+,,,;======================================================
+,,,;************* OPERATOR FUNCTIONS *********************
+,,,;======================================================
+,,,
+,,,;---------------------------------------------------------------------------------
+,,,;HANDLEOP - Subroutine to test whether the operator is arithmetic or not
+,,,;           and to call the appropriate function handlers.
+,,,;           If opcodeflag < =4 then arithmetic op else functional op.
+,,,;---------------------------------------------------------------------------------
+0A89,C3,handleop,handleop:       clr c                           ; Clear the carry flag before a cjne instruction
+0A8A,E5 6A,,                mov A,opcodeflag
+0A8C,B4 04 03,,                cjne A,#4,ho_testcarry          ; Test operator against 4
+0A8F,02 0A 9D,,                jmp ho_arithmcall               ; if 4 then arithmetic so jump
+,,,
+0A92,40 09,ho_testcarry,ho_testcarry:   jc ho_arithmcall                ; if less than 4 then arithmetic
+0A94,12 0B AB,,                call functionops                ; otherwise call function ops.
+0A97,75 62 00,,                mov arithopflag,#00h            ; If a functional op then clear arithopflag
+0A9A,02 0A A0,,                jmp ho_done
+,,,
+0A9D,12 0A A1,ho_arithmcall,ho_arithmcall:  call arithmeticop
+0AA0,22,ho_done,ho_done:        ret
+,,,
+,,,
+,,,;=========================================
+,,,;********* ARITHMETIC OPERATORS **********
+,,,;=========================================
+,,,
+,,,
+,,,;---------------------------------------------------------------------------------
+,,,;ARITHMETICOP - Subroutine to handle the operator logic for arithmetic operations
+,,,;               *opcodehex* is stored, *oldopcode* is retrieved.
+,,,;---------------------------------------------------------------------------------
+,,,
+0AA1,C0 83,arithmeticop,arithmeticop:   push DPH                        ; Preserve the Datapointer.
+0AA3,C0 82,,                push DPL
+0AA5,75 6E 01,,                mov mode,#1                     ; DPTR addresses the Keybuffer.
+0AA8,12 10 66,,                call getmode
+,,,
+0AAB,C3,,                clr c
+0AAC,AD 62,,                mov R5,arithopflag              ; Test for consecutive Arithmetic Operator presses
+0AAE,BD 01 03,,                cjne R5,#1,ao_equalscheck       ; If consecutive just store the op.
+0AB1,02 0B 1B,,                jmp ao_store
+,,,
+0AB4,C3,ao_equalscheck,ao_equalscheck: clr c
+0AB5,AD 60,,                mov R5,equalsflag               ; If *equ* - *arithmetic op* just store the op
+0AB7,BD 01 03,,                cjne R5,#1,ao_percentcheck      ; The equals operation stores the result.
+0ABA,02 0B 1B,,                jmp ao_store
+,,,
+0ABD,C3,ao_percentcheck,ao_percentcheck:clr c
+0ABE,AD 63,,                mov R5,pctopflag                ; If *pct* - *arithmetic op* just store the op
+0AC0,BD 01 03,,                cjne R5,#1,ao_statuscheck         ; The percent operation stores the result.
+0AC3,02 0B 1B,,                jmp ao_store
+,,,
+0AC6,AD 67,ao_statuscheck,ao_statuscheck: mov R5,status
+0AC8,BD 01 1F,,                cjne R5,#1,ao_normalinput       ; Test for *MRC*  - *aritmetic op* sequence
+0ACB,75 6E 01,,                mov mode,#1
+0ACE,AD 6F,,                mov R5,memcounter               ; Memcounter holds the length of the number in the M
+0AD0,8D 6B,,                mov bufferctr,R5
+0AD2,75 6D 00,,                mov digitcode,#0                ; Terminate the number.
+0AD5,12 0E EA,,                call storedigit
+0AD8,75 6E 01,,                mov mode,#1
+0ADB,12 10 1C,,                call inputnum                   ; Input the number.
+0ADE,75 70 01,,                mov copyfrom,#1
+0AE1,75 71 03,,                mov copyto,#3
+0AE4,12 0F DD,,                call buffercopy                 ; Copy the number into the oldnumbuffer.
+0AE7,02 0B 1B,,                jmp ao_store
+,,,
+0AEA,75 6E 01,ao_normalinput,ao_normalinput: mov mode,#1                     ; Test for *digit* - *arithmetic op* sequence
+0AED,75 6D 00,,                mov digitcode,#0
+0AF0,12 0E EA,,                call storedigit                 ; Terminate the number.
+0AF3,75 6E 01,,                mov mode,#1
+0AF6,12 10 1C,,                call inputnum                   ; Input the number.
+0AF9,75 70 01,,                mov copyfrom,#1
+0AFC,75 71 03,,                mov copyto,#3
+0AFF,12 0F DD,,                call buffercopy                 ; Copy the number.
+,,,
+0B02,05 6C,ao_countcheck,ao_countcheck:  inc opcounter                   ; opcounter holds the number of operations.
+0B04,AD 6C,,                mov R5,opcounter
+0B06,BD 01 03,,                cjne R5,#1,ao_retrieve
+0B09,02 0B 1B,,                jmp ao_store                    ; if this is first op nothing to retrieve/output so
+,,,
+0B0C,75 6E 01,ao_retrieve,ao_retrieve:    mov mode,#1
+0B0F,12 10 66,,                call getmode
+0B12,12 0B 54,,                call retrieveop                 ; retrieve the op, execute the opereration
+,,,                                                ; and output the result to the Keybuffer and to the
+0B15,75 6E 01,,                mov mode,#1
+0B18,12 10 1C,,                call inputnum                   ; Put the result back on the stack.
+0B1B,12 0B 35,ao_store,ao_store:       call storeop                    ; store the op type in *opcodehex*
+,,,
+0B1E,75 61 00,ao_setflags,ao_setflags:    mov memopflag,#00h              ; Clear/Set the appropriate flags.
+0B21,75 60 00,,                mov equalsflag,#00h
+0B24,75 63 00,,                mov pctopflag,#00h
+0B27,75 62 01,,                mov arithopflag,#01h
+,,,
+0B2A,75 67 01,ao_done,ao_done:        mov status,#01h                 ; set status to indicate that an operator has been p
+0B2D,12 10 53,,                call resetsign
+0B30,D0 82,,                pop DPL
+0B32,D0 83,,                pop DPH
+0B34,22,,                ret
+,,,
+,,,;---------------------------------------------------------------------------------
+,,,;STOREOP- Subroutine to store the operator. We store *opcodehex*.
+,,,;---------------------------------------------------------------------------------
+,,,
+0B35,AD 6A,storeop,storeop:        mov R5,opcodeflag
+0B37,BD 01 03,so_addition,so_addition:    cjne R5,#1,so_subtract          ; If Addition assign code
+0B3A,75 68 2B,,                mov opcodehex,#02Bh
+0B3D,BD 02 03,so_subtract,so_subtract:    cjne R5,#2,so_multiply          ; If Subtraction assign code
+0B40,75 68 2D,,                mov opcodehex,#02Dh
+0B43,BD 03 03,so_multiply,so_multiply:    cjne R5,#3,so_divide            ; If Multiplication assign code
+0B46,75 68 2A,,                mov opcodehex,#02Ah
+0B49,BD 04 03,so_divide,so_divide:      cjne R5,#4,so_done              ; If Division assign code
+0B4C,75 68 2F,,                mov opcodehex,#02Fh
+,,,
+0B4F,E5 68,so_done,so_done:        mov A,opcodehex                 ; Moves the op type into *oldopcode*.
+0B51,F5 69,,                mov oldopcode,A                 ; This means on next op press oldopcode is the
+,,,                                                ; old code and opcodehex is the new code.
+0B53,22,,                ret
+,,,
+,,,;---------------------------------------------------------------------------------
+,,,;RETRIEVEOP - Subroutine to retrieve the operator. We retrieve *oldopcode*.
+,,,;---------------------------------------------------------------------------------
+,,,
+0B54,AF 69,retrieveop,retrieveop:     mov R7,oldopcode                ; use R7 locally here for the cjne
+0B56,E4,,                clr A
+0B57,75 6B 00,,                mov bufferctr,#00h
+0B5A,BF 2B 09,ro_addition,ro_addition:    cjne R7,#02Bh,ro_subtract       ; Test for addition
+0B5D,12 01 71,,                call floating_add               ; Perform the operation
+0B60,12 10 C6,,                call errorcheck                 ; Check for errors
+0B63,02 0B 8A,,                jmp ro_output
+0B66,BF 2D 09,ro_subtract,ro_subtract:    cjne R7,#02Dh,ro_multiply       ; Test for subtraction
+0B69,12 01 67,,                call floating_sub               ; Perform the operation
+0B6C,12 10 C6,,                call errorcheck                 ; Check for errors
+0B6F,02 0B 8A,,                jmp ro_output
+0B72,BF 2A 09,ro_multiply,ro_multiply:    cjne R7,#02Ah,ro_divide         ; Test for multiplication
+0B75,12 02 55,,                call floating_mul               ; Perform the operation
+0B78,12 10 C6,,                call errorcheck                 ; Check for errors
+0B7B,02 0B 8A,,                jmp ro_output
+0B7E,BF 2F 09,ro_divide,ro_divide:      cjne R7,#02Fh,ro_output         ; Test for division
+0B81,12 02 8A,,                call floating_div               ; Perform the operation
+0B84,12 10 C6,,                call errorcheck                 ; Check for errors
+0B87,02 0B 8A,,                jmp ro_output
+,,,
+0B8A,AD 65,ro_output,ro_output:      mov R5,errorflag
+0B8C,BD 00 15,,                cjne R5,#0,ro_clear             ; Test for errors.
+0B8F,75 6E 01,,                mov mode,#1                     ; No error so output result.
+0B92,12 10 66,,                call getmode
+0B95,12 0F B4,,                call bufferclear
+0B98,75 6B 00,,                mov bufferctr,#00h
+0B9B,12 05 42,,                call floating_point_output      ; output result both to LCD and to keybuffer.
+0B9E,12 0F 6C,,                call bufferoutput
+0BA1,02 0B AA,,                jmp ro_done
+,,,
+0BA4,75 67 01,ro_clear,ro_clear:       mov status,#1                   ; If an error occurs we clear everything
+0BA7,12 0B ED,,                call cancelop                   ; ready to start again.
+0BAA,22,ro_done,ro_done:        ret
+,,,
+,,,
+,,,
+,,,;===================================
+,,,;***** FUNCTION OPERATORS **********
+,,,;===================================
+,,,
+,,,
+,,,;---------------------------------------------------------------------------------
+,,,;FUNCTIONOPS - Subroutine to handle the non arithmetic operations.
+,,,;              Determine which functional op is pressed and the call the appropriate subroutine.
+,,,;---------------------------------------------------------------------------------
+,,,
+0BAB,AD 6A,functionops,functionops:    mov R5,opcodeflag
+0BAD,BD 05 06,fo_cancel,fo_cancel:      cjne R5,#5,fo_equal
+0BB0,12 0B ED,,                call cancelop
+0BB3,02 0B EC,,                jmp fo_done
+0BB6,BD 06 06,fo_equal,fo_equal:       cjne R5,#6,fo_signop
+0BB9,12 0C 49,,                call equalop
+0BBC,02 0B EC,,                jmp fo_done
+0BBF,BD 07 06,fo_signop,fo_signop:      cjne R5,#7,fo_mrc
+0BC2,12 0C CC,,                call signop
+0BC5,02 0B EC,,                jmp fo_done
+0BC8,BD 08 06,fo_mrc,fo_mrc:         cjne R5,#8,fo_memplus
+0BCB,12 0D E2,,                call memrecall
+0BCE,02 0B EC,,                jmp fo_done
+0BD1,BD 09 03,fo_memplus,fo_memplus:     cjne R5,#9,fo_memsub
+0BD4,12 0E 53,,                call memplus
+0BD7,BD 0A 03,fo_memsub,fo_memsub:      cjne R5,#10,fo_pcnt
+0BDA,12 0E A0,,                call memsub
+0BDD,BD 0B 03,fo_pcnt,fo_pcnt:        cjne R5,#11,fo_sqr
+0BE0,12 0D 11,,                call percentop
+0BE3,BD 0C 06,fo_sqr,fo_sqr:         cjne R5,#12,fo_done
+0BE6,12 11 82,,                call banner
+0BE9,12 0B ED,,                call cancelop
+0BEC,22,fo_done,fo_done:        ret
+,,,
+,,,;---------------------------------------------------------------------------------
+,,,;CANCELOP - Subroutine to handle the cancel operation.
+,,,;---------------------------------------------------------------------------------
+,,,
+0BED,C0 83,cancelop,cancelop:       push DPH                        ; Preserve the Datapointer.
+0BEF,C0 82,,                push DPL
+,,,
+0BF1,AD 67,,                mov R5,status                   ; Test for full or partial clear.
+0BF3,BD 00 1E,,                cjne R5,#0,co_totalclear
+,,,
+0BF6,75 6E 01,co_partclear,co_partclear:   mov mode,#1                     ; Partial Clear - Lose num2 and display num1
+0BF9,12 10 66,,                call getmode                    ; This is Sequence:*num1*-*arithop*-*num2*-*cancel*
+0BFC,12 0F C8,,                call clearscreen                ; Scrap the second number ( isn't on the stack here
+0BFF,75 6B 00,,                mov bufferctr,#00h              ; Clear before FPO so we know the *size* of the resu
+0C02,75 6E 01,,                mov mode,#1
+0C05,12 10 66,,                call getmode
+0C08,12 05 42,,                call floating_point_output      ; Output the first number to the Keybuffer.
+0C0B,12 0F 6C,,                call bufferoutput               ; Output the first number to the LCD Display.
+0C0E,12 10 1C,,                call inputnum                   ; Put the first number back on the stack.
+0C11,02 0C 32,,                jmp co_setflags
+,,,
+,,,
+0C14,75 6E 01,co_totalclear,co_totalclear:  mov mode,#1                     ; Total Clear  - Clear the stack and the Keybuffer.
+0C17,12 10 66,,                call getmode
+0C1A,12 05 42,,                call floating_point_output      ; Output the contents of the stack.
+0C1D,12 0F C8,,                call clearscreen                ; Clear the screen.
+0C20,12 10 29,,                call initialize                 ; initialise the Keybuffer and the LCD dislay.
+0C23,75 69 00,,                mov oldopcode,#00
+0C26,75 6C 00,,                mov opcounter,#00               ; Start back at zero operations performed.
+0C29,12 0F B4,,                call bufferclear                ; Clear the Keybuffer.
+0C2C,75 73 00,,                mov decimalcnt,#00h
+0C2F,02 0C 32,,                jmp co_setflags
+,,,
+0C32,75 63 00,co_setflags,co_setflags:    mov pctopflag,#00h              ; Set/Clear the appropriate flags.
+0C35,75 61 00,,                mov memopflag,#00h
+0C38,75 60 00,,                mov equalsflag,#00h
+0C3B,75 62 00,,                mov arithopflag,#00h
+,,,
+0C3E,12 10 53,co_done,co_done:        call resetsign                  ; Reset the sign to it's default state ( positive )
+0C41,75 67 01,,                mov status,#01h                 ; Status = 1 'cause it's an operator press.
+0C44,D0 82,,                pop DPL                         ; Restore the Datapointer.
+0C46,D0 83,,                pop DPH
+0C48,22,,                ret
+,,,
+,,,;---------------------------------------------------------------------------------
+,,,;EQUALOP - Subroutine to handle the equals operation.
+,,,;---------------------------------------------------------------------------------
+,,,
+0C49,C0 83,equalop,equalop:        push DPH                        ; Preserve the Datapointer.
+0C4B,C0 82,,                push DPL
+0C4D,75 6E 01,,                mov mode,#1                     ; DPTR addresses the Keybuffer.
+0C50,12 10 66,,                call getmode
+,,,
+0C53,AD 60,,                mov R5,equalsflag               ; Check for repeat Equals presses.
+0C55,BD 01 25,,                cjne R5,#1,eo_stattest
+0C58,02 0C 5B,,                jmp eo_multiple                 ; If repeated goto multiple.
+,,,
+,,,
+0C5B,12 0F C8,eo_multiple,eo_multiple:    call clearscreen                ; Repeat Operations.
+0C5E,75 6E 03,,                mov mode,#3                     ; Use oldnumbuffer (holding last number)
+0C61,12 10 1C,,                call inputnum                   ; Input the last number.
+0C64,75 6E 01,,                mov mode,#1                     ; Address the Keybuffer.
+0C67,12 10 66,,                call getmode
+0C6A,71 54,,                call retrieveop                 ; Perform the operation and output.
+0C6C,AD 65,,                mov R5,errorflag                ; Test for errors.
+0C6E,BD 01 06,,                cjne R5,#1,eo_input1
+0C71,75 65 00,,                mov errorflag,#0                ; Error found - don't input the number. Clear errorf
+0C74,02 0C B5,,                jmp eo_setflags
+0C77,12 10 1C,eo_input1,eo_input1:      call inputnum                   ; No error so we can input the number safely.
+0C7A,02 0C B5,,                jmp eo_setflags
+,,,
+0C7D,AD 67,eo_stattest,eo_stattest:    mov R5,status
+0C7F,BD 01 0E,,                cjne R5,#1,eo_single            ; If status = 1 goto single else test the operator f
+,,,
+0C82,AD 63,eo_pcttest,eo_pcttest:     mov R5,pctopflag                ; If percentage op then treat the same as multiple p
+0C84,BD 01 02,,                cjne R5,#1,eo_memory
+0C87,80 D2,,                jmp eo_multiple
+,,,
+0C89,75 6E 01,eo_memory,eo_memory:      mov mode,#1                     ; If memory press adjust the bufferctr accordingly.
+0C8C,AD 6F,,                mov R5,memcounter
+0C8E,8D 6B,,                mov bufferctr,R5                ; Run through to eo_single
+,,,
+0C90,75 6D 00,eo_single,eo_single:      mov digitcode,#0                ; Single Equals.
+0C93,12 0E EA,,                call storedigit                 ; Terminate the  ( second )number.
+0C96,75 6E 01,,                mov mode,#1
+0C99,12 10 1C,,                call inputnum                   ; Input the second (second )number.
+0C9C,75 70 01,,                mov copyfrom,#1
+0C9F,75 71 03,,                mov copyto,#3
+0CA2,12 0F DD,,                call buffercopy                 ; Copy the (second) number.
+0CA5,71 54,,                call retrieveop                 ; Execute the operation and output the result.
+,,,
+0CA7,AD 65,,                mov R5,errorflag
+0CA9,BD 01 06,,                cjne R5,#1,eo_input             ; Test for errors.
+0CAC,75 65 00,,                mov errorflag,#0                ; Error found. Don't put result back on stack.
+0CAF,02 0C B5,,                jmp eo_setflags                 ; Clear the errorflag - we don't need it anymore.
+0CB2,12 10 1C,eo_input,eo_input:       call inputnum                   ; No error - put result back on stack and continue.
+,,,
+0CB5,75 60 01,eo_setflags,eo_setflags:    mov equalsflag,#01h             ; Set/Clear the appropriate flags.
+0CB8,75 61 00,,                mov memopflag,#00h
+0CBB,75 62 00,,                mov arithopflag,#00h
+0CBE,75 63 00,,                mov pctopflag,#00h
+,,,
+0CC1,12 10 53,eo_done,eo_done:        call resetsign                  ; Reset the sign to it's default state ( positive ).
+0CC4,75 67 01,,                mov status,#01h                 ; Operator press so Status = 1.
+0CC7,D0 82,,                pop DPL
+0CC9,D0 83,,                pop DPH                         ; Reatore the Datapointer.
+0CCB,22,,                ret
+,,,
+,,,
+,,,;---------------------------------------------------------------------------------
+,,,;SIGNOP - Subroutine to change the sign of the number entered. This is a special case -
+,,,;         We treat this as a digit press and not as an operator press. This is a bit of a
+,,,;         fudge to ensure that we get the proper visual output on the LCD screen after the next
+,,,;         keypress ( Screen is cleared on a *op* - *digit* sequence which we don't want here ).
+,,,;---------------------------------------------------------------------------------
+0CCC,75 6E 01,signop,signop:         mov mode,#1                             ; DPTR addresses the Keybuffer.
+0CCF,12 10 66,,                call getmode
+,,,
+0CD2,AC 61,,                mov R4,memopflag
+0CD4,BC 01 04,,                cjne R4,#1,so_initialize                ; Test for MRC press immediately prior to th
+0CD7,AC 6F,,                mov R4,memcounter                       ; MRC pressed so adjust the bufferctr accord
+0CD9,8C 6B,,                mov bufferctr,R4
+,,,
+0CDB,AA 66,so_initialize,so_initialize:  mov R2,signflag                         ; R2 holds the signflag
+0CDD,AF 6B,,                mov R7,bufferctr                        ; Preserve the bufferctr in R7
+,,,
+0CDF,BA 00 05,so_toggle,so_toggle:      cjne R2,#0,so_negative                  ; If R2 = 0 then positive else negative
+0CE2,7A 01,,                mov R2,#1                               ; If positve change to negative
+0CE4,02 0C E9,,                jmp so_continue
+0CE7,7A 00,so_negative,so_negative:    mov R2,#0                               ; If negative change to positive
+,,,
+0CE9,BA 00 0C,so_continue,so_continue:    cjne R2,#0,so_enterneg
+0CEC,75 6D 20,,                mov digitcode,#020h                     ; If positive output a space.
+0CEF,75 6B 00,,                mov bufferctr,#00h                      ; Output in buffer position 0.
+0CF2,12 0E EA,,                call storedigit
+0CF5,02 0D 01,,                jmp so_status
+,,,
+0CF8,75 6D 2D,so_enterneg,so_enterneg:    mov digitcode,#02Dh                     ; If negative output a minus sign.
+0CFB,75 6B 00,,                mov bufferctr,#00h                      ; Output in buffer position zero.
+0CFE,12 0E EA,,                call storedigit
+,,,
+0D01,AC 67,so_status,so_status:      mov R4,status                           ; If the status is one we need to change it
+0D03,BC 01 03,,                cjne R4,#1,so_complete                  ; for a correct visual display on the next k
+0D06,75 67 00,,                mov status,#0                           ; If status is zero we do not change anythin
+,,,
+0D09,8F 6B,so_complete,so_complete:    mov bufferctr,R7                        ; Restore the bufferctr.
+0D0B,12 0F 6C,,                call bufferoutput                       ; Output the buffer to the LCD display.
+0D0E,8A 66,,                mov signflag,R2                         ; Set the signflag.
+0D10,22,,                ret
+,,,
+,,,;---------------------------------------------------------------------------------
+,,,;PERCENTOP - Subroutine to work out the percentage.Arithmetically (num1*num2/100) is good for
+,,,;            +,- ,* but we use (num1*100)/num2 to set up the divide case. Ordering the inputs on the
+,,,;            stack is important for the non - commutitive operators ( -,/).
+,,,;---------------------------------------------------------------------------------
+0D11,AC 61,percentop,percentop:      mov R4,memopflag                        ; Test for *num1* - *op* - *mrc* - *pct*
+0D13,BC 01 03,,                cjne R4,#1,po_stattest
+0D16,02 0D 1F,,                jmp po_continue
+,,,
+0D19,AC 67,po_stattest,po_stattest:    mov R4,status                           ; Test for *num1* - *op* - *num2* -*pct*
+0D1B,BC 01 01,,                cjne R4,#1,po_continue
+0D1E,22,,                ret                                     ; If *op* - *pct* do nothing.
+0D1F,AD 69,po_continue,po_continue:    mov R5,oldopcode
+0D21,BD 2F 30,,                cjne R5,#02Fh,po_standard               ; Test for Divide Case.
+0D24,75 6E 04,,                mov mode,#4                             ; Address the Hundred buffer
+0D27,12 10 1C,,                call inputnum                           ; Input 100.
+0D2A,12 02 55,,                call floating_mul                       ; Gives us (num1 * 100).
+,,,
+0D2D,AD 61,,                mov R5,memopflag
+0D2F,BD 01 07,,                cjne R5,#1,po_divok
+0D32,75 6E 01,,                mov mode,#1
+0D35,AD 6F,,                mov R5,memcounter                       ; Adjust the bufferctr for memory buffer con
+0D37,8D 6B,,                mov bufferctr,R5
+0D39,75 6D 00,po_divok,po_divok:       mov digitcode,#0                        ; Terminate the number.
+0D3C,12 0E EA,,                call storedigit
+0D3F,75 6E 01,,                mov mode,#1                             ; Address the Keybuffer.
+0D42,12 10 1C,,                call inputnum                           ; Input the number.
+0D45,12 02 8A,,                call floating_div                       ; Divide.
+0D48,12 05 42,,                call floating_point_output              ; Output in Keybuffer.
+0D4B,12 0F 6C,,                call bufferoutput                       ; Output to LCD Display.
+0D4E,12 10 1C,,                call inputnum                           ; Put result back on the stack.
+0D51,02 0D CC,,                jmp po_setflags                         ; End up with (num1*100) / num2.
+,,,
+0D54,AD 61,po_standard,po_standard:    mov R5,memopflag
+0D56,BD 01 0D,,                cjne R5,#1,po_stok
+0D59,75 6E 01,,                mov mode,#1
+0D5C,AC 6F,,                mov R4,memcounter                       ; Adjust the bufferctr as appropriate.
+0D5E,8C 6B,,                mov bufferctr,R4
+0D60,75 6D 00,,                mov digitcode,#0                        ; Null terminate.
+0D63,12 0E EA,,                call storedigit
+,,,
+0D66,75 6E 01,po_stok,po_stok:        mov mode,#1                             ; We can do this for the other 3 cases.
+0D69,12 10 1C,,                call inputnum
+0D6C,12 02 55,,                call floating_mul
+0D6F,75 6E 04,,                mov mode,#4
+0D72,12 10 1C,,                call inputnum
+0D75,12 02 8A,,                call floating_div                       ; We now have (num1*num2/100)
+,,,
+,,,
+,,,;Multiplication: We effectively have what we want from above. i.e (num1*num2/100 ).
+,,,
+0D78,AD 69,,                mov R5,oldopcode
+0D7A,BD 2A 18,,                cjne R5,#02Ah,po_sub                    ; Test for Multiplication.
+0D7D,75 6E 01,,                mov mode,#1                             ; Address the Keybuffer.
+0D80,12 10 66,,                call getmode
+0D83,12 05 42,,                call floating_point_output              ; Output to the Keybuffer.
+0D86,12 0F 6C,,                call bufferoutput                       ; Output to the LCD display.
+0D89,75 6D 00,,                mov digitcode,#0
+0D8C,12 0E EA,,                call storedigit                         ; Terminate.
+0D8F,12 10 1C,,                call inputnum                           ; Put result back on the stack.
+0D92,02 0D CC,,                jmp po_setflags
+,,,
+,,,; Subtraction:  We need to rearrange the numbers on the stack into the proper order before executing
+,,,
+0D95,BD 2D 1D,po_sub,po_sub:         cjne R5,#02Dh,po_add                    ; Test for Subtraction.
+0D98,75 6E 01,,                mov mode,#1                             ; Address the Keybuffer.
+0D9B,12 10 66,,                call getmode
+0D9E,12 05 42,,                call floating_point_output              ; Output to the Keybuffer.
+0DA1,75 6E 03,,                mov mode,#3                             ; Address the oldnumbuffer.
+0DA4,12 10 1C,,                call inputnum                           ; Input the number
+0DA7,75 6E 01,,                mov mode,#1                             ; Address the keybuffer.
+0DAA,12 10 1C,,                call inputnum                           ; Input the number.
+0DAD,71 54,,                call retrieveop                         ; Execute the operation.
+0DAF,12 10 1C,,                call inputnum                           ; Input the result.
+0DB2,02 0D CC,,                jmp po_setflags
+,,,
+,,,; Addition : Input the number from oldnumbuffer and execute.
+,,,
+0DB5,BD 2B 20,po_add,po_add:         cjne R5,#02Bh,po_done                   ; Test for Addition.
+0DB8,75 6E 03,,                mov mode,#3                             ; Address the oldnumbuffer.
+0DBB,12 10 1C,,                call inputnum                           ; Input.
+0DBE,75 6E 01,,                mov mode,#1                             ; Address the Keybuffer.
+0DC1,12 10 66,,                call getmode
+0DC4,71 54,,                call retrieveop                         ; Execute the operation and output.
+0DC6,12 10 1C,,                call inputnum                           ; Put the result back on the stack.
+0DC9,02 0D CC,,                jmp po_setflags
+,,,
+0DCC,75 61 00,po_setflags,po_setflags:    mov memopflag,#00h                      ; Set/Clear the appropriate flags.
+0DCF,75 60 00,,                mov equalsflag,#00h
+0DD2,75 62 00,,                mov arithopflag,#00h
+0DD5,75 63 01,,                mov pctopflag,#01h
+,,,
+0DD8,75 67 01,po_done,po_done:        mov status,#01h                         ; Set status as it's an operator press.
+0DDB,75 6E 01,,                mov mode,#1
+0DDE,12 10 66,,                call getmode                            ; Address the Keybuffer.
+0DE1,22,,                ret
+,,,
+,,,
+,,,
+,,,;============================================
+,,,;************ MEMORY OPERATORS **************
+,,,;============================================
+,,,
+,,,
+,,,
+,,,
+,,,;------------------------------------------------------------------------------
+,,,;MEMRECALL  - 1 press recalls the memory buffer - 2 consecutive presses clears
+,,,;             the memory buffer.Memory Contents are stored in the MemoryBuffer.
+,,,;------------------------------------------------------------------------------
+,,,
+0DE2,AD 64,memrecall,memrecall:      mov R5,memocc                   ; Test for an empty buffer
+0DE4,BD 00 18,,                cjne R5,#0,mr_validate          ; If the memory buffer is empty and MRC is pressed
+0DE7,75 6E 02,,                mov mode,#2                     ; then initialise the buffer to zero and output to s
+0DEA,12 10 66,,                call getmode
+0DED,12 0F B4,,                call bufferclear
+0DF0,75 6B 00,,                mov bufferctr,#00h
+0DF3,75 6D 30,,                mov digitcode,#030h
+0DF6,12 0E EA,,                call storedigit
+0DF9,12 0F 6C,,                call bufferoutput
+0DFC,02 0E 3D,,                jmp mr_setflags
+,,,
+0DFF,AD 61,mr_validate,mr_validate:    mov R5,memopflag
+0E01,BD 00 25,,                cjne R5,#0,mr_consecutive       ; test for two consecutive mrc presses.
+,,,
+0E04,75 6E 02,,                mov mode,#2                     ; Display the contents of the memorybuffer
+0E07,12 10 66,,                call getmode
+0E0A,AC 6F,,                mov R4,memcounter               ; Adjust the bufferctr.
+0E0C,8C 6B,,                mov bufferctr,R4
+0E0E,12 0F 6C,,                call bufferoutput               ; Output to the LCD display.
+,,,
+0E11,75 6E 01,,                mov mode ,#1                    ; Address the Keybuffer.
+0E14,12 10 66,,                call getmode                    ; Note that we do not input the number onto the stac
+0E17,12 0F B4,,                call bufferclear                ; but rather copy it into the Keybuffer. The Stack h
+0E1A,75 70 02,,                mov copyfrom,#2                 ; are handled inside the arithmetic op subroutine  o
+0E1D,75 71 01,,                mov copyto,#1                   ; which are the only cases where we might need this
+0E20,12 0F DD,,                call buffercopy
+0E23,75 61 01,,                mov memopflag,#1                ; Set the flag to indicate a MRC press.
+0E26,02 0E 3D,,                jmp mr_setflags
+,,,
+0E29,75 6E 02,mr_consecutive,mr_consecutive: mov mode,#2                     ; Consecutive MRC presses so clear the memorybuffer.
+0E2C,12 10 66,,                call getmode
+0E2F,12 0F B4,,                call bufferclear
+0E32,75 67 01,,                mov status,#1
+0E35,71 ED,,                call cancelop
+0E37,75 61 00,,                mov memopflag,#0                ; Nothing in Memorybuffer so reset.
+0E3A,75 64 00,,                mov memocc,#0
+,,,
+0E3D,75 60 00,mr_setflags,mr_setflags:    mov equalsflag,#00h             ; Clear opflags as appropriate.
+0E40,75 62 00,,                mov arithopflag,#00h
+0E43,75 63 00,,                mov pctopflag,#00h
+,,,
+,,,
+0E46,75 6E 01,mr_done,mr_done:        mov mode,#1                     ; Address the Keybuffer
+0E49,12 10 66,,                call getmode
+0E4C,75 6B 00,,                mov bufferctr,#00h              ; Clear the Bufferctr.
+0E4F,75 67 01,,                mov status,#1                   ; Operator press so set Status = 1.
+0E52,22,,                ret
+,,,
+,,,
+,,,;---------------------------------------------------------------------------------
+,,,;MEMPLUS - Subroutine to add the entered number to the value in the memory buffer.
+,,,;---------------------------------------------------------------------------------
+0E53,75 6E 02,memplus,memplus:        mov mode,#2                     ; Address the MemoryBuffer as we are as performing
+0E56,12 10 66,,                call getmode                    ; addition on it's contents.
+,,,
+0E59,12 10 1C,,                call inputnum                   ; Input the contents of the memorybuffer (num1)
+0E5C,12 0F B4,,                call bufferclear
+,,,
+0E5F,75 6E 01,,                mov mode,#1                     ; Input the number entered thru keypad  (num2)
+0E62,12 10 1C,,                call inputnum
+0E65,12 0F B4,,                call bufferclear                ; Clear the Keybuffer
+,,,
+0E68,12 01 71,,                call floating_add               ; Perform num1+num2 and output to memorybuffer
+0E6B,75 6E 02,,                mov mode,#2                     ; Address Memorybuffer.
+0E6E,12 10 66,,                call getmode
+0E71,12 05 42,,                call floating_point_output
+0E74,AB 6B,,                mov R3,bufferctr
+0E76,8B 6F,,                mov memcounter,R3               ; Take the length of the outputed number and put in
+,,,
+0E78,75 64 01,,                mov memocc,#1                   ; Indicate that a number is now in the memorybuffer.
+,,,
+0E7B,75 6E 01,,                mov mode ,#1                    ; Copy the result back into the keybuffer and displa
+0E7E,12 10 66,,                call getmode
+0E81,12 0F B4,,                call bufferclear
+0E84,75 70 02,,                mov copyfrom,#2
+0E87,75 71 01,,                mov copyto,#1
+0E8A,12 0F DD,,                call buffercopy
+0E8D,12 0F 6C,,                call bufferoutput
+,,,
+0E90,75 61 00,mp_setflags,mp_setflags:    mov memopflag,#00h              ; Clear the appropriate flags.
+0E93,75 60 00,,                mov equalsflag,#00h
+0E96,75 62 00,,                mov arithopflag,#00h
+0E99,75 63 00,,                mov pctopflag,#00h
+,,,
+0E9C,75 67 01,mp_done,mp_done:        mov status,#1                   ; Operator press so set Status = 1.
+0E9F,22,,                ret
+,,,
+,,,;--------------------------------------------------------------------------------------
+,,,;MEMSUB - Subroutine to subtract the entered number from the value in the memorybuffer.
+,,,;---------------------------------------------------------------------------------------
+,,,
+0EA0,75 6E 02,memsub,memsub:         mov mode,#2
+0EA3,12 10 1C,,                call inputnum                   ;Input the contents of the memorybuffer (num1)
+0EA6,12 0F B4,,                call bufferclear
+,,,
+0EA9,75 6E 01,,                mov mode,#1                     ; Input the number entered thru keypad  (num2)
+0EAC,12 10 1C,,                call inputnum
+0EAF,12 0F B4,,                call bufferclear
+,,,
+0EB2,12 01 67,,                call floating_sub               ; Perform  num1 - num2
+0EB5,75 6E 02,,                mov mode,#2
+0EB8,12 10 66,,                call getmode
+0EBB,12 05 42,,                call floating_point_output
+0EBE,AB 6B,,                mov R3,bufferctr
+0EC0,8B 6F,,                mov memcounter,R3
+,,,
+0EC2,75 64 01,,                mov memocc,#1                   ; Indicate that a number is now in the memorybuffer.
+,,,
+0EC5,75 6E 01,,                mov mode ,#1                    ; Copy the result back into the keybuffer and displa
+0EC8,12 10 66,,                call getmode
+0ECB,75 70 02,,                mov copyfrom,#2
+0ECE,75 71 01,,                mov copyto,#1
+0ED1,12 0F B4,,                call bufferclear
+0ED4,12 0F DD,,                call buffercopy
+0ED7,12 0F 6C,,                call bufferoutput
+,,,
+0EDA,75 61 00,ms_setflags,ms_setflags:    mov memopflag,#00h
+0EDD,75 60 00,,                mov equalsflag,#00h
+0EE0,75 62 00,,                mov arithopflag,#00h
+0EE3,75 63 00,,                mov pctopflag,#00h
+,,,
+0EE6,75 67 01,ms_done,ms_done:        mov status,#1
+0EE9,22,,                ret
+,,,
+,,,
+,,,;======================================
+,,,;******* UTILITY FUNCTIONS ************
+,,,;======================================
+,,,
+,,,;---------------------------------------------------------------------------------
+,,,;STOREDIGIT - Subroutine to store a digit. DPTR addresses the KEYBUFFER.
+,,,;---------------------------------------------------------------------------------
+0EEA,12 10 66,storedigit,storedigit:     call getmode
+0EED,C0 83,,                push DPH
+0EEF,C0 82,,                push DPL
+0EF1,AD 6B,,                mov R5,bufferctr                ; move the buffercounter into R5
+,,,
+0EF3,AC 6E,,                mov R4,mode                     ; If we are going into the errorbuffer we allow 25 d
+0EF5,BC 06 0B,,                cjne R4,#6,sd_entry             ; This allows accurate comparison for bounds checkin
+0EF8,BD 18 03,,                cjne R5,#24,sd_test0
+0EFB,02 0F 17,,                jmp sd_continue
+0EFE,40 17,sd_test0,sd_test0:       jc sd_continue
+0F00,02 0F 25,,                jmp sd_done
+,,,
+0F03,BD 08 03,sd_entry,sd_entry:       cjne R5,#8,sd_test              ; test to be sure that a maximum of 8 digits go in t
+0F06,02 0F 0B,,                jmp sd_decimal
+0F09,40 00,sd_test,sd_test:        jc sd_decimal
+,,,
+,,,
+0F0B,AC 6D,sd_decimal,sd_decimal:     mov R4,digitcode                ; Test for decimal points - only  allow one per numb
+0F0D,BC 2E 07,,                cjne R4,#02Eh,sd_continue
+0F10,05 73,,                inc decimalcnt                  ; We need to see whether this is the first decimal p
+0F12,AB 73,,                mov R3,decimalcnt               ; This will be reset in the inputnum subroutine when
+0F14,BB 01 0E,,                cjne R3,#1,sd_done              ; It is a decimal point and it is not the first so d
+,,,                                                ; Fall through to sd_continue if it is the first dec
+0F17,BD 00 03,sd_continue,sd_continue:    cjne R5,#0,sd_loop              ; If it is zero goto write
+0F1A,02 0F 20,,                jmp sd_write                    ;
+,,,
+0F1D,A3,sd_loop,sd_loop:        inc DPTR
+0F1E,DD FD,,                djnz R5,sd_loop                 ; increment DPTR to DPTR + bufferctr
+,,,
+0F20,E5 6D,sd_write,sd_write:       mov A,digitcode
+0F22,F0,,                movx @DPTR,A                    ; Write the digit into the Buffer
+0F23,05 6B,,                inc bufferctr                   ; we write digits from bufferctr pos 1 - 8.
+,,,                                                ; Buffer position 0 is reserved for the sign.
+,,,
+0F25,D0 82,sd_done,sd_done:        pop DPL
+0F27,D0 83,,                pop DPH
+0F29,22,,                ret
+,,,;---------------------------------------------------------------------------------
+,,,;STATUSCHECK - Subroutine to test if this is the first key pressed after an operation
+,,,;              and if so to clear the screen.
+,,,;---------------------------------------------------------------------------------
+0F2A,AA 67,statuscheck,statuscheck:    mov R2,status
+0F2C,BA 01 3C,,                cjne R2,#1,sc_done
+0F2F,AA 60,,                mov R2,equalsflag
+0F31,BA 01 28,,                cjne R2,#1,sc_clear
+,,,
+0F34,AC 6D,,                mov R4,digitcode                ; This caters for num - op - num - equ - num. A numb
+0F36,8C 72,,                mov local1, R4                  ; signifies a new calculation.
+0F38,75 6E 03,,                mov mode,#3
+0F3B,12 10 66,,                call getmode
+0F3E,12 05 42,,                call floating_point_output
+0F41,12 0F B4,,                call bufferclear
+0F44,75 6C 00,,                mov opcounter,#0
+0F47,75 6B 00,,                mov bufferctr,#00h
+0F4A,75 6D 20,,                mov digitcode,#020h
+0F4D,D1 EA,,                call storedigit
+0F4F,AC 72,,                mov R4,local1
+0F51,8C 6D,,                mov digitcode,R4
+0F53,75 6E 01,,                mov mode,#1
+0F56,12 10 66,,                call getmode
+0F59,75 73 00,,                mov decimalcnt,#00h
+0F5C,75 67 00,sc_clear,sc_clear:       mov status,#00h
+,,,
+,,,
+0F5F,75 61 00,sc_setflags,sc_setflags:    mov memopflag,#00h
+0F62,75 60 00,,                mov equalsflag,#00h
+0F65,75 62 00,,                mov arithopflag,#00h
+0F68,75 63 00,,                mov pctopflag,#00h
+0F6B,22,sc_done,sc_done:        ret                             ; clear status to indicate that a digit key has been
+,,,;---------------------------------------------------------------------------------
+,,,;BUFFEROUTPUT - Subroutine to write the keybuffer onto the screen.
+,,,;---------------------------------------------------------------------------------
+0F6C,C0 83,bufferoutput,bufferoutput:   push DPH                        ; preserve the Datapointer
+0F6E,C0 82,,                push DPL
+,,,
+0F70,12 0F C8,,                call clearscreen                ; clears the screen and sets the LCD address to the
+0F73,12 10 66,,                call getmode                    ; point at the keybuffer
+0F76,AB 6B,,                mov R3,bufferctr                ; We know the length of the number from the bufferct
+0F78,75 6B 00,,                mov bufferctr,#0
+0F7B,7D 00,,                mov R5,#0
+,,,
+0F7D,AF 6B,bo_start,bo_start:       mov R7,bufferctr
+0F7F,E4,,                clr A
+0F80,E0,bo_output,bo_output:      movx A,@DPTR                    ; read the digit into A
+,,,                ;cjne A,#02Eh,bo_write          ; if a decimal point don't count that as one of the
+,,,                ;dec R5
+,,,                ;jmp bo_write
+,,,
+0F81,11 B2,bo_write,bo_write:       call wrdata                     ; write out the digit.
+,,,
+0F83,C3,bo_test,bo_test:        clr c                           ; need to clear the carry before the subb instructio
+0F84,EB,,                mov  A,R3                       ; test for the end of the string.
+0F85,9F,,                subb A,R7
+0F86,FF,,                mov R7,A
+0F87,E4,,                clr A
+0F88,BF 01 03,,                cjne R7,#01h,bo_test2
+0F8B,02 0F 9F,,                jmp bo_sign
+,,,
+,,,
+0F8E,BD 08 03,bo_test2,bo_test2:       cjne R5,#8,bo_test3
+0F91,02 0F 99,,                jmp bo_increment
+0F94,40 03,bo_test3,bo_test3:       jc bo_increment
+0F96,02 0F 9F,,                jmp bo_sign
+,,,
+0F99,05 6B,bo_increment,bo_increment:   inc bufferctr
+0F9B,0D,,                inc R5
+0F9C,A3,,                inc DPTR
+0F9D,80 DE,,                jmp bo_start
+,,,
+0F9F,AC 64,bo_sign,bo_sign:        mov R4,memocc
+0FA1,BC 01 09,,                cjne R4,#1,bo_done
+0FA4,EB,,                mov A,R3                        ; Draws the 'M' on the far left when there is a numb
+0FA5,24 81,,                add A,#LCD_SETDDADDR + 1        ; in the memory buffer. We need to offset by the amo
+0FA7,11 A9,,                call wrcmd                      ; buffercounter because of the *shift* mode we have
+0FA9,74 4D,,                mov A,#04Dh                     ; set up in.
+0FAB,11 B2,,                call wrdata
+,,,
+0FAD,8B 6B,bo_done,bo_done:        mov bufferctr,R3
+0FAF,D0 82,,                pop DPL
+0FB1,D0 83,,                pop DPH
+0FB3,22,,                ret
+,,,;---------------------------------------------------------------------------------
+,,,;BUFFERCLEAR - Subroutine to clear the keybuffer.
+,,,;---------------------------------------------------------------------------------
+0FB4,C0 83,bufferclear,bufferclear:    push DPH
+0FB6,C0 82,,                push DPL
+0FB8,12 10 66,,                call getmode
+0FBB,7A 09,,                mov R2,#9                       ; Clear the buffer.
+0FBD,74 00,,                mov A,#0
+0FBF,F0,bc_loop,bc_loop:        movx @DPTR,A                    ; Write a zero into the buffer position addressed by
+0FC0,A3,,                inc DPTR                        ; move the Datapointer along the databuffer.
+0FC1,DA FC,,                djnz R2,bc_loop                 ; loop through the bufferlength
+0FC3,D0 82,,                pop DPL
+0FC5,D0 83,,                pop DPH
+0FC7,22,,                ret
+,,,;---------------------------------------------------------------------------------
+,,,;CLEARSCREEN - Subroutine to clear the screen and set the writing to the RHS.
+,,,;---------------------------------------------------------------------------------
+0FC8,74 01,clearscreen,clearscreen:    mov A,#LCD_CLS
+0FCA,11 A9,,                call wrcmd
+0FCC,AC 64,,                mov R4,memocc                   ; We need to account for the extra digit outputed (
+0FCE,BC 01 07,,                cjne R4,#1,cs_standard          ; there is a number in memory. Due to the mode that
+0FD1,74 90,,                mov A,#LCD_SETDDADDR + 16       ; display in (i.e. shifts display left) we need ddad
+0FD3,11 A9,,                call wrcmd                      ; right in this case.
+0FD5,02 0F DC,,                jmp cs_done
+0FD8,74 8F,cs_standard,cs_standard:    mov A,#LCD_SETDDADDR + 15       ; Standard case when nothing is in memory (output nu
+0FDA,11 A9,,                call wrcmd
+0FDC,22,cs_done,cs_done:        ret
+,,,;---------------------------------------------------------------------------------
+,,,;BUFFERCOPY - Subroutine to copy the keybuffer contents into  oldnumbuffer.
+,,,;---------------------------------------------------------------------------------
+0FDD,C0 83,buffercopy,buffercopy:     push DPH                        ; Preserve the DataPointer
+0FDF,C0 82,,                push DPL
+0FE1,AF 6B,,                mov R7,bufferctr                ; Preserve the Bufferctr
+0FE3,75 6B 00,,                mov bufferctr,#00h
+0FE6,7A 08,,                mov R2,#8                       ; Set the counter to the buffer size
+,,,
+0FE8,,bc_transfer,bc_transfer:
+0FE8,AD 6B,,                mov R5,bufferctr
+,,,
+0FEA,AE 70,,                mov R6,copyfrom                 ; Get the copy info.
+0FEC,8E 6E,,                mov mode,R6                     ; ( set to a mode depending on which buffer we wish
+0FEE,12 10 66,,                call getmode
+,,,
+0FF1,BD 00 03,,                cjne R5,#0,bc_address1
+0FF4,02 0F FA,,                jmp bc_readin
+,,,
+0FF7,A3,bc_address1,bc_address1:    inc DPTR
+0FF8,DD FD,,                djnz R5,bc_address1
+,,,
+0FFA,E0,bc_readin,bc_readin:      movx A,@DPTR
+,,,
+,,,                ;cjne A,#020h,bc_continue
+,,,                ;jmp bc_increment
+,,,
+0FFB,AE 71,bc_continue,bc_continue:    mov R6,copyto
+0FFD,8E 6E,,                mov mode,R6
+0FFF,12 10 66,,                call getmode
+,,,
+1002,AD 6B,,                mov R5,bufferctr
+1004,BD 00 03,,                cjne R5,#0,bc_address2
+1007,02 10 0D,,                jmp bc_writeout
+100A,A3,bc_address2,bc_address2:    inc DPTR
+100B,DD FD,,                djnz R5,bc_address2
+,,,
+100D,F0,bc_writeout,bc_writeout:    movx @DPTR,A
+,,,
+100E,05 6B,bc_increment,bc_increment:   inc bufferctr                   ; loop through the Buffersize .
+1010,DA D6,,                djnz R2,bc_transfer
+,,,
+1012,8F 6B,,                mov bufferctr,R7                ; Restore Bufferctr
+1014,75 6E 01,,                mov mode,#1
+1017,D0 82,bc_done,bc_done:        pop DPL
+1019,D0 83,,                pop DPH
+101B,22,,                ret
+,,,;---------------------------------------------------------------------------------
+,,,;INPUTNUM - Subroutine to push the number onto the stack.
+,,,;---------------------------------------------------------------------------------
+101C,12 10 66,inputnum,inputnum:       call getmode                    ; move the DPTR back to the beginning of the appropr
+101F,12 04 8A,,                call floating_point_input       ; move the contents of the keybuffer onto the floati
+1022,75 6B 00,,                mov bufferctr,#00h              ; move the buffercounter back to zero ready for the
+1025,75 73 00,,                mov decimalcnt,#00h             ; Reset the decimal point counter for the next numbe
+1028,22,,                ret
+,,,;---------------------------------------------------------------------------------
+,,,;INITIALIZE - Subroutine to initialize the calc on startup.
+,,,;---------------------------------------------------------------------------------
+1029,75 6E 01,initialize,initialize:     mov mode,#1                     ; set the mode to default ( DPTR, points at the KEYB
+102C,12 10 66,,                call getmode                    ; Set the DPTR to address the appropriate buffer.
+102F,12 0F B4,,                call bufferclear
+1032,75 6B 00,,                mov bufferctr,#00h
+1035,75 6D 20,,                mov digitcode,#020h             ; initialise with a space in position 0 to indicate
+1038,12 0E EA,,                call storedigit
+,,,
+103B,75 66 00,,                mov signflag,#0
+103E,75 67 01,,                mov status,#1                   ; start with status = 1 so if an op is pressed first
+,,,                                                ; on the stack - if a digit is pressed first the zer
+1041,12 0F C8,,                call clearscreen                ; sets the ddaddress to be at  the RHS
+1044,75 6D 30,,                mov digitcode,#30h              ; start with 0 on the screen
+1047,12 0E EA,,                call storedigit
+104A,12 0F 6C,,                call bufferoutput
+104D,AC 6B,,                mov R4,bufferctr
+104F,1C,,                dec R4
+1050,8C 6B,,                mov bufferctr,R4
+,,,
+1052,22,,                ret
+,,,;---------------------------------------------------------------------------------
+,,,;RESETSIGN - Subroutine to ensure that every number starts as being positive.
+,,,;---------------------------------------------------------------------------------
+1053,12 10 66,resetsign,resetsign:      call getmode                    ; point at the buffer to clear.
+1056,12 0F B4,,                call bufferclear
+,,,
+1059,75 6B 00,,                mov bufferctr,#00h              ; Clear the signfrom the buffer and set the buffer p
+105C,75 6D 20,,                mov digitcode,#020h             ; StoreDigit increments the buffer position *AFTER*
+105F,12 0E EA,,                call storedigit                 ; This leaves us with position 0 clear and bufferctr
+1062,75 66 00,,                mov signflag,#00h
+1065,22,rs_done,rs_done:        ret
+,,,;----------------------------------------------------------------------------------------------
+,,,;GETMODE - Subroutine to point the Datapointer at the required buffer - dependant on the mode.
+,,,;----------------------------------------------------------------------------------------------
+1066,AC 6E,getmode,getmode:        mov R4,mode
+1068,BC 01 06,,                cjne R4,#1,gm_memory
+106B,90 00 00,,                mov DPTR,#KEYBUFFER
+106E,02 10 9B,,                jmp gm_done
+,,,
+1071,BC 02 06,gm_memory,gm_memory:      cjne R4,#2,gm_oldnum
+1074,90 00 14,,                mov DPTR,#MEMORYBUFFER
+1077,02 10 9B,,                jmp gm_done
+,,,
+107A,BC 03 06,gm_oldnum,gm_oldnum:      cjne R4,#3,gm_const
+107D,90 00 0A,,                mov DPTR,#OLDNUMBUFFER
+1080,02 10 9B,,                jmp gm_done
+,,,
+1083,BC 04 06,gm_const,gm_const:       cjne R4,#4,gm_bounds
+1086,90 00 1E,,                mov DPTR,#HUNDREDBUFF
+1089,02 10 9B,,                jmp gm_done
+108C,BC 05 06,gm_bounds,gm_bounds:      cjne R4,#5,gm_temp
+108F,90 00 23,,                mov DPTR,#BOUNDBUFFER
+1092,02 10 9B,,                jmp gm_done
+1095,BC 06 03,gm_temp,gm_temp:        cjne R4,#6,gm_done
+1098,90 00 2D,,                mov DPTR,#TEMPBUFFER
+109B,22,gm_done,gm_done:        ret
+,,,
+,,,;----------------------------------------------------------------------------------------------
+,,,;BOUNDSBUFFER- Generate a buffer with the maximum permissable value i.e 99999999
+,,,;----------------------------------------------------------------------------------------------
+,,,
+109C,C0 83,boundsbuffer,boundsbuffer:   push DPH
+109E,C0 82,,                push DPL
+10A0,75 6E 05,,                mov mode,#5
+10A3,AB 6B,,                mov R3,bufferctr                ; Preserve the bufferctr.
+10A5,75 6B 00,,                mov bufferctr,#0
+10A8,75 6D 20,,                mov digitcode,#020h
+10AB,12 0E EA,,                call storedigit
+10AE,75 6D 39,bb_loop,bb_loop:        mov digitcode,#039h             ; Enter  digit 9.
+10B1,12 0E EA,,                call storedigit
+10B4,AC 6B,,                mov  R4,bufferctr
+10B6,BC 09 F5,,                cjne R4,#9, bb_loop
+10B9,75 6D 00,,                mov digitcode,#0
+10BC,12 0E EA,,                call storedigit
+10BF,8B 6B,,                mov bufferctr,R3
+,,,
+10C1,D0 82,bb_done,bb_done:        pop DPL
+10C3,D0 83,,                pop DPH
+10C5,22,,                ret
+,,,
+,,,
+,,,;----------------------------------------------------------------------------------------------
+,,,;ERRORCHECK - Checks the upper and lower bounds and divide by zero.
+,,,;----------------------------------------------------------------------------------------------
+,,,
+10C6,20 E3 46,errorcheck,errorcheck:     jb ACC.3,ec_divide              ; Result is on the stack.
+10C9,75 65 01,,                mov errorflag,#01h              ; We set the error flag here and clear it if appropr
+10CC,75 6E 06,,                mov mode,#6                     ; output and then input result
+10CF,11 66,,                call getmode
+10D1,75 6B 00,,                mov bufferctr,#0
+10D4,12 05 42,,                call floating_point_output
+10D7,11 1C,,                call inputnum
+,,,
+10D9,75 6E 05,,                mov mode,#5
+10DC,75 6B 00,,                mov bufferctr,#0
+10DF,75 6D 20,,                mov digitcode,#020h
+10E2,12 0E EA,,                call storedigit
+10E5,11 1C,,                call inputnum                   ; input the UBound on the stack
+10E7,C3,,                clr c
+10E8,12 02 24,,                call floating_comp              ; Call floating_compare ( pops twice and returns sta
+10EB,40 03,,                jc ec_lower                     ; Carry set so less than Ubound
+10ED,02 11 2E,,                jmp ec_upperr                   ; Otherwise error - result too large.
+,,,
+10F0,75 6E 06,ec_lower,ec_lower:       mov mode,#6
+10F3,11 1C,,                call inputnum                   ; input result
+,,,
+10F5,75 6E 05,,                mov mode,#5                     ; make the max number negative ( i.e. the lower boun
+10F8,75 6B 00,,                mov bufferctr,#0
+10FB,75 6D 2D,,                mov digitcode,#02Dh
+10FE,12 0E EA,,                call storedigit
+1101,75 6E 05,,                mov mode,#5
+1104,11 1C,,                call inputnum                   ; input the lower bound.
+,,,
+1106,C3,,                clr c
+1107,12 02 24,,                call floating_comp
+110A,40 41,,                jc ec_lowerr                    ; Error - result too low
+,,,
+110C,02 11 6C,,                jmp ec_ok                       ; Greater than lower bound so o.k.
+,,,
+110F,12 0F C8,ec_divide,ec_divide:      call clearscreen
+1112,90 09 3D,,                mov DPTR,#errorstr              ; Error message.
+1115,12 08 60,,                call wrstr
+1118,90 01 F4,,                mov DPTR,#500
+111B,12 08 CA,,                call wtms
+111E,75 6E 06,,                mov mode,#6
+1121,11 1C,,                call inputnum                   ; input result.
+1123,75 6E 01,,                mov mode,#1
+1126,11 66,,                call getmode
+1128,75 67 01,,                mov status,#1
+112B,02 11 74,,                jmp ec_done
+,,,
+112E,12 0F C8,ec_upperr,ec_upperr:      call clearscreen
+1131,90 09 3D,,                mov DPTR,#errorstr              ; Error message.
+1134,12 08 60,,                call wrstr
+1137,90 01 F4,,                mov DPTR,#500
+113A,12 08 CA,,                call wtms
+113D,75 6E 06,,                mov mode,#6
+1140,11 1C,,                call inputnum                   ; input result.
+1142,75 6E 01,,                mov mode,#1
+1145,11 66,,                call getmode
+1147,75 67 01,,                mov status,#1
+114A,02 11 74,,                jmp ec_done
+,,,
+114D,12 0F C8,ec_lowerr,ec_lowerr:      call clearscreen
+1150,90 09 3D,,                mov DPTR,#errorstr              ; Error Message
+1153,12 08 60,,                call wrstr
+1156,90 01 F4,,                mov DPTR,#500
+1159,12 08 CA,,                call wtms
+115C,75 6E 06,,                mov mode,#6
+115F,11 1C,,                call inputnum                   ; input result.
+1161,75 6E 01,,                mov mode,#1
+1164,11 66,,                call getmode
+1166,75 67 01,,                mov status,#1
+1169,02 11 74,,                jmp ec_done
+,,,
+,,,
+116C,75 6E 06,ec_ok,ec_ok:          mov mode,#6
+116F,11 1C,,                call inputnum                   ; input result.
+1171,75 65 00,,                mov errorflag,#00h
+,,,
+1174,75 6E 06,ec_done,ec_done:        mov mode,#6
+1177,11 66,,                call getmode
+1179,12 0F B4,,                call bufferclear
+117C,75 6E 01,,                mov mode,#1
+117F,11 66,,                call getmode
+1181,22,,                ret
+,,,
+,,,
+,,,;----------------------------------------------------------------------------------------------
+,,,;BANNER - Exports a wraparound banner to the LCD screen.
+,,,;----------------------------------------------------------------------------------------------
+,,,
+1182,,Banner,Banner:
+,,,
+1182,12 0F C8,,                call clearscreen
+1185,74 90,,                mov A,#LCD_SETDDADDR+16         ; Start at right hand side of the display
+1187,12 08 A9,,                call wrcmd
+,,,
+118A,90 09 44,Reloop,Reloop:         mov DPTR,#STRING1
+,,,
+118D,12 08 60,Iterate,Iterate:        call wrstr
+,,,
+1190,90 03 E8,,                mov DPTR,#1000
+1193,12 08 CA,,                call wtms
+,,,
+1196,12 0F C8,,                call clearscreen
+1199,22,,                ret
+,,,
+000E,,,END

@@ -1,0 +1,121 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        11/26/2019  22:54:49  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE jieshou.obj TO jieshou
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  jieshou.obj (JIESHOU)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  jieshou (JIESHOU)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0001H     UNIT         ?DT?JIESHOU
+            IDATA   0009H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0020H                  *** GAP ***
+            CODE    0023H     0003H     ABSOLUTE     
+                    0026H     07DAH                  *** GAP ***
+            CODE    0800H     008AH     UNIT         ?PR?SERIAL?JIESHOU
+            CODE    088AH     0017H     UNIT         ?PR?MAIN?JIESHOU
+            CODE    08A1H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   jieshou (JIESHOU)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?JIESHOU
+
+
+
+SYMBOL TABLE OF MODULE:  jieshou (JIESHOU)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        JIESHOU
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  C:0800H         PUBLIC        serial
+  B:00A8H.7       PUBLIC        EA
+  D:00A8H         PUBLIC        IE
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/26/2019  22:54:49  PAGE 2
+
+
+  B:00A8H.4       PUBLIC        ES
+  D:00B8H         PUBLIC        IP
+  B:0098H.0       PUBLIC        RI
+  B:00A0H.3       PUBLIC        beep
+  C:088AH         PUBLIC        main
+  D:0099H         PUBLIC        SBUF
+  D:0087H         PUBLIC        PCON
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  D:0008H         PUBLIC        buf
+  D:008DH         PUBLIC        TH1
+  D:008BH         PUBLIC        TL1
+  B:0088H.6       PUBLIC        TR1
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          MAIN
+  C:088AH         LINE#         15
+  C:088AH         LINE#         16
+  C:088AH         LINE#         17
+  C:088DH         LINE#         18
+  C:0890H         LINE#         20
+  C:0893H         LINE#         21
+  C:0895H         LINE#         22
+  C:0897H         LINE#         23
+  C:089AH         LINE#         24
+  C:089DH         LINE#         25
+  C:089FH         LINE#         26
+  -------         ENDPROC       MAIN
+  -------         PROC          SERIAL
+  C:0800H         LINE#         33
+  C:080AH         LINE#         35
+  C:080CH         LINE#         36
+  C:080EH         LINE#         37
+  C:0811H         LINE#         38
+  C:0840H         LINE#         39
+  C:0840H         LINE#         40
+  C:0847H         LINE#         41
+  C:084EH         LINE#         42
+  C:0855H         LINE#         43
+  C:085CH         LINE#         44
+  C:0863H         LINE#         45
+  C:086AH         LINE#         46
+  C:0871H         LINE#         47
+  C:0878H         LINE#         48
+  C:087DH         LINE#         49
+  C:087DH         LINE#         50
+  C:087FH         LINE#         51
+  -------         ENDPROC       SERIAL
+  -------         ENDMOD        JIESHOU
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 00A4H BYTE ( 8%) *
+******************************************************************************
+
+Program Size: data=10.0 xdata=0 code=179
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

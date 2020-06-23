@@ -1,0 +1,38 @@
+C51 COMPILER V9.00   LED                                                                   03/25/2020 17:13:05 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN led.OBJ
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE led.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /********************************************************************************
+   2                            
+   3          程序功能：  点亮第一个发光二极管
+   4          ********************************************************************************/
+   5          #include <reg52.h> //包含头文件，在“reg51.h”上右键单击，并打开，可以看到它里面的定义
+   6          
+   7          sbit led=P1^0;
+   8          sbit beep=P2^3;
+   9          
+  10          void main()
+  11          {
+  12   1              beep=0;
+  13   1              led=0;
+  14   1              while(1);
+  15   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =      6    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

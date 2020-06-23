@@ -1,0 +1,35 @@
+C51 COMPILER V8.02   LED                                                                   07/16/2010 12:56:45 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN led.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE led.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /********************************************************************************
+   2                              “天祥电子”        倾情奉献
+   3          *********************************************************************************
+   4          程序功能：  用总线操作的方法点亮第一、第三、第五、第七个发光二极管。
+   5          ********************************************************************************/
+   6          #include <reg51.h> //包含头文件，在“reg51.h”上右键单击，并打开，可以看到它里面的定义
+   7          
+   8          void main()
+   9          {
+  10   1              P1=0XAA;  //对P1口的八位一起操作，高低电平分配为10101010，为0的位对应的二极管被点亮。
+  11   1              while(1);
+  12   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =      5    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

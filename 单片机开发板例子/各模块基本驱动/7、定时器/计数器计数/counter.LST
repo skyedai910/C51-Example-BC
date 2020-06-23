@@ -1,0 +1,57 @@
+C51 COMPILER V8.02   COUNTER                                                               07/16/2010 15:45:11 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE COUNTER
+OBJECT MODULE PLACED IN counter.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE counter.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /***********************************************************************
+   2                                                  “天祥电子”            倾情奉献
+   3                                                                  www.txmcu.cn
+   4                                                                  www.txmcu.com
+   5          ***********************************************************************
+   6          程序功能：      本程序为计数器的基本驱动示例，计数器工作于方式1。
+   7                                  对按键S2按下的次数进行计数，当计数记到3时，第一个发光二极管被点亮。
+   8          **************************************************************************/
+   9          
+  10          #include<reg52.h>
+  11          
+  12          #define uint unsigned int 
+  13          //uint pp;
+  14          
+  15          sbit led=P1^0;
+  16          sbit s2=P3^4;
+  17          
+  18          void main()
+  19          {
+  20   1              TMOD=0x05;               //模式设置，00000001，可见采用的是定时器0，工作与模式1（M1=0，M0=1）。
+  21   1              TR0=1;                   //打开计数器
+  22   1              ET0=1;                   //开计数器0中断
+  23   1              EA=1;                    //开总中断
+  24   1              while(1)
+  25   1              {
+  26   2                      if(TL0==3)      //当计数为3时，led被点亮。
+  27   2                              led=0;
+  28   2              }
+  29   1      }
+  30          /*
+  31          void time0() interrupt 1
+  32          {       
+  33                  pp++;
+  34          } */
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     18    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

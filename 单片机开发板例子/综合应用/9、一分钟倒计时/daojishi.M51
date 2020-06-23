@@ -1,0 +1,161 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        06/21/2010  13:04:34  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE daojishi.obj TO daojishi
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  daojishi.obj (DAOJISHI)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  daojishi (DAOJISHI)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0007H     UNIT         ?DT?DAOJISHI
+            IDATA   000FH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0004H     UNIT         ?C_INITSEG
+                    0007H     0004H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     008CH     UNIT         ?C_C51STARTUP
+            CODE    009AH     003EH     UNIT         ?PR?MAIN?DAOJISHI
+            CODE    00D8H     002FH     UNIT         ?PR?_DISPLAY?DAOJISHI
+            CODE    0107H     0014H     UNIT         ?PR?_DELAY?DAOJISHI
+            CODE    011BH     0013H     UNIT         ?PR?TIME0?DAOJISHI
+            CODE    012EH     0010H     UNIT         ?CO?DAOJISHI
+
+
+
+OVERLAY MAP OF MODULE:   daojishi (DAOJISHI)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?DAOJISHI
+  +--> ?C_INITSEG
+
+?PR?MAIN?DAOJISHI
+  +--> ?PR?_DISPLAY?DAOJISHI
+
+?PR?_DISPLAY?DAOJISHI
+  +--> ?CO?DAOJISHI
+  +--> ?PR?_DELAY?DAOJISHI
+
+
+
+SYMBOL TABLE OF MODULE:  daojishi (DAOJISHI)
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/21/2010  13:04:34  PAGE 2
+
+
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        DAOJISHI
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+  B:00A8H.7       PUBLIC        EA
+  C:012EH         PUBLIC        table
+  D:0008H         PUBLIC        a0
+  D:0009H         PUBLIC        a1
+  B:00A0H.3       PUBLIC        beep
+  C:009AH         PUBLIC        main
+  B:00A0H.6       PUBLIC        dula
+  B:00A0H.7       PUBLIC        wela
+  D:0089H         PUBLIC        TMOD
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  B:0088H.4       PUBLIC        TR0
+  C:00D8H         PUBLIC        _display
+  C:011BH         PUBLIC        time0
+  D:000AH         PUBLIC        j
+  D:000BH         PUBLIC        k
+  D:000CH         PUBLIC        m
+  C:0107H         PUBLIC        _delay
+  D:000EH         PUBLIC        s
+  -------         PROC          _DELAY
+  D:0007H         SYMBOL        i
+  C:0107H         LINE#         11
+  C:0107H         LINE#         12
+  C:0107H         LINE#         13
+  C:0110H         LINE#         14
+  C:011AH         LINE#         15
+  -------         ENDPROC       _DELAY
+  -------         PROC          _DISPLAY
+  D:0007H         SYMBOL        sh_c
+  D:0005H         SYMBOL        g_c
+  C:00D8H         LINE#         16
+  C:00D8H         LINE#         17
+  C:00D8H         LINE#         18
+  C:00DAH         LINE#         19
+  C:00E1H         LINE#         20
+  C:00E3H         LINE#         21
+  C:00E5H         LINE#         23
+  C:00E7H         LINE#         24
+  C:00EAH         LINE#         25
+  C:00ECH         LINE#         26
+  C:00EEH         LINE#         27
+  C:00F3H         LINE#         29
+  C:00F7H         LINE#         30
+  C:00F9H         LINE#         31
+  C:00FBH         LINE#         33
+  C:00FEH         LINE#         34
+  C:0100H         LINE#         35
+  C:0102H         LINE#         36
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/21/2010  13:04:34  PAGE 3
+
+
+  -------         ENDPROC       _DISPLAY
+  -------         PROC          MAIN
+  C:009AH         LINE#         39
+  C:009AH         LINE#         40
+  C:009AH         LINE#         41
+  C:009DH         LINE#         42
+  C:009FH         LINE#         43
+  C:00A2H         LINE#         44
+  C:00A5H         LINE#         45
+  C:00A7H         LINE#         46
+  C:00A9H         LINE#         47
+  C:00A9H         LINE#         48
+  C:00A9H         LINE#         49
+  C:00B1H         LINE#         50
+  C:00B5H         LINE#         51
+  C:00B7H         LINE#         52
+  C:00B7H         LINE#         53
+  C:00C0H         LINE#         54
+  C:00C8H         LINE#         55
+  C:00CEH         LINE#         56
+  C:00D2H         LINE#         57
+  C:00D2H         LINE#         58
+  C:00D4H         LINE#         59
+  C:00D6H         LINE#         60
+  C:00D6H         LINE#         61
+  -------         ENDPROC       MAIN
+  -------         PROC          TIME0
+  C:011BH         LINE#         64
+  C:011DH         LINE#         65
+  C:0120H         LINE#         66
+  C:0123H         LINE#         67
+  C:012BH         LINE#         68
+  -------         ENDPROC       TIME0
+  -------         ENDMOD        DAOJISHI
+
+Program Size: data=16.0 xdata=0 code=314
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

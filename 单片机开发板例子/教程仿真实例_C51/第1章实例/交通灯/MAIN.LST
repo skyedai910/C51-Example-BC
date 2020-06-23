@@ -1,0 +1,639 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	main.ASM
+	Object File:	main.hex
+	List File:	main.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	ORG 0000H
+    2:		N      0020	A_BIT EQU 20H ;用于存放南北十位数
+    3:		N      0021	B_BIT EQU 21H ;用于存放南北十位数
+    4:		N      0022	C_BIT EQU 22H ;用于存放东西十位数
+    5:		N      0023	D_BIT EQU 23H ; 用于存放东西位数
+    6:
+    7:
+    8:		N      0024	TEMP1 EQU 24H  ;用于存放第一二南北状态要显示的时间
+    9:		N      0025	TEMP2 EQU 25H  ;用于存放第一二东西状态要显示的时间
+   10:
+   11:		N      0026	TEMP3 EQU 26H ;用于存放第三第四南北状态要显示的时间
+   12:		N      0027	TEMP4 EQU 27H;用于存放第三第四南北状态要显示的时间
+   13:	  0000	02 00 5B	LJMP MAIN
+   14:
+   15:		N      0003	ORG 0003H     ;外部中断0入口
+   16:	  0003	02 00 16	LJMP INTA     ;跳转到外部0中断
+   17:		N      0013	ORG 0013H     ;外部中断1入口
+   18:	  0013	02 00 39	LJMP INTB     ;跳转到外部1中断
+   19:
+   20:	  0016	E5 90		INTA: MOV A,P1   ;外部0中断
+   21:	  0018	C0 E0		      PUSH ACC
+   22:	  001A	E5 A0		      MOV A,P2  ;中断保护
+   23:	  001C	C0 E0		      PUSH ACC
+   24:	  001E	75 90 FF	MOV P1,#0FFH    ;清除先前状态
+   25:	  0021	75 A0 FF	MOV P2,#0FFH
+   26:	  0024	C2 90		CLR P1.0
+   27:	  0026	C2 94		CLR P1.4      ;南北通行，东西禁止通行
+   28:	  0028	C2 96		CLR P1.6
+   29:	  002A	C2 A3		CLR P2.3
+   30:	  002C	30 B2 FD	JNB P3.2 ,$  ;判断是否还在中断状态
+   31:	  002F	D0 E0		POP ACC
+   32:	  0031	F5 A0		MOV P2,A     ;返回中断前状态
+   33:	  0033	D0 E0		POP ACC
+   34:	  0035	85 E0 90	MOV P1,ACC
+   35:	  0038	32		RETI          ;中断返回
+   36:
+   37:
+   38:
+   39:	  0039	E5 90		INTB:MOV A,P1  ;外部1中断
+   40:	  003B	C0 E0		     PUSH ACC   ;中断保护
+   41:	  003D	E5 A0		     MOV A,P2
+   42:	  003F	C0 E0		     PUSH ACC
+   43:	  0041	75 90 FF	MOV P1,#0FFH  ;清除先前状态
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+ Line  I  Addr  Code            Source
+
+   44:	  0044	75 A0 FF	MOV P2,#0FFH
+   45:	  0047	C2 92		CLR P1.2
+   46:	  0049	C2 A1		CLR P2.1
+   47:	  004B	C2 93		CLR P1.3    ;东西通行，南北禁止通行
+   48:	  004D	C2 95		CLR P1.5
+   49:	  004F	30 B3 FD	JNB P3.3 ,$  ;判断是否还在中断状态
+   50:	  0052	D0 E0		POP ACC
+   51:	  0054	F5 A0		MOV P2,A    ;返回中断前状态
+   52:	  0056	D0 E0		POP ACC
+   53:	  0058	F5 90		MOV P1,A
+   54:	  005A	32		RETI         ;中断返回
+   55:
+   56:
+   57:
+   58:	  005B			MAIN:
+   59:		N      0100	ORG 0100H        ;初始情况
+   60:	  0100	75 90 FF	MOV P1,#0FFH
+   61:	  0103	75 A0 FF	MOV P2,#0FFH   ;灭所有灯
+   62:	  0106	75 89 55	MOV TMOD,#55H  ;计数方式方式1
+   63:	  0109	75 A8 85	MOV IE,#85H    ;开中断
+   64:	  010C	75 24 14	MOV TEMP1,#20 ;
+   65:	  010F	75 25 19	MOV TEMP2,#25
+   66:	  0112	75 26 19	MOV TEMP3,#25
+   67:	  0115	75 27 14	MOV TEMP4,#20
+   68:
+   69:	  0118			STAR:
+   70:	  0118	75 90 FF	MOV P1,#0FFH
+   71:	  011B	75 A0 FF	MOV P2,#0FFH   ;灭所有灯
+   72:	  011E	E5 24		MOV A,24H    ;将显示时间送A
+   73:	  0120	B4 14 13	CJNE A,#20,T40T  ;判断时间，选初始值
+   74:	  0123			T20T:       ;南北通行要显示的时间为20的计数器初始值
+   75:	  0123	C2 8D		CLR TF0   ;清TF0
+   76:	  0125	C2 8F		CLR TF1 ;清TF1
+   77:	  0127	75 8D FF	MOV TH1 ,#0FFH ;送20秒时的初始值
+   78:	  012A	75 8B FC	MOV TL1 ,#0FCH ;在些设计20秒6辆为多车
+   79:	  012D	75 8C FF	MOV TH0 ,#0FFH
+   80:	  0130	75 8A FC	MOV TL0 ,#0FCH
+   81:	  0133	02 01 49	LJMP TEMP20   ;跳到20秒
+   82:	  0136			T40T:     ;南北通行要显示的时间为40的计数器初始值
+   83:	  0136	C2 8D		CLR TF0 ;清TF0
+   84:	  0138	C2 8F		CLR TF1 ;清TF1
+   85:	  013A	75 8D FF	MOV TH1,#0FFH ;送40秒时的初始值
+   86:	  013D	75 8B F8	MOV TL1 ,#0F8H ;在些设计40秒8辆为多车
+   87:	  0140	75 8C FF	MOV TH0 ,#0FFH
+   88:	  0143	75 8A F8	MOV TL0 ,#0F8H
+   89:	  0146	02 01 9A	LJMP TEMP40  ;跳到40秒
+   90:
+   91:
+   92:
+   93:	  0149			TEMP20:     ;TEMP1=20情况
+   94:	  0149	D2 8C		SETB TR0    ;开始计数
+   95:	  014B	D2 8E		SETB TR1
+   96:	  014D	C2 92		CLR P1.2
+   97:	  014F	C2 A1		CLR P2.1    ;南北通行，东西禁止通行
+   98:	  0151	C2 93		CLR P1.3
+   99:	  0153	C2 95		CLR P1.5
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
+
+
+
+ Line  I  Addr  Code            Source
+
+  100:	  0155	75 24 14	MOV TEMP1,#20  ;南北要显示的时间，
+  101:	  0158	75 25 19	MOV TEMP2,#25 ;东西要显示的时间
+  102:	  015B			STLOP:
+  103:	  015B	51 C8		ACALL DISPLAY1   ;调用显示
+  104:	  015D	15 24		DEC TEMP1      ;时间够一秒显示时间减1
+  105:	  015F	15 25		DEC TEMP2
+  106:	  0161	E5 24		MOV A,TEMP1
+  107:	  0163	B4 00 03	CJNE A,#0,NEXT ;若显示时间不为0保持现在状态
+  108:	  0166	02 01 6C	LJMP STAR2     ;若显示时间为 0跳到第二状态
+  109:	  0169	02 01 5B	NEXT: LJMP STLOP
+  110:
+  111:
+  112:	  016C			STAR2:     ;状态1
+  113:	  016C	D2 92		SETB P1.2
+  114:	  016E	C2 91		CLR P1.1    ;南北黄灯，东西禁止通行
+  115:	  0170	D2 93		SETB P1.3
+  116:	  0172	C2 94		CLR P1.4
+  117:	  0174	75 24 05	MOV TEMP1,#05  ;南北要显示的时间，
+  118:	  0177	75 25 05	MOV TEMP2,#05 ;东西要显示的时间，
+  119:
+  120:	  017A			STLOP2:
+  121:	  017A	51 C8		ACALL DISPLAY1   ;调用显示
+  122:	  017C	15 24		DEC TEMP1      ;时间够一秒显示时间减1
+  123:	  017E	15 25		DEC TEMP2
+  124:	  0180	E5 24		MOV A,TEMP1
+  125:	  0182	B4 00 12	CJNE A,#0,NEXT2   ;若显示时间不为0保持现在状态
+  126:	  0185	20 8F 09	JB TF1 ,T40      ;判断南北是否多车
+  127:	  0188	20 8D 06	JB TF0 ,T40       ;判断北南是否多车
+  128:	  018B	75 24 14	MOV TEMP1,#20    ;少车下次显示时间为20秒
+  129:	  018E	02 01 EB	LJMP STAR3       ;跳到状态3
+  130:	  0191			T40:
+  131:	  0191	75 24 28	MOV TEMP1,#40    ; 多车下次显示时间为40秒
+  132:	  0194	02 01 EB	LJMP STAR3        ;若显示时间为 0跳到第三状态
+  133:	  0197	02 01 7A	NEXT2:LJMP STLOP2
+  134:
+  135:
+  136:	  019A			TEMP40:;TEM=40 程序
+  137:	  019A	D2 8C		SETB TR0  ; 开始计数
+  138:	  019C	D2 8E		SETB TR1
+  139:	  019E	C2 92		CLR P1.2
+  140:	  01A0	C2 A1		CLR P2.1    ;南北通行，东西禁止通行
+  141:	  01A2	C2 93		CLR P1.3
+  142:	  01A4	C2 95		CLR P1.5
+  143:	  01A6	75 24 28	MOV TEMP1,#40  ;南北要显示的时间，
+  144:	  01A9	75 25 2D	MOV TEMP2,#45 ;东西要显示的时间
+  145:	  01AC			STLOP11:
+  146:	  01AC	51 C8		ACALL DISPLAY1   ;调用显示
+  147:	  01AE	15 24		DEC TEMP1      ;时间够一秒显示时间减1
+  148:	  01B0	15 25		DEC TEMP2
+  149:	  01B2	E5 24		MOV A,TEMP1
+  150:	  01B4	B4 00 03	CJNE A,#0,NEXT11 ;若显示时间不为0保持现在状态
+  151:	  01B7	02 01 BD	LJMP STAR22     ;若显示时间为 0跳到第二状态
+  152:	  01BA	02 01 AC	NEXT11: LJMP STLOP11
+  153:
+  154:
+  155:	  01BD			STAR22:     ;状态1
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+
+
+
+ Line  I  Addr  Code            Source
+
+  156:	  01BD	D2 92		SETB P1.2
+  157:	  01BF	C2 91		CLR P1.1    ;南北黄灯，东西禁止通行
+  158:	  01C1	D2 93		SETB P1.3
+  159:	  01C3	C2 94		CLR P1.4
+  160:	  01C5	75 24 05	MOV TEMP1,#05  ;南北要显示的时间，
+  161:	  01C8	75 25 05	MOV TEMP2,#05 ;东西要显示的时间，
+  162:
+  163:	  01CB			STLOP22:
+  164:	  01CB	51 C8		ACALL DISPLAY1   ;调用显示
+  165:	  01CD	15 24		DEC TEMP1      ;时间够一秒显示时间减1
+  166:	  01CF	15 25		DEC TEMP2
+  167:	  01D1	E5 24		MOV A,TEMP1
+  168:	  01D3	B4 00 12	CJNE A,#0,NEXT22   ;若显示时间不为0保持现在状态
+  169:	  01D6	20 8F 09	JB TF1 ,T401      ; 判断是否多车
+  170:	  01D9	20 8D 06	JB TF0 ,T401
+  171:	  01DC	75 24 14	MOV TEMP1,#20  ;少车下次显示时间为20秒
+  172:	  01DF	02 01 EB	LJMP STAR3
+  173:	  01E2	75 24 28	T401:MOV TEMP1,#40 ;多车下次显示时间为40秒
+  174:	  01E5	02 01 EB	LJMP STAR3        ;若显示时间为 0跳到第三状态
+  175:	  01E8	02 01 CB	NEXT22:LJMP STLOP22
+  176:
+  177:
+  178:	  01EB			STAR3:
+  179:	  01EB	E5 26		MOV A,26H
+  180:	  01ED	B4 19 13	CJNE A,#25,T40T1  ;判断时间，选初始值
+  181:	  01F0			T20T1:       ;南北通行要显示的时间为20的计数器初始值
+  182:	  01F0	C2 8D		CLR TF0        ; 清溢出位
+  183:	  01F2	C2 8F		CLR TF1
+  184:	  01F4	75 8D FF	MOV TH1 ,#0FFH  ; 给初值
+  185:	  01F7	75 8B FC	MOV TL1 ,#0FCH
+  186:	  01FA	75 8C FF	MOV TH0 ,#0FFH
+  187:	  01FD	75 8A FC	MOV TL0 ,#0FCH
+  188:	  0200	02 02 16	LJMP TEMP320
+  189:	  0203			T40T1:     ;南北通行要显示的时间为40的计数器初始值
+  190:	  0203	C2 8D		CLR TF0  ;
+  191:	  0205	C2 8F		CLR TF1
+  192:	  0207	75 8D FF	MOV TH1,#0FFH ;给初值
+  193:	  020A	75 8B F8	MOV TL1 ,#0F8H
+  194:	  020D	75 8C FF	MOV TH0 ,#0FFH
+  195:	  0210	75 8A F8	MOV TL0 ,#0F8H
+  196:	  0213	02 02 6F	LJMP TEMP340
+  197:
+  198:	  0216			TEMP320:;状态三
+  199:	  0216	D2 8E		SETB TR1      ;南北停止计数
+  200:	  0218	D2 8C		SETB TR0     ;东西开始计数
+  201:	  021A	D2 91		SETB P1.1    ;东西通行，南北禁止通行
+  202:	  021C	C2 90		CLR P1.0
+  203:	  021E	D2 91		SETB P1.1
+  204:	  0220	C2 90		CLR P1.0
+  205:	  0222	D2 95		SETB P1.5
+  206:	  0224	C2 96		CLR P1.6
+  207:	  0226	D2 A1		SETB P2.1
+  208:	  0228	C2 A3		CLR P2.3
+  209:	  022A	75 26 19	MOV TEMP3,#25  ;南北要显示的时间，
+  210:	  022D	75 27 14	MOV TEMP4,#20 ;东西要显示的时间，
+  211:
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
+
+
+
+ Line  I  Addr  Code            Source
+
+  212:	  0230			STLOP33:
+  213:	  0230	71 16		ACALL DISPLAY  ;调用显示
+  214:	  0232	15 26		DEC TEMP3       ;时间够一秒显示时间减1
+  215:	  0234	15 27		DEC TEMP4
+  216:	  0236	E5 27		MOV A,TEMP4
+  217:	  0238	B4 00 03	CJNE A,#0,NEXT33  ;若显示时间不为0保持现在状态
+  218:	  023B	02 02 41	LJMP STAR34       ;若显示时间为 0跳到第四状态
+  219:	  023E	02 02 30	NEXT33:LJMP STLOP33
+  220:
+  221:
+  222:	  0241			STAR34:           ;状态四
+  223:	  0241	D2 A3		SETB P2.3
+  224:	  0243	C2 A2		CLR P2.2
+  225:	  0245	D2 96		SETB P1.6      ;东西黄灯，南北禁止通行
+  226:	  0247	C2 95		CLR P1.5
+  227:
+  228:
+  229:
+  230:
+  231:	  0249	75 26 05	MOV TEMP3,#05   ;南北要显示的时间，
+  232:	  024C	75 27 05	MOV TEMP4,#05   ;东西要显示的时间，
+  233:	  024F			STLOP34:
+  234:	  024F	71 16		ACALL DISPLAY  ;调用显示
+  235:	  0251	15 26		DEC TEMP3       ;时间够一秒显示时间减1
+  236:	  0253	15 27		DEC TEMP4
+  237:	  0255	E5 27		MOV A,TEMP4
+  238:	  0257	B4 00 12	CJNE A,#0,NEXT34  ;若显示时间不为0保持现在状态
+  239:	  025A	20 8F 09	JB TF1 ,T402
+  240:	  025D	20 8D 06	JB TF0 ,T402
+  241:	  0260	75 26 19	MOV TEMP3,#25
+  242:	  0263	02 01 18	LJMP STAR
+  243:	  0266			T402:
+  244:	  0266	75 26 2D	MOV TEMP3,#45
+  245:	  0269	02 01 18	LJMP STAR
+  246:	  026C	02 02 4F	NEXT34:   LJMP STLOP34
+  247:
+  248:
+  249:	  026F			TEMP340 :
+  250:	  026F	D2 8E		SETB TR1      ;南北停止计数
+  251:	  0271	D2 8C		SETB TR0     ;东西开始计数
+  252:	  0273	D2 91		SETB P1.1    ;东西通行，南北禁止通行
+  253:	  0275	C2 90		CLR P1.0
+  254:	  0277	D2 91		SETB P1.1
+  255:	  0279	C2 90		CLR P1.0
+  256:	  027B	D2 95		SETB P1.5
+  257:	  027D	C2 96		CLR P1.6
+  258:	  027F	D2 A1		SETB P2.1
+  259:	  0281	C2 A3		CLR P2.3
+  260:	  0283	75 26 2D	MOV TEMP3,#45  ;南北要显示的时间，
+  261:	  0286	75 27 28	MOV TEMP4,#40 ;东西要显示的时间，
+  262:
+  263:	  0289			STLOP43:
+  264:	  0289	71 16		ACALL DISPLAY  ;调用显示
+  265:	  028B	15 26		DEC TEMP3       ;时间够一秒显示时间减1
+  266:	  028D	15 27		DEC TEMP4
+  267:	  028F	E5 27		MOV A,TEMP4
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
+
+
+
+ Line  I  Addr  Code            Source
+
+  268:	  0291	B4 00 03	CJNE A,#0,NEXT43  ;若显示时间不为0保持现在状态
+  269:	  0294	02 02 9A	LJMP STAR44       ;若显示时间为 0跳到第四状态
+  270:	  0297	02 02 89	NEXT43:LJMP STLOP43
+  271:
+  272:
+  273:	  029A			STAR44:           ;状态四
+  274:	  029A	D2 A3		SETB P2.3
+  275:	  029C	C2 A2		CLR P2.2
+  276:	  029E	D2 96		SETB P1.6      ;东西黄灯，南北禁止通行
+  277:	  02A0	C2 95		CLR P1.5
+  278:
+  279:
+  280:
+  281:
+  282:	  02A2	75 26 05	MOV TEMP3,#05   ;南北要显示的时间，
+  283:	  02A5	75 27 05	MOV TEMP4,#05   ;东西要显示的时间，
+  284:	  02A8			STLOP44:
+  285:	  02A8	71 16		ACALL DISPLAY  ;调用显示
+  286:	  02AA	15 26		DEC TEMP3       ;时间够一秒显示时间减1
+  287:	  02AC	15 27		DEC TEMP4
+  288:	  02AE	E5 26		MOV A,TEMP3
+  289:	  02B0	B4 00 12	CJNE A,#0,NEXT44  ;若显示时间不为0保持现在状态
+  290:	  02B3	20 8F 09	JB TF1 ,T403
+  291:	  02B6	20 8D 06	JB TF0 ,T403
+  292:	  02B9	75 26 19	MOV TEMP3,#25
+  293:	  02BC	02 01 18	LJMP STAR
+  294:	  02BF			T403:
+  295:	  02BF	75 26 2D	MOV TEMP3,#45
+  296:	  02C2	02 01 18	 LJMP STAR
+  297:	  02C5	02 02 A8	NEXT44:   LJMP STLOP44
+  298:
+  299:
+  300:				;显示
+  301:	  02C8			DISPLAY1:
+  302:	  02C8	E5 24		MOV A,TEMP1  ;将南北要显示的数存放到A
+  303:	  02CA	75 F0 0A	MOV B,#10  ;B=10
+  304:	  02CD	84		DIV AB     ;A除以B商存A，余数B
+  305:	  02CE	F5 21		MOV B_BIT,A ; 将A放到20H
+  306:	  02D0	85 F0 20	MOV A_BIT,B  ;将B放到21H
+  307:
+  308:	  02D3	E5 25		MOV A,TEMP2 ;将东西要显示的数存放到A
+  309:	  02D5	75 F0 0A	MOV B,#10   ;B=10
+  310:	  02D8	84		DIV AB       ;A除以B商存A，余数B
+  311:	  02D9	F5 22		MOV C_BIT,A   ;将A放到22H
+  312:	  02DB	85 F0 23	MOV D_BIT,B   ;将B放到23H
+  313:
+  314:	  02DE	90 03 69	MOV DPTR ,#NUMT ;
+  315:	  02E1	78 02		MOV R0,#2    ;R0=2
+  316:	  02E3	79 FA		DPL11: MOV R1,#250 ;R1=250
+  317:	  02E5			DPLOP1:
+  318:	  02E5	E5 20		MOV A,A_BIT ;将南北要显示的10位数送A
+  319:	  02E7	93		MOVC A,@A+DPTR ;查表
+  320:	  02E8	F5 80		MOV P0,A    ;显示南北10位数
+  321:	  02EA	C2 A7		CLR P2.7
+  322:	  02EC	71 64		ACALL D1MS;延时1MS
+  323:	  02EE	D2 A7		SETB P2.7 ;灭南北10位数
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 7
+
+
+
+ Line  I  Addr  Code            Source
+
+  324:	  02F0	E5 21		MOV A,B_BIT  ;将南北要显示的个位数送A
+  325:	  02F2	93		MOVC A,@A+DPTR   ;查表
+  326:	  02F3	F5 80		MOV P0,A    ;显示南北个位数
+  327:	  02F5	C2 A6		CLR P2.6
+  328:	  02F7	71 64		ACALL D1MS ;延时1MS
+  329:	  02F9	D2 A6		SETB P2.6  ;灭南北个位数
+  330:
+  331:	  02FB	E5 22		MOV A,C_BIT  ;将东西要显示的10位数送A
+  332:	  02FD	93		MOVC A,@A+DPTR  ;查表
+  333:	  02FE	F5 80		MOV P0,A    ;显示东西10位数
+  334:	  0300	C2 A5		CLR P2.5
+  335:	  0302	71 64		ACALL D1MS ;延时1MS
+  336:	  0304	D2 A5		SETB P2.5   ;灭东西10位数
+  337:
+  338:	  0306	E5 23		MOV A,D_BIT  ;将东西要显示的个位数送A
+  339:	  0308	93		MOVC A,@A+DPTR ;查表
+  340:	  0309	F5 80		MOV P0,A    ;显示东西东西位数
+  341:	  030B	C2 A4		CLR P2.4
+  342:	  030D	71 64		ACALL D1MS ;延时1MS
+  343:	  030F	D2 A4		SETB P2.4  ;灭东西个位数
+  344:
+  345:	  0311	D9 20		DJNZ R1,DPLOP ;循环扫描
+  346:	  0313	D8 1C		DJNZ R0,DPL1
+  347:	  0315	22		RET     ;等待1秒返回
+  348:
+  349:				;显示
+  350:	  0316			DISPLAY:
+  351:	  0316	E5 26		MOV A,TEMP3  ;将南北要显示的数存放到A
+  352:	  0318	75 F0 0A	MOV B,#10  ;B=10
+  353:	  031B	84		DIV AB     ;A除以B商存A，余数B
+  354:	  031C	F5 21		MOV B_BIT,A ; 将A放到20H
+  355:	  031E	85 F0 20	MOV A_BIT,B  ;将B放到21H
+  356:
+  357:	  0321	E5 27		MOV A,TEMP4 ;将东西要显示的数存放到A
+  358:	  0323	75 F0 0A	MOV B,#10   ;B=10
+  359:	  0326	84		DIV AB       ;A除以B商存A，余数B
+  360:	  0327	F5 22		MOV C_BIT,A   ;将A放到22H
+  361:	  0329	85 F0 23	MOV D_BIT,B   ;将B放到23H
+  362:
+  363:	  032C	90 03 69	MOV DPTR ,#NUMT ;
+  364:	  032F	78 02		MOV R0,#2    ;R0=2
+  365:	  0331	79 FA		DPL1: MOV R1,#250 ;R1=250
+  366:	  0333			DPLOP:
+  367:	  0333	E5 20		MOV A,A_BIT ;将南北要显示的10位数送A
+  368:	  0335	93		MOVC A,@A+DPTR ;查表
+  369:	  0336	F5 80		MOV P0,A    ;显示南北10位数
+  370:	  0338	C2 A7		CLR P2.7
+  371:	  033A	71 64		ACALL D1MS;延时1MS
+  372:	  033C	D2 A7		SETB P2.7 ;灭南北10位数
+  373:	  033E	E5 21		MOV A,B_BIT  ;将南北要显示的个位数送A
+  374:	  0340	93		MOVC A,@A+DPTR   ;查表
+  375:	  0341	F5 80		MOV P0,A    ;显示南北个位数
+  376:	  0343	C2 A6		CLR P2.6
+  377:	  0345	71 64		ACALL D1MS ;延时1MS
+  378:	  0347	D2 A6		SETB P2.6  ;灭南北个位数
+  379:
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 8
+
+
+
+ Line  I  Addr  Code            Source
+
+  380:	  0349	E5 22		MOV A,C_BIT  ;将东西要显示的10位数送A
+  381:	  034B	93		MOVC A,@A+DPTR  ;查表
+  382:	  034C	F5 80		MOV P0,A    ;显示东西10位数
+  383:	  034E	C2 A5		CLR P2.5
+  384:	  0350	71 64		ACALL D1MS ;延时1MS
+  385:	  0352	D2 A5		SETB P2.5   ;灭东西10位数
+  386:
+  387:	  0354	E5 23		MOV A,D_BIT  ;将东西要显示的个位数送A
+  388:	  0356	93		MOVC A,@A+DPTR ;查表
+  389:	  0357	F5 80		MOV P0,A    ;显示东西东西位数
+  390:	  0359	C2 A4		CLR P2.4
+  391:	  035B	71 64		ACALL D1MS ;延时1MS
+  392:	  035D	D2 A4		SETB P2.4  ;灭东西个位数
+  393:
+  394:	  035F	D9 D2		DJNZ R1,DPLOP ;循环扫描
+  395:	  0361	D8 CE		DJNZ R0,DPL1
+  396:	  0363	22		RET     ;等待1秒返回
+  397:
+  398:
+  399:
+  400:	  0364	7F FA		D1MS: MOV R7,#250  ;1MS延时程序
+  401:	  0366	DF FE		DJNZ R7,$
+  402:	  0368	22		RET
+  403:				;1到10对应电路图数码管表
+  404:	  0369	7E 48 67 6B	NUMT: DB    7EH,48H,67H,6BH,59H
+	  036D	59
+  405:	  036E	3B 3F 68 7F	      DB    3BH,3FH,68H,7FH,7BH
+	  0372	7B
+  406:				END
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors
+
+
+
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 9
+
+
+
+
+
+	       L I S T   O F   S Y M B O L S
+	       =============================
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+??ASEM_51			  NUMBER    8051
+??VERSION			  NUMBER    0130
+AC				  BIT	      D6
+ACC				  DATA	      E0
+A_BIT				  NUMBER    0020	   2
+B				  DATA	      F0
+B_BIT				  NUMBER    0021	   3
+CY				  BIT	      D7
+C_BIT				  NUMBER    0022	   4
+D1MS				  CODE	    0364	 400
+DISPLAY				  CODE	    0316	 350
+DISPLAY1			  CODE	    02C8	 301
+DPH				  DATA	      83
+DPL				  DATA	      82
+DPL1				  CODE	    0331	 365
+DPL11				  CODE	    02E3	 316
+DPLOP				  CODE	    0333	 366
+DPLOP1				  CODE	    02E5	 317
+D_BIT				  NUMBER    0023	   5
+EA				  BIT	      AF
+ES				  BIT	      AC
+ET0				  BIT	      A9
+ET1				  BIT	      AB
+EX0				  BIT	      A8
+EX1				  BIT	      AA
+EXTI0				  CODE	    0003
+EXTI1				  CODE	    0013
+F0				  BIT	      D5
+IE				  DATA	      A8
+IE0				  BIT	      89
+IE1				  BIT	      8B
+INT0				  BIT	      B2
+INT1				  BIT	      B3
+INTA				  CODE	    0016	  20
+INTB				  CODE	    0039	  39
+IP				  DATA	      B8
+IT0				  BIT	      88
+IT1				  BIT	      8A
+MAIN				  CODE	    005B	  58
+NEXT				  CODE	    0169	 109
+NEXT11				  CODE	    01BA	 152
+NEXT2				  CODE	    0197	 133
+NEXT22				  CODE	    01E8	 175
+NEXT33				  CODE	    023E	 219
+NEXT34				  CODE	    026C	 246
+NEXT43				  CODE	    0297	 270
+NEXT44				  CODE	    02C5	 297
+NUMT				  CODE	    0369	 404
+OV				  BIT	      D2
+P				  BIT	      D0
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 10
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+P0				  DATA	      80
+P1				  DATA	      90
+P2				  DATA	      A0
+P3				  DATA	      B0
+PCON				  DATA	      87
+PS				  BIT	      BC
+PSW				  DATA	      D0
+PT0				  BIT	      B9
+PT1				  BIT	      BB
+PX0				  BIT	      B8
+PX1				  BIT	      BA
+RB8				  BIT	      9A
+RD				  BIT	      B7
+REN				  BIT	      9C
+RESET				  CODE	    0000
+RI				  BIT	      98
+RS0				  BIT	      D3
+RS1				  BIT	      D4
+RXD				  BIT	      B0
+SBUF				  DATA	      99
+SCON				  DATA	      98
+SINT				  CODE	    0023
+SM0				  BIT	      9F
+SM1				  BIT	      9E
+SM2				  BIT	      9D
+SP				  DATA	      81
+STAR				  CODE	    0118	  69
+STAR2				  CODE	    016C	 112
+STAR22				  CODE	    01BD	 155
+STAR3				  CODE	    01EB	 178
+STAR34				  CODE	    0241	 222
+STAR44				  CODE	    029A	 273
+STLOP				  CODE	    015B	 102
+STLOP11				  CODE	    01AC	 145
+STLOP2				  CODE	    017A	 120
+STLOP22				  CODE	    01CB	 163
+STLOP33				  CODE	    0230	 212
+STLOP34				  CODE	    024F	 233
+STLOP43				  CODE	    0289	 263
+STLOP44				  CODE	    02A8	 284
+T0				  BIT	      B4
+T1				  BIT	      B5
+T20T				  CODE	    0123	  74
+T20T1				  CODE	    01F0	 181
+T40				  CODE	    0191	 130
+T401				  CODE	    01E2	 173
+T402				  CODE	    0266	 243
+T403				  CODE	    02BF	 294
+T40T				  CODE	    0136	  82
+T40T1				  CODE	    0203	 189
+TB8				  BIT	      9B
+TCON				  DATA	      88
+TEMP1				  NUMBER    0024	   8
+TEMP2				  NUMBER    0025	   9
+TEMP20				  CODE	    0149	  93
+TEMP3				  NUMBER    0026	  11
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 11
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+TEMP320				  CODE	    0216	 198
+TEMP340				  CODE	    026F	 249
+TEMP4				  NUMBER    0027	  12
+TEMP40				  CODE	    019A	 136
+TF0				  BIT	      8D
+TF1				  BIT	      8F
+TH0				  DATA	      8C
+TH1				  DATA	      8D
+TI				  BIT	      99
+TIMER0				  CODE	    000B
+TIMER1				  CODE	    001B
+TL0				  DATA	      8A
+TL1				  DATA	      8B
+TMOD				  DATA	      89
+TR0				  BIT	      8C
+TR1				  BIT	      8E
+TXD				  BIT	      B1
+WR				  BIT	      B6

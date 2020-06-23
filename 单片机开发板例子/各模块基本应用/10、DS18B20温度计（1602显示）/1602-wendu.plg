@@ -1,0 +1,21 @@
+<html>
+<body>
+<pre>
+<h1>礦ision3 Build Log</h1>
+<h2>Project:</h2>
+I:\程序0\TX-1C程序\3、TX-1C各模块基本应用\10、DS18B20温度计（1602显示）0\1602-wendu.uv2
+Project File Date:  06/29/2010
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling 1602-wendu.c...
+linking...
+Program Size: data=38.1 xdata=0 code=1876
+creating hex file from "1602-wendu"...
+"1602-wendu" - 0 Error(s), 0 Warning(s).
+Build target 'Target 1'
+compiling 1602-wendu.c...
+linking...
+Program Size: data=38.1 xdata=0 code=1876
+creating hex file from "1602-wendu"...
+"1602-wendu" - 0 Error(s), 0 Warning(s).

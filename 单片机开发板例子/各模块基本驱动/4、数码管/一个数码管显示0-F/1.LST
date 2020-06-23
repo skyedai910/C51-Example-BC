@@ -1,0 +1,63 @@
+C51 COMPILER V9.00   1                                                                     09/24/2019 00:09:33 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE 1
+OBJECT MODULE PLACED IN 1.OBJ
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE 1.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /********************************************************************
+   2                                  
+   3          
+   4          程序功能：      让学习板的第一个数码管动态地显示数字0到F。
+   5          
+   6          **********************************************************************/
+   7          #include <reg51.h>
+   8          
+   9          sbit dula=P2^6;         //段选信号的锁存器控制
+  10          sbit wela=P2^7;         //位选信号的锁存器控制
+  11          
+  12          unsigned char code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,
+  13                                  0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};
+  14                                                          //0-F的码表
+  15          void delay(unsigned int i)
+  16          {
+  17   1              unsigned int m,n;
+  18   1              for(m=i;m>0;m--)
+  19   1                      for(n=90;n>0;n--);
+  20   1      }
+  21          
+  22          void main()
+  23          {
+  24   1              unsigned char num;
+  25   1              while(1)
+  26   1              {
+  27   2                      for(num=0;num<16;num++)
+  28   2                      {
+  29   3                              P0=table[num];     
+  30   3                              dula=1;
+  31   3                              dula=0;
+  32   3      
+  33   3                              P0=0xfe;           //选中第一个数码管
+  34   3                              wela=1;
+  35   3                              wela=0;
+  36   3                              delay(1000);
+  37   3                      }
+  38   2              }
+  39   1      }
+  40          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     63    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

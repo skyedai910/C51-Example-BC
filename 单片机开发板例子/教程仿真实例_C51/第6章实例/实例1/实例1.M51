@@ -1,0 +1,88 @@
+BL51 BANKED LINKER/LOCATER V5.12                                                        11/05/2012  22:59:27  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V5.12, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE 实例1b.obj TO 实例1
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例1b.obj (实例1B)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  实例1 (实例1B)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0008H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     0013H     UNIT         ?PR?MAIN?实例1B
+            CODE    0021H     000CH     UNIT         ?C_C51STARTUP
+            CODE    002DH     0009H     UNIT         ?PR?TIMER0?实例1B
+
+
+
+OVERLAY MAP OF MODULE:   实例1 (实例1B)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?实例1B
+
+
+
+SYMBOL TABLE OF MODULE:  实例1 (实例1B)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        实例1B
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  B:00A8H.7       PUBLIC        EA
+  B:0090H.0       PUBLIC        P1_0
+  C:000EH         PUBLIC        main
+  D:0089H         PUBLIC        TMOD
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+BL51 BANKED LINKER/LOCATER V5.12                                                      11/05/2012  22:59:27  PAGE 2
+
+
+  C:002DH         PUBLIC        timer0
+  B:0088H.4       PUBLIC        TR0
+  -------         PROC          TIMER0
+  C:002DH         LINE#         3
+  C:002DH         LINE#         4
+  C:002FH         LINE#         5
+  C:0032H         LINE#         6
+  C:0035H         LINE#         7
+  -------         ENDPROC       TIMER0
+  -------         PROC          MAIN
+  C:000EH         LINE#         8
+  C:000EH         LINE#         9
+  C:0011H         LINE#         10
+  C:0013H         LINE#         11
+  C:0016H         LINE#         12
+  C:0019H         LINE#         13
+  C:001BH         LINE#         14
+  C:001DH         LINE#         15
+  C:001FH         LINE#         16
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        实例1B
+
+Program Size: data=9.0 xdata=0 code=46
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

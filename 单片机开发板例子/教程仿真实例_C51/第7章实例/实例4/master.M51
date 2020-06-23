@@ -1,0 +1,138 @@
+BL51 BANKED LINKER/LOCATER V5.12                                                        02/27/2014  19:53:32  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V5.12, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE master.obj TO master
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  master.obj (MASTER)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  master (MASTER)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0003H     UNIT         ?DT?MASTER
+            IDATA   000BH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     008CH     UNIT         ?C_C51STARTUP
+            CODE    008FH     0057H     UNIT         ?PR?_PROC_KEY?MASTER
+            CODE    00E6H     0021H     UNIT         ?PR?MAIN?MASTER
+            CODE    0107H     0011H     UNIT         ?PR?_DELAY?MASTER
+            CODE    0118H     0011H     UNIT         ?CO?MASTER
+            CODE    0129H     000AH     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   master (MASTER)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?MASTER
+  +--> ?C_INITSEG
+
+?PR?MAIN?MASTER
+  +--> ?PR?_PROC_KEY?MASTER
+
+?PR?_PROC_KEY?MASTER
+  +--> ?PR?_DELAY?MASTER
+  +--> ?CO?MASTER
+
+
+
+SYMBOL TABLE OF MODULE:  master (MASTER)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+BL51 BANKED LINKER/LOCATER V5.12                                                      02/27/2014  19:53:32  PAGE 2
+
+
+
+  -------         MODULE        MASTER
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:0008H         PUBLIC        pointer_1
+  D:0009H         PUBLIC        pointer_2
+  B:0098H.1       PUBLIC        TI
+  C:00E6H         PUBLIC        main
+  D:000AH         PUBLIC        KeyValue
+  D:0099H         PUBLIC        SBUF
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  C:008FH         PUBLIC        _proc_key
+  D:008DH         PUBLIC        TH1
+  B:0098H.3       PUBLIC        TB8
+  D:008BH         PUBLIC        TL1
+  B:0088H.6       PUBLIC        TR1
+  C:0118H         PUBLIC        str
+  C:0107H         PUBLIC        _delay
+  -------         PROC          _DELAY
+  D:0007H         SYMBOL        time
+  -------         DO            
+  D:0006H         SYMBOL        i
+  D:0005H         SYMBOL        j
+  -------         ENDDO         
+  C:0107H         LINE#         11
+  C:0107H         LINE#         13
+  C:0109H         LINE#         14
+  C:0117H         LINE#         15
+  -------         ENDPROC       _DELAY
+  -------         PROC          _PROC_KEY
+  D:0004H         SYMBOL        node_number
+  C:008FH         LINE#         17
+  C:0091H         LINE#         18
+  C:0096H         LINE#         19
+  C:0099H         LINE#         20
+  C:009CH         LINE#         21
+  C:00A2H         LINE#         22
+  C:00A4H         LINE#         23
+  C:00A6H         LINE#         24
+  C:00A8H         LINE#         25
+  C:00ABH         LINE#         26
+  C:00ADH         LINE#         27
+  C:00AFH         LINE#         28
+  C:00B7H         LINE#         29
+  C:00B7H         LINE#         30
+  C:00C2H         LINE#         31
+  C:00CCH         LINE#         32
+  C:00CDH         LINE#         33
+  C:00CDH         LINE#         34
+  C:00CDH         LINE#         35
+  C:00D8H         LINE#         36
+  C:00E2H         LINE#         37
+  C:00E3H         LINE#         38
+  C:00E3H         LINE#         39
+  C:00E3H         LINE#         41
+  C:00E5H         LINE#         42
+BL51 BANKED LINKER/LOCATER V5.12                                                      02/27/2014  19:53:32  PAGE 3
+
+
+  -------         ENDPROC       _PROC_KEY
+  -------         PROC          MAIN
+  C:00E6H         LINE#         44
+  C:00E6H         LINE#         45
+  C:00E6H         LINE#         46
+  C:00E9H         LINE#         47
+  C:00EEH         LINE#         48
+  C:00F9H         LINE#         49
+  C:0100H         LINE#         50
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MASTER
+
+Program Size: data=12.0 xdata=0 code=307
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

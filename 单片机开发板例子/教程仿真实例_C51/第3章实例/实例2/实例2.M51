@@ -1,0 +1,72 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/22/2017  21:31:13  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE 实例2.obj TO 实例2
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例2.obj (____2)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  实例2 (____2)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0006H     UNIT         ?DT?____2
+            IDATA   000EH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     008CH     UNIT         ?C_C51STARTUP
+            CODE    008FH     0043H     UNIT         ?PR?MAIN?____2
+            CODE    00D2H     0005H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   实例2 (____2)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?____2
+  +--> ?C_INITSEG
+
+
+
+SYMBOL TABLE OF MODULE:  实例2 (____2)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ____2
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:008FH         PUBLIC        main
+  D:0008H         PUBLIC        y1
+  D:000AH         PUBLIC        y2
+  D:000CH         PUBLIC        x
+  -------         PROC          MAIN
+  C:008FH         LINE#         5
+  C:008FH         LINE#         6
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/22/2017  21:31:13  PAGE 2
+
+
+  C:00AAH         LINE#         7
+  C:00B6H         LINE#         8
+  C:00D1H         LINE#         9
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        ____2
+
+Program Size: data=15.0 xdata=0 code=215
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

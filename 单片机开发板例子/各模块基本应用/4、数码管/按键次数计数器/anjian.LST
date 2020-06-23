@@ -1,0 +1,167 @@
+C51 COMPILER V8.02   ANJIAN                                                                06/26/2010 13:58:03 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE ANJIAN
+OBJECT MODULE PLACED IN anjian.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE anjian.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /************************************************************************************************
+   2                                                     “天祥电子”         倾情奉献
+   3                                                                  www.txmcu.cn
+   4                                                                  www.txmcu.com
+   5          *****************************************************************************************************
+   6          程序功能：模拟工厂里的产品扫描计数器。
+   7                          用TX-1C学习板上的S2和S3键。
+   8                          其中S2用于模拟代替扫描开关，当有产品经过时，会使S2送出低电平（本程序中是用手按下S2来模拟）
+   9                          S2每按一下，便会使数码管上的计数器加一。
+  10                          S3用于对计数清零。
+  11          ******************************************************************************************************/
+  12          
+  13          #include<reg52.h>
+  14          
+  15          #define uchar unsigned char 
+  16          unsigned long num;
+  17          uchar j,k;
+  18          uchar a0,b0,c0,d0,e0,f0;
+  19          sbit dula=P2^6;
+  20          sbit wela=P2^7;
+  21          sbit s2=P3^4;
+  22          sbit s3=P3^5;
+  23          unsigned char code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,
+  24                                  0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71,0x00};
+  25          
+  26          void delay(uchar i)
+  27          {
+  28   1              for(j=i;j>0;j--)
+  29   1              for(k=125;k>0;k--);
+  30   1      }
+  31          
+  32          void display(uchar a,uchar b,uchar c,uchar d,uchar e,uchar f)
+  33          {
+  34   1         dula=0;
+  35   1         P0=table[a];
+  36   1         dula=1;
+  37   1         dula=0;
+  38   1         
+  39   1         wela=0;
+  40   1         P0=0xfe;
+  41   1         wela=1;
+  42   1         wela=0;
+  43   1         delay(5);
+  44   1         
+  45   1         P0=table[b];
+  46   1         dula=1;
+  47   1         dula=0;
+  48   1         
+  49   1         P0=0xfd;
+  50   1         wela=1;
+  51   1         wela=0;
+  52   1         delay(5);
+  53   1      
+  54   1         P0=table[c];
+  55   1         dula=1;
+C51 COMPILER V8.02   ANJIAN                                                                06/26/2010 13:58:03 PAGE 2   
+
+  56   1         dula=0;
+  57   1         
+  58   1         P0=0xfb;
+  59   1         wela=1;
+  60   1         wela=0;
+  61   1         delay(5);
+  62   1         
+  63   1         P0=table[d];
+  64   1         dula=1;
+  65   1         dula=0;
+  66   1         
+  67   1         P0=0xf7;
+  68   1         wela=1;
+  69   1         wela=0;
+  70   1         delay(5);
+  71   1         
+  72   1         P0=table[e];
+  73   1         dula=1;
+  74   1         dula=0;
+  75   1         
+  76   1         P0=0xef;
+  77   1         wela=1;
+  78   1         wela=0;
+  79   1         delay(5);
+  80   1         
+  81   1         P0=table[f];
+  82   1         dula=1;
+  83   1         dula=0;
+  84   1         
+  85   1         P0=0xdf;
+  86   1         wela=1;
+  87   1         wela=0;
+  88   1         delay(5);
+  89   1      }
+  90          
+  91          void keyscan()
+  92          {
+  93   1              if(s2==0)
+  94   1              {
+  95   2                      while(s2==0);
+  96   2                      num++;
+  97   2              }
+  98   1              if(s3==0)
+  99   1              {
+ 100   2                      while(s3==0);
+ 101   2                      num=0;
+ 102   2              }
+ 103   1      }
+ 104          
+ 105          void main()
+ 106          {       while(1)
+ 107   1              {
+ 108   2              keyscan();
+ 109   2              if(num<10)
+ 110   2              {
+ 111   3                      a0=num;b0=16;c0=16;d0=16;e0=16;f0=16;
+ 112   3              }
+ 113   2              else
+ 114   2              {
+ 115   3                      if(num<100)
+ 116   3                      {a0=num/10;b0=num%10;c0=16;d0=16;e0=16;f0=16;}
+ 117   3                      else
+C51 COMPILER V8.02   ANJIAN                                                                06/26/2010 13:58:03 PAGE 3   
+
+ 118   3                      {
+ 119   4                              if(num<1000)
+ 120   4                              {a0=num/100;b0=num%100/10;c0=num%10;d0=16;e0=16;f0=16;}
+ 121   4                              else
+ 122   4                              {
+ 123   5                                      if(num<10000)
+ 124   5                                      {a0=num/1000;b0=num%1000/100;c0=num%100/10;d0=num%10;e0=16;f0=16;}
+ 125   5                                      else
+ 126   5                                      {
+ 127   6                                              if(num<100000)
+ 128   6                                              {a0=num/10000;b0=num%10000/1000;c0=num%1000/100;d0=num%100/10;e0=num%10;f0=16;}
+ 129   6                                              else
+ 130   6                                              {
+ 131   7                                                      if(num<1000000)
+ 132   7                                                      {a0=num/100000;b0=num%100000/10000;c0=num%10000/1000;d0=num%1000/100;e0=num%100/10;f0=num%10;}
+ 133   7                                              }
+ 134   6                                      }
+ 135   5                              }
+ 136   4                      }
+ 137   3              }
+ 138   2              display(a0,b0,c0,d0,e0,f0);
+ 139   2              }
+ 140   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    930    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     12       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

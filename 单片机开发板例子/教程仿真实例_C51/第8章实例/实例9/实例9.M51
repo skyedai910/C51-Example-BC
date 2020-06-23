@@ -1,0 +1,109 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/23/2017  19:18:01  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE 实例9.obj TO 实例9
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例9.obj (____9)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C?UIDIV)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  实例9 (____9)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0010H     UNIT         ?DT?____9
+            DATA    0018H     0002H     UNIT         _DATA_GROUP_
+            IDATA   001AH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     008CH     UNIT         ?C_C51STARTUP
+            CODE    008FH     0055H     UNIT         ?C?LIB_CODE
+            CODE    00E4H     004FH     UNIT         ?PR?MAIN?____9
+            CODE    0133H     001EH     UNIT         ?PR?_DELAY?____9
+            CODE    0151H     0015H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   实例9 (____9)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?____9
+  +--> ?C_INITSEG
+
+?PR?MAIN?____9                 0018H    0002H
+  +--> ?PR?_DELAY?____9
+
+
+
+SYMBOL TABLE OF MODULE:  实例9 (____9)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ____9
+  C:0000H         SYMBOL        _ICE_DUMMY_
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/23/2017  19:18:01  PAGE 2
+
+
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  C:0133H         PUBLIC        _delay
+  C:00E4H         PUBLIC        main
+  D:0089H         PUBLIC        TMOD
+  D:0008H         PUBLIC        disp_tab
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  B:0088H.4       PUBLIC        TR0
+  D:0012H         PUBLIC        bit_tab
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        time
+  -------         DO            
+  D:0005H         SYMBOL        j
+  -------         ENDDO         
+  C:0133H         LINE#         5
+  C:0133H         LINE#         7
+  C:013CH         LINE#         8
+  C:0150H         LINE#         9
+  -------         ENDPROC       _DELAY
+  -------         PROC          MAIN
+  -------         DO            
+  D:0018H         SYMBOL        count
+  D:0003H         SYMBOL        led_point
+  -------         ENDDO         
+  C:00E4H         LINE#         11
+  C:00E4H         LINE#         14
+  C:00E7H         LINE#         15
+  C:00E9H         LINE#         16
+  C:00E9H         LINE#         17
+  C:00F9H         LINE#         18
+  C:00FBH         LINE#         19
+  C:0105H         LINE#         20
+  C:0117H         LINE#         21
+  C:0126H         LINE#         22
+  C:012DH         LINE#         23
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        ____9
+
+  -------         MODULE        ?C?UIDIV
+  C:008FH         PUBLIC        ?C?UIDIV
+  -------         ENDMOD        ?C?UIDIV
+
+Program Size: data=27.0 xdata=0 code=358
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

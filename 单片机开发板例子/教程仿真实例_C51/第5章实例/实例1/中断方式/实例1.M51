@@ -1,0 +1,78 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        01/17/2014  15:40:54  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE 实例1.obj TO 实例1
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例1.obj (实例1)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  实例1 (实例1)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0003H     ABSOLUTE     
+            CODE    0006H     000CH     UNIT         ?C_C51STARTUP
+            CODE    0012H     0008H     UNIT         ?PR?MAIN?实例1
+            CODE    001AH     0003H     UNIT         ?PR?INT0_SRV?实例1
+
+
+
+OVERLAY MAP OF MODULE:   实例1 (实例1)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?实例1
+
+
+
+SYMBOL TABLE OF MODULE:  实例1 (实例1)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        实例1
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:00A0H         PUBLIC        P2
+  B:00A8H.7       PUBLIC        EA
+  C:0012H         PUBLIC        main
+  B:00A0H.0       PUBLIC        p2_0
+  C:001AH         PUBLIC        int0_srv
+  B:00A8H.0       PUBLIC        EX0
+  B:0088H.0       PUBLIC        IT0
+  -------         PROC          INT0_SRV
+  C:001AH         LINE#         4
+BL51 BANKED LINKER/LOCATER V6.00                                                      01/17/2014  15:40:54  PAGE 2
+
+
+  C:001AH         LINE#         5
+  C:001CH         LINE#         6
+  -------         ENDPROC       INT0_SRV
+  -------         PROC          MAIN
+  C:0012H         LINE#         8
+  C:0012H         LINE#         9
+  C:0014H         LINE#         10
+  C:0016H         LINE#         11
+  C:0018H         LINE#         12
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        实例1
+
+Program Size: data=9.0 xdata=0 code=29
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

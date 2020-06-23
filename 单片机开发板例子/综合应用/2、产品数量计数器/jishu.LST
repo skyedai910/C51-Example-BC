@@ -1,0 +1,155 @@
+C51 COMPILER V8.02   JISHU                                                                 06/23/2010 15:32:49 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE JISHU
+OBJECT MODULE PLACED IN jishu.OBJ
+COMPILER INVOKED BY: D:\¥¶¿Ì»Ìº˛\keil\C51\BIN\C51.EXE jishu.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg52.h>
+   2          
+   3          #define uchar unsigned char 
+   4          unsigned long num;
+   5          uchar j,k;
+   6          uchar a0,b0,c0,d0,e0,f0;
+   7          sbit dula=P2^6;
+   8          sbit wela=P2^7;
+   9          sbit s2=P3^4;
+  10          sbit s3=P3^5;
+  11          unsigned char code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,
+  12                                  0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71,0x00};
+  13          
+  14          void delay(uchar i)
+  15          {
+  16   1              for(j=i;j>0;j--)
+  17   1              for(k=125;k>0;k--);
+  18   1      }
+  19          
+  20          void display(uchar a,uchar b,uchar c,uchar d,uchar e,uchar f)
+  21          {
+  22   1         dula=0;
+  23   1         P0=table[a];
+  24   1         dula=1;
+  25   1         dula=0;
+  26   1         
+  27   1         wela=0;
+  28   1         P0=0xfe;
+  29   1         wela=1;
+  30   1         wela=0;
+  31   1         delay(5);
+  32   1         
+  33   1         P0=table[b];
+  34   1         dula=1;
+  35   1         dula=0;
+  36   1         
+  37   1         P0=0xfd;
+  38   1         wela=1;
+  39   1         wela=0;
+  40   1         delay(5);
+  41   1      
+  42   1         P0=table[c];
+  43   1         dula=1;
+  44   1         dula=0;
+  45   1         
+  46   1         P0=0xfb;
+  47   1         wela=1;
+  48   1         wela=0;
+  49   1         delay(5);
+  50   1         
+  51   1         P0=table[d];
+  52   1         dula=1;
+  53   1         dula=0;
+  54   1         
+  55   1         P0=0xf7;
+C51 COMPILER V8.02   JISHU                                                                 06/23/2010 15:32:49 PAGE 2   
+
+  56   1         wela=1;
+  57   1         wela=0;
+  58   1         delay(5);
+  59   1         
+  60   1         P0=table[e];
+  61   1         dula=1;
+  62   1         dula=0;
+  63   1         
+  64   1         P0=0xef;
+  65   1         wela=1;
+  66   1         wela=0;
+  67   1         delay(5);
+  68   1         
+  69   1         P0=table[f];
+  70   1         dula=1;
+  71   1         dula=0;
+  72   1         
+  73   1         P0=0xdf;
+  74   1         wela=1;
+  75   1         wela=0;
+  76   1         delay(5);
+  77   1      }
+  78          
+  79          void keyscan()
+  80          {
+  81   1              if(s2==0)
+  82   1              {
+  83   2                      while(s2==0);
+  84   2                      num++;
+  85   2              }
+  86   1              if(s3==0)
+  87   1              {
+  88   2                      while(s3==0);
+  89   2                      num=0;
+  90   2              }
+  91   1      }
+  92          
+  93          void main()
+  94          {       while(1)
+  95   1              {
+  96   2              keyscan();
+  97   2              if(num<10)
+  98   2              {
+  99   3                      a0=num;b0=16;c0=16;d0=16;e0=16;f0=16;
+ 100   3              }
+ 101   2              else
+ 102   2              {
+ 103   3                      if(num<100)
+ 104   3                      {a0=num/10;b0=num%10;c0=16;d0=16;e0=16;f0=16;}
+ 105   3                      else
+ 106   3                      {
+ 107   4                              if(num<1000)
+ 108   4                              {a0=num/100;b0=num%100/10;c0=num%10;d0=16;e0=16;f0=16;}
+ 109   4                              else
+ 110   4                              {
+ 111   5                                      if(num<10000)
+ 112   5                                      {a0=num/1000;b0=num%1000/100;c0=num%100/10;d0=num%10;e0=16;f0=16;}
+ 113   5                                      else
+ 114   5                                      {
+ 115   6                                              if(num<100000)
+ 116   6                                              {a0=num/10000;b0=num%10000/1000;c0=num%1000/100;d0=num%100/10;e0=num%10;f0=16;}
+ 117   6                                              else
+C51 COMPILER V8.02   JISHU                                                                 06/23/2010 15:32:49 PAGE 3   
+
+ 118   6                                              {
+ 119   7                                                      if(num<1000000)
+ 120   7                                                      {a0=num/100000;b0=num%100000/10000;c0=num%10000/1000;d0=num%1000/100;e0=num%100/10;f0=num%10;}
+ 121   7                                              }
+ 122   6                                      }
+ 123   5                              }
+ 124   4                      }
+ 125   3              }
+ 126   2              display(a0,b0,c0,d0,e0,f0);
+ 127   2              }
+ 128   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    930    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     12       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,64 @@
+C51 COMPILER V8.02   3                                                                     06/26/2010 13:20:26 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 3
+OBJECT MODULE PLACED IN 3.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE 3.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /********************************************************************
+   2                                          “天祥电子”            倾情奉献
+   3                                                          www.txmcu.com
+   4                                                          www.txmcu.cn
+   5          **********************************************************************
+   6          
+   7          程序功能：      让TX-1C学习板的第一位闪烁地显示数字3。
+   8          
+   9          **********************************************************************/
+  10          #include <reg51.h>
+  11          
+  12          sbit dula=P2^6;         //段选信号的锁存器控制
+  13          sbit wela=P2^7;         //位选信号的锁存器控制
+  14          
+  15          void delay(unsigned int i)
+  16          {
+  17   1              unsigned int m,n;
+  18   1              for(m=i;m>0;m--)
+  19   1                      for(n=90;n>0;n--);
+  20   1      }
+  21          
+  22          void main()
+  23          {
+  24   1              while(1)
+  25   1              {
+  26   2                              P0=0xfe;           
+  27   2                              wela=1;
+  28   2                              wela=0;
+  29   2      
+  30   2                              P0=0x4f;          //数字“3”的代码
+  31   2                              dula=1;
+  32   2                              dula=0;
+  33   2                              delay(1000);
+  34   2      
+  35   2                              P0=0x00;          //什么都不显示的代码
+  36   2                              dula=1;
+  37   2                              dula=0;
+  38   2                              delay(1000);
+  39   2              }
+  40   1      }
+  41          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     59    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

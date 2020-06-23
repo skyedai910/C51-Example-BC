@@ -1,0 +1,79 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        09/03/2019  16:06:40  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE beep.obj TO beep
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  beep.obj (BEEP)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  beep (BEEP)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     000CH     UNIT         ?C_C51STARTUP
+            CODE    000FH     000BH     UNIT         ?PR?MAIN?BEEP
+
+
+
+OVERLAY MAP OF MODULE:   beep (BEEP)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?BEEP
+
+
+
+SYMBOL TABLE OF MODULE:  beep (BEEP)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        BEEP
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  B:00A0H.3       PUBLIC        beep
+  B:00B0H.4       PUBLIC        s2
+  C:000FH         PUBLIC        main
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  D:00C8H         PUBLIC        T2CON
+BL51 BANKED LINKER/LOCATER V6.22                                                      09/03/2019  16:06:40  PAGE 2
+
+
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          MAIN
+  C:000FH         LINE#         13
+  C:000FH         LINE#         14
+  C:000FH         LINE#         15
+  C:000FH         LINE#         16
+  C:000FH         LINE#         17
+  C:0012H         LINE#         18
+  C:0016H         LINE#         20
+  C:0018H         LINE#         21
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        BEEP
+
+Program Size: data=9.0 xdata=0 code=26
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

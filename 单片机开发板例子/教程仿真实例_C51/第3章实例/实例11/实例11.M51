@@ -1,0 +1,84 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/22/2017  21:15:42  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE 实例11.obj TO 实例11
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例11.obj (____11)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C?ILDPTR)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  实例11 (____11)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     000CH     UNIT         ?DT?____11
+            IDATA   0014H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     008CH     UNIT         ?C_C51STARTUP
+            CODE    008FH     0043H     UNIT         ?PR?MAIN?____11
+            CODE    00D2H     002BH     UNIT         ?C?LIB_CODE
+            CODE    00FDH     0017H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   实例11 (____11)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?____11
+  +--> ?C_INITSEG
+
+
+
+SYMBOL TABLE OF MODULE:  实例11 (____11)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ____11
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0008H         PUBLIC        p1
+  D:000BH         PUBLIC        p2
+  C:008FH         PUBLIC        main
+  D:000EH         PUBLIC        a
+  D:0010H         PUBLIC        b
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/22/2017  21:15:42  PAGE 2
+
+
+  D:0012H         PUBLIC        c
+  -------         PROC          MAIN
+  C:008FH         LINE#         6
+  C:008FH         LINE#         7
+  C:00A0H         LINE#         8
+  C:00A9H         LINE#         9
+  C:00B5H         LINE#         10
+  C:00BDH         LINE#         11
+  C:00CBH         LINE#         12
+  C:00D1H         LINE#         13
+  C:00D1H         LINE#         14
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        ____11
+
+  -------         MODULE        ?C?ILDPTR
+  C:00D2H         PUBLIC        ?C?ILDPTR
+  -------         ENDMOD        ?C?ILDPTR
+
+Program Size: data=21.0 xdata=0 code=276
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,102 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        09/24/2019  00:26:45  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE 5.obj TO 5
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  5.obj (5)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  5 (5)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0025H     UNIT         ?PR?MAIN?5
+            CODE    0028H     001EH     UNIT         ?PR?_DELAY?5
+            CODE    0046H     000CH     UNIT         ?CO?5
+            CODE    0052H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   5 (5)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?5
+
+?PR?MAIN?5
+  +--> ?CO?5
+  +--> ?PR?_DELAY?5
+
+
+
+SYMBOL TABLE OF MODULE:  5 (5)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        5
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+  C:0028H         PUBLIC        _delay
+  C:0003H         PUBLIC        main
+  B:00A0H.6       PUBLIC        dula
+BL51 BANKED LINKER/LOCATER V6.22                                                      09/24/2019  00:26:45  PAGE 2
+
+
+  C:004CH         PUBLIC        duan
+  B:00A0H.7       PUBLIC        wela
+  C:0046H         PUBLIC        wei
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        i
+  -------         DO            
+  D:0006H         SYMBOL        m
+  D:0004H         SYMBOL        n
+  -------         ENDDO         
+  C:0028H         LINE#         16
+  C:0028H         LINE#         17
+  C:0028H         LINE#         19
+  C:0031H         LINE#         20
+  C:0045H         LINE#         21
+  -------         ENDPROC       _DELAY
+  -------         PROC          MAIN
+  -------         DO            
+  D:0003H         SYMBOL        num
+  -------         ENDDO         
+  C:0003H         LINE#         23
+  C:0003H         LINE#         24
+  C:0003H         LINE#         26
+  C:0003H         LINE#         27
+  C:0003H         LINE#         28
+  C:0005H         LINE#         29
+  C:0005H         LINE#         30
+  C:000CH         LINE#         31
+  C:000EH         LINE#         32
+  C:0010H         LINE#         34
+  C:0017H         LINE#         35
+  C:0019H         LINE#         36
+  C:001BH         LINE#         37
+  C:0022H         LINE#         38
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        5
+
+Program Size: data=9.0 xdata=0 code=94
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

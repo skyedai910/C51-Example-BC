@@ -1,0 +1,21 @@
+<html>
+<body>
+<pre>
+<h1>礦ision3 Build Log</h1>
+<h2>Project:</h2>
+C:\Users\cmee0163.com\Desktop\第三版教材\第9章实例\实例2\实例2.uv2
+Project File Date:  07/03/2014
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling 实例2.c...
+linking...
+Program Size: data=17.1 xdata=0 code=1502
+creating hex file from "实例2"...
+"实例2" - 0 Error(s), 0 Warning(s).
+Build target 'Target 1'
+compiling 实例2.c...
+linking...
+Program Size: data=17.1 xdata=0 code=1500
+creating hex file from "实例2"...
+"实例2" - 0 Error(s), 0 Warning(s).

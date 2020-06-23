@@ -1,0 +1,106 @@
+BL51 BANKED LINKER/LOCATER V5.12                                                        02/27/2014  15:08:48  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V5.12, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE 实例7.obj TO 实例7
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例7.obj (实例7)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  实例7 (实例7)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0001H     UNIT         ?DT?实例7
+            DATA    0009H     0001H     UNIT         _DATA_GROUP_
+                    000AH     0016H                  *** GAP ***
+            BIT     0020H.0   0000H.1   UNIT         ?BI?实例7
+                    0020H.1   0000H.7                *** GAP ***
+            IDATA   0021H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0008H     UNIT         ?CO?实例7
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     008CH     UNIT         ?C_C51STARTUP
+            CODE    009AH     0028H     UNIT         ?PR?MAIN?实例7
+            CODE    00C2H     001BH     UNIT         ?PR?TIMER0?实例7
+            CODE    00DDH     0006H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   实例7 (实例7)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?实例7
+  +--> ?C_INITSEG
+
+?PR?MAIN?实例7                 0009H    0001H
+  +--> ?CO?实例7
+
+
+
+SYMBOL TABLE OF MODULE:  实例7 (实例7)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+BL51 BANKED LINKER/LOCATER V5.12                                                      02/27/2014  15:08:48  PAGE 2
+
+
+
+  -------         MODULE        实例7
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  B:0020H.0       PUBLIC        ldelay
+  D:00A0H         PUBLIC        P2
+  B:00A8H.7       PUBLIC        EA
+  C:009AH         PUBLIC        main
+  D:0089H         PUBLIC        TMOD
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  C:00C2H         PUBLIC        timer0
+  B:0088H.4       PUBLIC        TR0
+  D:0008H         PUBLIC        t
+  -------         PROC          MAIN
+  -------         DO            
+  C:0003H         SYMBOL        ledp
+  D:0009H         SYMBOL        ledi
+  -------         ENDDO         
+  C:009AH         LINE#         6
+  C:009AH         LINE#         9
+  C:009DH         LINE#         10
+  C:00A3H         LINE#         11
+  C:00A5H         LINE#         12
+  C:00A9H         LINE#         13
+  C:00A9H         LINE#         14
+  C:00ACH         LINE#         15
+  C:00AEH         LINE#         16
+  C:00B6H         LINE#         17
+  C:00B8H         LINE#         18
+  C:00C0H         LINE#         19
+  -------         ENDPROC       MAIN
+  -------         PROC          TIMER0
+  C:00C2H         LINE#         21
+  C:00C6H         LINE#         22
+  C:00D2H         LINE#         23
+  C:00D8H         LINE#         24
+  -------         ENDPROC       TIMER0
+  -------         ENDMOD        实例7
+
+Program Size: data=11.1 xdata=0 code=227
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

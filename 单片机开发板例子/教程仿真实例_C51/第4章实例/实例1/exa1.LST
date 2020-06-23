@@ -1,0 +1,37 @@
+C51 COMPILER V7.50   EXA1                                                                  09/25/2017 15:17:16 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE EXA1
+OBJECT MODULE PLACED IN exa1.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE exa1.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <reg51.h>              //头文件
+   2          sbit p1_0=P1^0;                 //定义变量p1_0
+   3          main()                                  //主函数
+   4          {       void delay(int x);      //函数声明
+   5   1              int time=1000;          //延时参数
+   6   1              while(1)                        //无限循环
+   7   1              {       p1_0=!p1_0;             //p1_0交替取反
+   8   2                      delay(time);    //调用延时函数
+   9   2              }
+  10   1      }
+  11          void delay(int x)               //延时函数定义
+  12          {       int i;                          //定义变量i
+  13   1              for(i=1;i<=x;x++);      //空循环
+  14   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     42    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

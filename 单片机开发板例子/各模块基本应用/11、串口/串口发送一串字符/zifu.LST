@@ -1,0 +1,130 @@
+C51 COMPILER V9.00   ZIFU                                                                  10/28/2019 23:38:56 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE ZIFU
+OBJECT MODULE PLACED IN zifu.OBJ
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE zifu.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /********************************************************************
+   2                                                  
+   3          *************************************************************************
+   4          函数功能：往串口发送一字节数据（可通过超级终端或者串口调试助手显示出来，
+   5                            超级终端波特率选为9600）。
+   6                            超级终端设置好后，每按下一次S2键，松开后均会在超级终端
+   7                            上显示一串字母"abcdefg哈哈"。
+   8                            入口参数：d: 要发送的字节数据。
+   9          ********************************************************************/
+  10          
+  11          
+  12          #include <reg52.h>
+  13          #define jingzhen     11059200UL                  /*使用22.1184M晶体*/    
+  14          #define botelv   9600UL      /*波特率定义为9600 */
+  15          unsigned char zifuchuan[]="abcdefg      哈哈";                  //待显示字符。1234567890abcdefg 哈哈
+  16          volatile unsigned char sending;
+  17          sbit s2=P3^4;
+  18          
+  19          sbit  s3=P3^5;                           //接收
+  20          unsigned char   rev;
+  21          
+  22          void delay(unsigned char i)
+  23          {
+  24   1              unsigned char j,k;
+  25   1              for(j=i;j>0;j--)
+  26   1                      for(k=90;k>0;k--);
+  27   1      }
+  28          void init(void)                         //串口初始化
+  29          {
+  30   1       EA=0; //暂时关闭中断
+  31   1       TMOD&=0x0F;  //定时器1模式控制在高4位
+  32   1       TMOD|=0x20;    //定时器1工作在模式2，自动重装模式
+  33   1       SCON=0x50;     //串口工作在模式1
+  34   1       TH1=256-jingzhen/(botelv*12*16);  //计算定时器重装值
+  35   1       TL1=256-jingzhen/(botelv*12*16);
+  36   1       PCON|=0x80;    //串口波特率加倍
+  37   1       ES=1;         //串行中断允许
+  38   1       TR1=1;        //启动定时器1
+  39   1       REN=1;        //允许接收 
+  40   1       EA=1;         //允许中断
+  41   1      }
+  42          
+  43          void send(unsigned char d)                //发送一个字节的数据，形参d即为待发送数据。
+  44          {
+  45   1       
+  46   1       SBUF=d; //将数据写入到串口缓冲
+  47   1       sending=1;      //设置发送标志
+  48   1       while(sending); //等待发送完毕
+  49   1      }
+  50          
+  51          void sendc(unsigned char * pd)
+  52          {
+  53   1       while((*pd)!='\0') //发送字符串，直到遇到0才结束
+  54   1       {
+  55   2        send(*pd); //发送一个字符
+C51 COMPILER V9.00   ZIFU                                                                  10/28/2019 23:38:56 PAGE 2   
+
+  56   2        pd++;  //移动到下一个字符
+  57   2       }
+  58   1      }
+  59          
+  60          resev(rev)
+  61          {
+  62   1              P1=rev;
+  63   1      }
+  64          void main()
+  65          {
+  66   1              init();
+  67   1              while(1)
+  68   1              {
+  69   2                      if(s2==0)
+  70   2                      {
+  71   3                              delay(20);
+  72   3                              if(!s2)
+  73   3                              {
+  74   4                                      while(!s2);                
+  75   4                                      sendc(zifuchuan);
+  76   4                              }
+  77   3                      }
+  78   2                      if(s3==0)
+  79   2                      {
+  80   3                              delay(20);
+  81   3                              if(!s3)
+  82   3                              {
+  83   4                                      while(!s3);                
+  84   4                                      resev(rev);
+  85   4                              }
+  86   3                      }
+  87   2      
+  88   2              }
+  89   1      }
+  90          
+  91          void uart(void) interrupt 4              //串口发送中断
+  92          {
+  93   1       if(RI)    //收到数据
+  94   1       {
+  95   2        RI=0;   //清中断请求
+  96   2              rev=SBUF;
+  97   2      
+  98   2       }
+  99   1       else      //发送完一字节数据
+ 100   1       {
+ 101   2        TI=0;
+ 102   2        sending=0;  //清正在发送标志
+ 103   2       }
+ 104   1      }
+*** WARNING C290 IN LINE 63 OF ZIFU.C: missing return value
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    139    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     15    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

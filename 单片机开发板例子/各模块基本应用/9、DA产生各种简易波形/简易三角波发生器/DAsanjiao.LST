@@ -1,0 +1,56 @@
+C51 COMPILER V8.02   DASANJIAO                                                             06/19/2010 10:27:50 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE DASANJIAO
+OBJECT MODULE PLACED IN DAsanjiao.OBJ
+COMPILER INVOKED BY: D:\¥¶¿Ì»Ìº˛\keil\C51\BIN\C51.EXE DAsanjiao.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg51.h>
+   2          sbit wela=P2^7;
+   3          sbit dula=P2^6;
+   4          sbit dawr=P3^6;
+   5          sbit csda=P3^2;
+   6          unsigned char a,j,k;
+   7          void delay(unsigned char i)
+   8          {
+   9   1        for(j=i;j>0;j--)
+  10   1          for(k=125;k>0;k--);
+  11   1      }
+  12          void main()
+  13          {
+  14   1        wela=0;
+  15   1        dula=0;
+  16   1        csda=0;
+  17   1        a=0;
+  18   1        dawr=0;
+  19   1        while(1)
+  20   1        {
+  21   2              unsigned char m;
+  22   2              for(m=0;m<255;m++)
+  23   2              {
+  24   3                      P0=m;
+  25   3                      delay(20);
+  26   3              }
+  27   2              for(m=255;m>0;m--)
+  28   2              {
+  29   3                      P0=m;
+  30   3                      delay(20);
+  31   3              }
+  32   2        }
+  33   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     73    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

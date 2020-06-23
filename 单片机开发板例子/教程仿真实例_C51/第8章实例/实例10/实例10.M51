@@ -1,0 +1,112 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/23/2017  19:18:51  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE 实例10.obj TO 实例10
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例10.obj (____10)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  实例10 (____10)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0002H     UNIT         ?DT?____10
+            IDATA   000AH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0003H     ABSOLUTE     
+            CODE    0006H     008CH     UNIT         ?C_C51STARTUP
+            CODE    0092H     0042H     UNIT         ?PR?INT0_SRV?____10
+            CODE    00D4H     0009H     UNIT         ?PR?MAIN?____10
+            CODE    00DDH     0007H     UNIT         ?PR?DELAY?____10
+            CODE    00E4H     0007H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   实例10 (____10)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?PR?INT0_SRV?____10
+  +--> ?PR?DELAY?____10
+
+*** NEW ROOT ***************************************************
+
+?C_C51STARTUP
+  +--> ?PR?MAIN?____10
+  +--> ?C_INITSEG
+
+
+
+SYMBOL TABLE OF MODULE:  实例10 (____10)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ____10
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/23/2017  19:18:51  PAGE 2
+
+
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  B:00A8H.7       PUBLIC        EA
+  C:00DDH         PUBLIC        delay
+  D:0008H         PUBLIC        light_code
+  C:00D4H         PUBLIC        main
+  D:0088H         PUBLIC        TCON
+  D:0009H         PUBLIC        delay_par
+  B:00A8H.0       PUBLIC        EX0
+  C:0092H         PUBLIC        INT0_srv
+  -------         PROC          DELAY
+  -------         DO            
+  D:0007H         SYMBOL        i
+  -------         ENDDO         
+  C:00DDH         LINE#         5
+  C:00DDH         LINE#         6
+  C:00DFH         LINE#         7
+  C:00E3H         LINE#         8
+  -------         ENDPROC       DELAY
+  -------         PROC          MAIN
+  C:00D4H         LINE#         10
+  C:00D4H         LINE#         11
+  C:00D7H         LINE#         12
+  C:00D9H         LINE#         13
+  C:00DBH         LINE#         14
+  -------         ENDPROC       MAIN
+  -------         PROC          INT0_SRV
+  C:0092H         LINE#         17
+  C:009BH         LINE#         18
+  C:009EH         LINE#         19
+  C:00A1H         LINE#         20
+  C:00A4H         LINE#         21
+  C:00A7H         LINE#         22
+  C:00A7H         LINE#         23
+  C:00B8H         LINE#         24
+  C:00BDH         LINE#         25
+  C:00C2H         LINE#         26
+  C:00C7H         LINE#         27
+  C:00CAH         LINE#         28
+  C:00CAH         LINE#         29
+  C:00CAH         LINE#         30
+  C:00CDH         LINE#         31
+  C:00CDH         LINE#         32
+  -------         ENDPROC       INT0_SRV
+  -------         ENDMOD        ____10
+
+Program Size: data=11.0 xdata=0 code=235
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

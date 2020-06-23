@@ -1,0 +1,174 @@
+BL51 BANKED LINKER/LOCATER V5.03                                                        04/29/2014  12:39:40  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V5.03, INVOKED BY:
+E:\KEIL\C51\BIN\BL51.EXE pwm.obj TO pwm
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  pwm.obj (PWM)
+  E:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  E:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  pwm (PWM)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0004H     UNIT         ?DT?PWM
+            IDATA   000CH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0004H     UNIT         ?C_INITSEG
+                    0007H     0004H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     008CH     UNIT         ?C_C51STARTUP
+            CODE    009AH     0054H     UNIT         ?PR?MAIN?PWM
+            CODE    00EEH     0027H     UNIT         ?PR?KEYSCAN?PWM
+            CODE    0115H     0017H     UNIT         ?PR?_DISPLAY?PWM
+            CODE    012CH     0013H     UNIT         ?PR?TIME0?PWM
+            CODE    013FH     0011H     UNIT         ?CO?PWM
+
+
+
+OVERLAY MAP OF MODULE:   pwm (PWM)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?PWM
+  +--> ?C_INITSEG
+
+?PR?MAIN?PWM
+  +--> ?PR?KEYSCAN?PWM
+  +--> ?PR?_DISPLAY?PWM
+
+?PR?_DISPLAY?PWM
+  +--> ?CO?PWM
+
+
+
+SYMBOL TABLE OF MODULE:  pwm (PWM)
+BL51 BANKED LINKER/LOCATER V5.03                                                      04/29/2014  12:39:40  PAGE 2
+
+
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        PWM
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+  C:013FH         PUBLIC        table
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  B:00B0H.4       PUBLIC        s2
+  B:00B0H.5       PUBLIC        s3
+  C:009AH         PUBLIC        main
+  B:00A0H.6       PUBLIC        dula
+  B:00A0H.7       PUBLIC        wela
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  D:0008H         PUBLIC        dis
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  D:0009H         PUBLIC        num
+  B:0090H.0       PUBLIC        pwm
+  B:0088H.4       PUBLIC        TR0
+  C:0115H         PUBLIC        _display
+  D:000AH         PUBLIC        pp
+  C:012CH         PUBLIC        time0
+  D:00C8H         PUBLIC        T2CON
+  C:00EEH         PUBLIC        keyscan
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          KEYSCAN
+  C:00EEH         LINE#         29
+  C:00EEH         LINE#         30
+  C:00EEH         LINE#         31
+  C:00F1H         LINE#         32
+  C:00F1H         LINE#         33
+  C:00F4H         LINE#         34
+  C:00F6H         LINE#         35
+  C:00FBH         LINE#         36
+  C:00FEH         LINE#         37
+  C:0101H         LINE#         38
+  C:0101H         LINE#         39
+  C:0104H         LINE#         40
+  C:0104H         LINE#         41
+  C:0107H         LINE#         42
+  C:0109H         LINE#         43
+  C:010EH         LINE#         44
+  C:0111H         LINE#         45
+  C:0114H         LINE#         46
+  C:0114H         LINE#         47
+  -------         ENDPROC       KEYSCAN
+  -------         PROC          _DISPLAY
+BL51 BANKED LINKER/LOCATER V5.03                                                      04/29/2014  12:39:40  PAGE 3
+
+
+  D:0006H         SYMBOL        a
+  C:0115H         LINE#         49
+  C:0115H         LINE#         50
+  C:0115H         LINE#         51
+  C:0117H         LINE#         52
+  C:011EH         LINE#         53
+  C:0120H         LINE#         54
+  C:0122H         LINE#         56
+  C:0124H         LINE#         57
+  C:0127H         LINE#         58
+  C:0129H         LINE#         59
+  C:012BH         LINE#         60
+  -------         ENDPROC       _DISPLAY
+  -------         PROC          MAIN
+  C:009AH         LINE#         62
+  C:009AH         LINE#         63
+  C:009AH         LINE#         64
+  C:009DH         LINE#         65
+  C:009FH         LINE#         66
+  C:00A2H         LINE#         67
+  C:00A5H         LINE#         68
+  C:00A7H         LINE#         69
+  C:00A9H         LINE#         70
+  C:00A9H         LINE#         71
+  C:00A9H         LINE#         72
+  C:00ACH         LINE#         73
+  C:00B4H         LINE#         74
+  C:00B4H         LINE#         75
+  C:00C4H         LINE#         76
+  C:00C8H         LINE#         78
+  C:00CAH         LINE#         79
+  C:00CCH         LINE#         80
+  C:00D0H         LINE#         81
+  C:00D4H         LINE#         83
+  C:00D6H         LINE#         84
+  C:00DEH         LINE#         85
+  C:00E2H         LINE#         86
+  C:00ECH         LINE#         87
+  -------         ENDPROC       MAIN
+  -------         PROC          TIME0
+  C:012CH         LINE#         90
+  C:012EH         LINE#         91
+  C:0131H         LINE#         92
+  C:0134H         LINE#         93
+  C:013CH         LINE#         94
+  -------         ENDPROC       TIME0
+  -------         ENDMOD        PWM
+
+Program Size: data=13.0 xdata=0 code=332
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

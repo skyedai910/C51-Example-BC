@@ -1,0 +1,87 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        01/17/2014  15:48:37  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE 实例1-0.obj TO 实例1
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例1-0.obj (实例1_0)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  实例1 (实例1_0)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     001FH     UNIT         ?PR?_DELAY?实例1_0
+            CODE    0022H     000CH     UNIT         ?C_C51STARTUP
+            CODE    002EH     0009H     UNIT         ?PR?MAIN?实例1_0
+
+
+
+OVERLAY MAP OF MODULE:   实例1 (实例1_0)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?实例1_0
+
+
+
+SYMBOL TABLE OF MODULE:  实例1 (实例1_0)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        实例1_0
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  C:002EH         PUBLIC        main
+  B:00A0H.0       PUBLIC        p2_0
+  B:00B0H.2       PUBLIC        p3_2
+  C:0003H         PUBLIC        _delay
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        time
+  -------         DO            
+  D:0004H         SYMBOL        j
+BL51 BANKED LINKER/LOCATER V6.00                                                      01/17/2014  15:48:37  PAGE 2
+
+
+  -------         ENDDO         
+  C:0003H         LINE#         5
+  C:0003H         LINE#         6
+  C:0003H         LINE#         7
+  C:000CH         LINE#         8
+  C:0021H         LINE#         9
+  -------         ENDPROC       _DELAY
+  -------         PROC          MAIN
+  C:002EH         LINE#         12
+  C:002EH         LINE#         13
+  C:0030H         LINE#         14
+  C:0030H         LINE#         15
+  C:0033H         LINE#         17
+  C:0035H         LINE#         21
+  C:0035H         LINE#         22
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        实例1_0
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_DELAY?实例1_0
+
+Program Size: data=9.0 xdata=0 code=55
+LINK/LOCATE RUN COMPLETE.  1 WARNING(S),  0 ERROR(S)

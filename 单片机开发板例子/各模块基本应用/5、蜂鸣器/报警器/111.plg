@@ -1,0 +1,15 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Project:</h2>
+G:\课件\C51单片机\TH-802单片机开发板\3.各模块基本应用\5、蜂鸣器\报警器\baojing.uvproj
+Project File Date:  09/10/2019
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling baojing.c...
+linking...
+Program Size: data=11.0 xdata=0 code=101
+creating hex file from "111"...
+"111" - 0 Error(s), 0 Warning(s).

@@ -1,0 +1,251 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        11/24/2019  22:37:00  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE 12864tupian.obj TO 12864tupian
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  12864tupian.obj (12864TUPIAN)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\KEIL\C51\LIB\C51S.LIB (?C?CLDPTR)
+
+
+LINK MAP OF MODULE:  12864tupian (12864TUPIAN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0003H     UNIT         _DATA_GROUP_
+                    000BH     0015H                  *** GAP ***
+            BIT     0020H.0   0000H.1   UNIT         _BIT_GROUP_
+                    0020H.1   0000H.7                *** GAP ***
+            IDATA   0021H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     07FDH                  *** GAP ***
+            CODE    0800H     0400H     UNIT         ?CO?12864TUPIAN
+            CODE    0C00H     0069H     UNIT         ?PR?_DRAW_PM?12864TUPIAN
+            CODE    0C69H     0026H     UNIT         ?PR?LCD_INIT?12864TUPIAN
+            CODE    0C8FH     0020H     UNIT         ?PR?_LCD_WDAT?12864TUPIAN
+            CODE    0CAFH     001DH     UNIT         ?PR?_DELAY?12864TUPIAN
+            CODE    0CCCH     001CH     UNIT         ?PR?_LCD_WCMD?12864TUPIAN
+            CODE    0CE8H     0019H     UNIT         ?C?LIB_CODE
+            CODE    0D01H     0014H     UNIT         ?PR?LCD_BUSY?12864TUPIAN
+            CODE    0D15H     0012H     UNIT         ?PR?MAIN?12864TUPIAN
+            CODE    0D27H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   12864tupian (12864TUPIAN)
+
+
+SEGMENT                              BIT_GROUP          DATA_GROUP 
+  +--> CALLED SEGMENT             START    LENGTH     START    LENGTH
+---------------------------------------------------------------------
+?C_C51STARTUP                     -----    -----      -----    -----
+  +--> ?PR?MAIN?12864TUPIAN
+
+?PR?MAIN?12864TUPIAN              -----    -----      -----    -----
+  +--> ?PR?LCD_INIT?12864TUPIAN
+  +--> ?CO?12864TUPIAN
+  +--> ?PR?_DRAW_PM?12864TUPIAN
+
+?PR?LCD_INIT?12864TUPIAN          -----    -----      -----    -----
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/24/2019  22:37:00  PAGE 2
+
+
+  +--> ?PR?_LCD_WCMD?12864TUPIAN
+  +--> ?PR?_DELAY?12864TUPIAN
+
+?PR?_LCD_WCMD?12864TUPIAN         -----    -----      -----    -----
+  +--> ?PR?LCD_BUSY?12864TUPIAN
+
+?PR?LCD_BUSY?12864TUPIAN          0020H.0  0000H.1    -----    -----
+
+?PR?_DELAY?12864TUPIAN            -----    -----      0008H    0001H
+
+?PR?_DRAW_PM?12864TUPIAN          -----    -----      0008H    0003H
+  +--> ?PR?_LCD_WCMD?12864TUPIAN
+  +--> ?PR?_LCD_WDAT?12864TUPIAN
+
+?PR?_LCD_WDAT?12864TUPIAN         -----    -----      -----    -----
+  +--> ?PR?LCD_BUSY?12864TUPIAN
+
+
+
+SYMBOL TABLE OF MODULE:  12864tupian (12864TUPIAN)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        12864TUPIAN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  C:0C00H         PUBLIC        _Draw_PM
+  C:0CAFH         PUBLIC        _delay
+  B:00B0H.7       PUBLIC        LCD_PSB
+  C:0D15H         PUBLIC        main
+  B:00A0H.7       PUBLIC        dula
+  B:00A0H.6       PUBLIC        wela
+  C:0CCCH         PUBLIC        _lcd_wcmd
+  C:0C95H         PUBLIC        _lcd_wdat
+  B:00B0H.4       PUBLIC        LCD_EN
+  C:0C69H         PUBLIC        lcd_init
+  C:0800H         PUBLIC        zhu
+  B:00B0H.5       PUBLIC        LCD_RS
+  C:0D01H         PUBLIC        lcd_busy
+  B:00B0H.6       PUBLIC        LCD_RW
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        ms
+  -------         DO            
+  D:0008H         SYMBOL        i
+  -------         ENDDO         
+  C:0CAFH         LINE#         159
+  C:0CAFH         LINE#         160
+  C:0CAFH         LINE#         161
+  C:0CB9H         LINE#         162
+  C:0CB9H         LINE#         164
+  C:0CC3H         LINE#         165
+  C:0CC3H         LINE#         166
+  C:0CC4H         LINE#         167
+  C:0CC5H         LINE#         168
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/24/2019  22:37:00  PAGE 3
+
+
+  C:0CC6H         LINE#         169
+  C:0CC7H         LINE#         170
+  C:0CCBH         LINE#         171
+  C:0CCBH         LINE#         172
+  -------         ENDPROC       _DELAY
+  -------         PROC          LCD_BUSY
+  -------         DO            
+  B:0020H.0       SYMBOL        result
+  -------         ENDDO         
+  C:0D01H         LINE#         180
+  C:0D01H         LINE#         181
+  C:0D01H         LINE#         183
+  C:0D03H         LINE#         184
+  C:0D05H         LINE#         185
+  C:0D07H         LINE#         186
+  C:0D0BH         LINE#         187
+  C:0D10H         LINE#         188
+  C:0D12H         LINE#         189
+  C:0D14H         LINE#         190
+  -------         ENDPROC       LCD_BUSY
+  -------         PROC          _LCD_WCMD
+  D:0007H         SYMBOL        cmd
+  C:0CCCH         LINE#         197
+  C:0CCCH         LINE#         198
+  C:0CCCH         LINE#         199
+  C:0CD1H         LINE#         200
+  C:0CD3H         LINE#         201
+  C:0CD5H         LINE#         202
+  C:0CD7H         LINE#         203
+  C:0CD8H         LINE#         204
+  C:0CD9H         LINE#         205
+  C:0CDBH         LINE#         206
+  C:0CDFH         LINE#         207
+  C:0CE1H         LINE#         208
+  C:0CE5H         LINE#         209
+  C:0CE7H         LINE#         210
+  -------         ENDPROC       _LCD_WCMD
+  -------         PROC          L?0034
+  -------         ENDPROC       L?0034
+  -------         PROC          _LCD_WDAT
+  D:0007H         SYMBOL        dat
+  C:0C95H         LINE#         217
+  C:0C95H         LINE#         218
+  C:0C95H         LINE#         219
+  C:0C9AH         LINE#         220
+  C:0C9CH         LINE#         221
+  C:0C9EH         LINE#         222
+  C:0CA0H         LINE#         223
+  C:0CA2H         LINE#         224
+  C:0CA6H         LINE#         225
+  C:0CA8H         LINE#         226
+  C:0CACH         LINE#         227
+  C:0CAEH         LINE#         228
+  -------         ENDPROC       _LCD_WDAT
+  -------         PROC          LCD_INIT
+  C:0C69H         LINE#         234
+  C:0C69H         LINE#         235
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/24/2019  22:37:00  PAGE 4
+
+
+  C:0C69H         LINE#         237
+  C:0C6BH         LINE#         241
+  C:0C70H         LINE#         242
+  C:0C77H         LINE#         243
+  C:0C7CH         LINE#         244
+  C:0C83H         LINE#         245
+  C:0C88H         LINE#         246
+  -------         ENDPROC       LCD_INIT
+  -------         PROC          _DRAW_PM
+  D:0008H         SYMBOL        ptr
+  -------         DO            
+  D:0005H         SYMBOL        i
+  D:0004H         SYMBOL        j
+  D:0006H         SYMBOL        k
+  -------         ENDDO         
+  C:0C00H         LINE#         255
+  C:0C06H         LINE#         256
+  C:0C06H         LINE#         258
+  C:0C08H         LINE#         259
+  C:0C0AH         LINE#         260
+  C:0C0FH         LINE#         261
+  C:0C11H         LINE#         262
+  C:0C13H         LINE#         263
+  C:0C13H         LINE#         264
+  C:0C19H         LINE#         265
+  C:0C1EH         LINE#         266
+  C:0C20H         LINE#         267
+  C:0C20H         LINE#         268
+  C:0C2FH         LINE#         269
+  C:0C33H         LINE#         270
+  C:0C37H         LINE#         271
+  C:0C39H         LINE#         272
+  C:0C3BH         LINE#         273
+  C:0C3BH         LINE#         274
+  C:0C41H         LINE#         275
+  C:0C46H         LINE#         276
+  C:0C48H         LINE#         277
+  C:0C48H         LINE#         278
+  C:0C57H         LINE#         279
+  C:0C5BH         LINE#         280
+  C:0C5FH         LINE#         281
+  C:0C64H         LINE#         282
+  -------         ENDPROC       _DRAW_PM
+  -------         PROC          MAIN
+  C:0D15H         LINE#         285
+  C:0D15H         LINE#         286
+  C:0D15H         LINE#         287
+  C:0D17H         LINE#         288
+  C:0D19H         LINE#         289
+  C:0D1CH         LINE#         290
+  C:0D25H         LINE#         291
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        12864TUPIAN
+
+  -------         MODULE        ?C?CLDPTR
+  C:0CE8H         PUBLIC        ?C?CLDPTR
+  -------         ENDMOD        ?C?CLDPTR
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/24/2019  22:37:00  PAGE 5
+
+
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 050EH BYTE (63%) *
+******************************************************************************
+
+Program Size: data=12.1 xdata=0 code=1334
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

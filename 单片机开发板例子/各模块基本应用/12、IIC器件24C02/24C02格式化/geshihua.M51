@@ -1,0 +1,241 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        07/09/2010  09:44:35  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE geshihua.obj TO geshihua
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  geshihua.obj (GESHIHUA)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C?UIDIV)
+
+
+LINK MAP OF MODULE:  geshihua (GESHIHUA)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0055H     UNIT         ?C?LIB_CODE
+            CODE    0058H     0034H     UNIT         ?PR?MAIN?GESHIHUA
+            CODE    008CH     0021H     UNIT         ?PR?_WRITE24C02?GESHIHUA
+            CODE    00ADH     001EH     UNIT         ?PR?_WRITEBYTE?GESHIHUA
+            CODE    00CBH     001BH     UNIT         ?PR?CLOCK?GESHIHUA
+            CODE    00E6H     0012H     UNIT         ?PR?_DELAY1?GESHIHUA
+            CODE    00F8H     000FH     UNIT         ?PR?START?GESHIHUA
+            CODE    0107H     000CH     UNIT         ?C_C51STARTUP
+            CODE    0113H     000AH     UNIT         ?PR?INIT?GESHIHUA
+            CODE    011DH     000AH     UNIT         ?PR?STOP?GESHIHUA
+            CODE    0127H     0008H     UNIT         ?PR?NOP?GESHIHUA
+
+
+
+OVERLAY MAP OF MODULE:   geshihua (GESHIHUA)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?GESHIHUA
+
+?PR?MAIN?GESHIHUA
+  +--> ?PR?INIT?GESHIHUA
+  +--> ?PR?_WRITE24C02?GESHIHUA
+
+?PR?INIT?GESHIHUA
+  +--> ?PR?NOP?GESHIHUA
+
+?PR?_WRITE24C02?GESHIHUA
+  +--> ?PR?START?GESHIHUA
+  +--> ?PR?CLOCK?GESHIHUA
+BL51 BANKED LINKER/LOCATER V6.00                                                      07/09/2010  09:44:35  PAGE 2
+
+
+  +--> ?PR?_WRITEBYTE?GESHIHUA
+  +--> ?PR?STOP?GESHIHUA
+  +--> ?PR?_DELAY1?GESHIHUA
+
+?PR?START?GESHIHUA
+  +--> ?PR?NOP?GESHIHUA
+
+?PR?CLOCK?GESHIHUA
+  +--> ?PR?_WRITEBYTE?GESHIHUA
+  +--> ?PR?NOP?GESHIHUA
+
+?PR?_WRITEBYTE?GESHIHUA
+  +--> ?PR?NOP?GESHIHUA
+
+?PR?STOP?GESHIHUA
+  +--> ?PR?NOP?GESHIHUA
+
+
+
+SYMBOL TABLE OF MODULE:  geshihua (GESHIHUA)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        GESHIHUA
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  C:00CEH         PUBLIC        clock
+  B:00D0H.7       PUBLIC        CY
+  C:00E6H         PUBLIC        _delay1
+  C:0058H         PUBLIC        main
+  C:00F8H         PUBLIC        start
+  C:0113H         PUBLIC        init
+  B:00A0H.0       PUBLIC        sda
+  C:008CH         PUBLIC        _write24c02
+  B:00A0H.1       PUBLIC        scl
+  C:00ADH         PUBLIC        _writebyte
+  C:011DH         PUBLIC        stop
+  C:012CH         PUBLIC        nop
+  C:0127H         SYMBOL        L?0028
+  -------         PROC          L?0027
+  -------         ENDPROC       L?0027
+  C:0127H         SYMBOL        L?0028
+  -------         PROC          NOP
+  C:012CH         LINE#         16
+  C:012CH         LINE#         17
+  C:012CH         LINE#         18
+  C:012DH         LINE#         19
+  C:012EH         LINE#         20
+  -------         ENDPROC       NOP
+  -------         PROC          _DELAY1
+  D:0006H         SYMBOL        m
+  -------         DO            
+  D:0004H         SYMBOL        n
+  -------         ENDDO         
+  C:00E6H         LINE#         23
+BL51 BANKED LINKER/LOCATER V6.00                                                      07/09/2010  09:44:35  PAGE 3
+
+
+  C:00E6H         LINE#         24
+  C:00E6H         LINE#         25
+  C:00F7H         LINE#         26
+  -------         ENDPROC       _DELAY1
+  -------         PROC          INIT
+  C:0113H         LINE#         28
+  C:0113H         LINE#         29
+  C:0113H         LINE#         30
+  C:0115H         LINE#         31
+  C:0118H         LINE#         32
+  C:011AH         LINE#         33
+  -------         ENDPROC       INIT
+  -------         PROC          START
+  C:00F8H         LINE#         36
+  C:00F8H         LINE#         37
+  C:00F8H         LINE#         38
+  C:00FAH         LINE#         39
+  C:00FAH         LINE#         40
+  C:00FAH         LINE#         41
+  C:00FDH         LINE#         42
+  C:00FFH         LINE#         43
+  C:0102H         LINE#         44
+  C:0104H         LINE#         45
+  -------         ENDPROC       START
+  -------         PROC          STOP
+  C:011DH         LINE#         48
+  C:011DH         LINE#         49
+  C:011DH         LINE#         50
+  C:011FH         LINE#         51
+  C:011FH         LINE#         52
+  C:011FH         LINE#         53
+  C:0122H         LINE#         54
+  C:0124H         LINE#         55
+  -------         ENDPROC       STOP
+  -------         PROC          _WRITEBYTE
+  D:0007H         SYMBOL        j
+  -------         DO            
+  D:0006H         SYMBOL        i
+  D:0007H         SYMBOL        temp
+  -------         ENDDO         
+  C:00ADH         LINE#         58
+  C:00ADH         LINE#         59
+  C:00ADH         LINE#         61
+  C:00ADH         LINE#         62
+  C:00AFH         LINE#         63
+  C:00AFH         LINE#         64
+  C:00B3H         LINE#         65
+  C:00B5H         LINE#         66
+  C:00B8H         LINE#         67
+  C:00BAH         LINE#         68
+  C:00BAH         LINE#         69
+  C:00BAH         LINE#         70
+  C:00BDH         LINE#         71
+  C:00C1H         LINE#         72
+  C:00C3H         LINE#         73
+  C:00C6H         LINE#         74
+  C:00C8H         LINE#         75
+BL51 BANKED LINKER/LOCATER V6.00                                                      07/09/2010  09:44:35  PAGE 4
+
+
+  -------         ENDPROC       _WRITEBYTE
+  -------         PROC          L?0029
+  -------         ENDPROC       L?0029
+  -------         PROC          CLOCK
+  -------         DO            
+  D:0007H         SYMBOL        i
+  -------         ENDDO         
+  C:00CEH         LINE#         96
+  C:00CEH         LINE#         97
+  C:00CEH         LINE#         98
+  C:00D0H         LINE#         99
+  C:00D2H         LINE#         100
+  C:00D5H         LINE#         101
+  C:00DEH         LINE#         102
+  C:00E1H         LINE#         103
+  C:00E3H         LINE#         104
+  -------         ENDPROC       CLOCK
+  -------         PROC          _WRITE24C02
+  D:0004H         SYMBOL        address
+  D:0005H         SYMBOL        info
+  C:008CH         LINE#         128
+  C:008EH         LINE#         129
+  C:008EH         LINE#         130
+  C:0091H         LINE#         131
+  C:0093H         LINE#         132
+  C:0096H         LINE#         133
+  C:0098H         LINE#         134
+  C:009BH         LINE#         135
+  C:00A0H         LINE#         136
+  C:00A3H         LINE#         137
+  C:00A6H         LINE#         138
+  -------         ENDPROC       _WRITE24C02
+  -------         PROC          MAIN
+  -------         DO            
+  D:0002H         SYMBOL        i
+  -------         ENDDO         
+  C:0058H         LINE#         141
+  C:0058H         LINE#         142
+  C:0058H         LINE#         144
+  C:005BH         LINE#         145
+  C:005EH         LINE#         146
+  C:0061H         LINE#         147
+  C:0061H         LINE#         148
+  C:0068H         LINE#         149
+  C:0077H         LINE#         150
+  C:007AH         LINE#         151
+  C:0087H         LINE#         152
+  C:008AH         LINE#         153
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        GESHIHUA
+
+  -------         MODULE        ?C?UIDIV
+  C:0003H         PUBLIC        ?C?UIDIV
+  -------         ENDMOD        ?C?UIDIV
+
+Program Size: data=9.0 xdata=0 code=303
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

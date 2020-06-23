@@ -1,0 +1,65 @@
+C51 COMPILER V8.02   2                                                                     06/26/2010 13:11:50 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 2
+OBJECT MODULE PLACED IN 2.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE 2.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /********************************************************************
+   2                                          “天祥电子”            倾情奉献
+   3                                                          www.txmcu.com
+   4                                                          www.txmcu.cn
+   5          **********************************************************************
+   6          
+   7          程序功能：      让TX-1C学习板的六个数码管流动地显示数字3。
+   8          
+   9          **********************************************************************/
+  10          #include <reg51.h>
+  11          
+  12          sbit dula=P2^6;         //段选信号的锁存器控制
+  13          sbit wela=P2^7;         //位选信号的锁存器控制
+  14          
+  15          unsigned char code table[]={0xfe,0xfd,0xfb,0xf7,0xef,0xdf};
+  16                                                          //数码管各位的码表
+  17          void delay(unsigned int i)
+  18          {
+  19   1              unsigned int m,n;
+  20   1              for(m=i;m>0;m--)
+  21   1                      for(n=90;n>0;n--);
+  22   1      }
+  23          
+  24          void main()
+  25          {
+  26   1              unsigned char num;
+  27   1              while(1)
+  28   1              {
+  29   2                      for(num=0;num<6;num++)
+  30   2                      {
+  31   3                              P0=table[num];     //数字“3”的代码
+  32   3                              wela=1;
+  33   3                              wela=0;
+  34   3      
+  35   3                              P0=0x4f;           //选中第一个数码管
+  36   3                              dula=1;
+  37   3                              dula=0;
+  38   3                              delay(1000);
+  39   3                      }
+  40   2              }
+  41   1      }
+  42          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     63    ----
+   CONSTANT SIZE    =      6    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

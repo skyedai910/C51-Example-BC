@@ -1,0 +1,473 @@
+C51 COMPILER V8.02   JISUANQI1                                                             06/23/2010 15:02:49 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE JISUANQI1
+OBJECT MODULE PLACED IN jisuanqi1.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE jisuanqi1.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /******************************************************************
+   2                                          “天祥电子”    倾情奉献
+   3                                                          www.txmcu.com
+   4                                                          www.txmcu.cn
+   5          *******************************************************************
+   6          
+   7          程序功能：按下键盘矩阵后，在六个数码管上依次显示所按下的键所代表的数字。
+   8                            按复位键可以清空显示为0
+   9          ******************************************************************/
+  10          #include<reg51.h>
+  11          
+  12          #define uchar unsigned char
+  13          
+  14          uchar a0=16,b0=16,c0=16,d0=16,e0=16,f0=16,wei,temp,key,i,j,k;
+  15          uchar jia,jian,cheng,chu,dengyu,jia0,jian0,cheng0,chu0,qingling;
+  16          uchar s0,s1,s2,s3,s4,s5; //参加运算的各个位
+  17          unsigned long qian,hou;//定义参于运算的第一个数和第二个数。
+  18          sbit dula=P2^6;
+  19          sbit wela=P2^7;
+  20          sbit beep=P2^3;
+  21          
+  22          unsigned char code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,
+  23                                  0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71,0x00};
+  24          
+  25          void delay(uchar i)
+  26          {
+  27   1              for(j=i;j>0;j--)
+  28   1              for(k=125;k>0;k--);
+  29   1      }
+  30          void display(uchar a,uchar b,uchar c,uchar d,uchar e,uchar f)
+  31          {
+  32   1         dula=0;
+  33   1         P0=table[a];
+  34   1         dula=1;
+  35   1         dula=0;
+  36   1         
+  37   1         wela=0;
+  38   1         P0=0xfe;
+  39   1         wela=1;
+  40   1         wela=0;
+  41   1         delay(5);
+  42   1         
+  43   1         P0=table[b];
+  44   1         dula=1;
+  45   1         dula=0;
+  46   1         
+  47   1         P0=0xfd;
+  48   1         wela=1;
+  49   1         wela=0;
+  50   1         delay(5);
+  51   1      
+  52   1         P0=table[c];
+  53   1         dula=1;
+  54   1         dula=0;
+  55   1         
+C51 COMPILER V8.02   JISUANQI1                                                             06/23/2010 15:02:49 PAGE 2   
+
+  56   1         P0=0xfb;
+  57   1         wela=1;
+  58   1         wela=0;
+  59   1         delay(5);
+  60   1         
+  61   1         P0=table[d];
+  62   1         dula=1;
+  63   1         dula=0;
+  64   1         
+  65   1         P0=0xf7;
+  66   1         wela=1;
+  67   1         wela=0;
+  68   1         delay(5);
+  69   1         
+  70   1         P0=table[e];
+  71   1         dula=1;
+  72   1         dula=0;
+  73   1         
+  74   1         P0=0xef;
+  75   1         wela=1;
+  76   1         wela=0;
+  77   1         delay(5);
+  78   1         
+  79   1         P0=table[f];
+  80   1         dula=1;
+  81   1         dula=0;
+  82   1         
+  83   1         P0=0xdf;
+  84   1         wela=1;
+  85   1         wela=0;
+  86   1         delay(5);
+  87   1      }
+  88          
+  89          void keyscan()
+  90          {
+  91   1        {     
+  92   2          P3=0xfe;
+  93   2          temp=P3;
+  94   2          temp=temp&0xf0;
+  95   2          if(temp!=0xf0)
+  96   2          {
+  97   3            delay(10);
+  98   3            if(temp!=0xf0)
+  99   3            { 
+ 100   4              temp=P3;
+ 101   4              switch(temp)
+ 102   4              {
+ 103   5                case 0xee:
+ 104   5                     key=0;
+ 105   5                                 wei++;
+ 106   5                     break;
+ 107   5      
+ 108   5                case 0xde:
+ 109   5                     key=1;
+ 110   5                                 wei++;
+ 111   5                     break;
+ 112   5      
+ 113   5                case 0xbe:
+ 114   5                     key=2;
+ 115   5                                 wei++;
+ 116   5                     break;
+ 117   5      
+C51 COMPILER V8.02   JISUANQI1                                                             06/23/2010 15:02:49 PAGE 3   
+
+ 118   5                case 0x7e:
+ 119   5                     key=3;
+ 120   5                                 wei++;
+ 121   5                     break;
+ 122   5               }
+ 123   4               while(temp!=0xf0) 
+ 124   4              {
+ 125   5                 temp=P3;
+ 126   5                 temp=temp&0xf0;
+ 127   5                 beep=0;
+ 128   5               }
+ 129   4               beep=1;
+ 130   4            }
+ 131   3          }
+ 132   2          P3=0xfd;
+ 133   2          temp=P3;
+ 134   2          temp=temp&0xf0;
+ 135   2          if(temp!=0xf0)
+ 136   2          {
+ 137   3            delay(10);
+ 138   3            if(temp!=0xf0)
+ 139   3            {
+ 140   4              temp=P3;
+ 141   4              switch(temp)
+ 142   4              {
+ 143   5                case 0xed:
+ 144   5                     key=4;
+ 145   5                                 wei++;
+ 146   5                     break;
+ 147   5      
+ 148   5                case 0xdd:
+ 149   5                     key=5;
+ 150   5                                 wei++;
+ 151   5                     break;
+ 152   5      
+ 153   5                case 0xbd:
+ 154   5                     key=6;
+ 155   5                                 wei++;
+ 156   5                     break;
+ 157   5      
+ 158   5                case 0x7d:
+ 159   5                     key=7;
+ 160   5                                 wei++;
+ 161   5                     break;
+ 162   5               }
+ 163   4               while(temp!=0xf0)
+ 164   4               {
+ 165   5                 temp=P3;
+ 166   5                 temp=temp&0xf0;
+ 167   5                 beep=0;
+ 168   5               }
+ 169   4               beep=1;
+ 170   4            }
+ 171   3            }
+ 172   2          P3=0xfb;
+ 173   2          temp=P3;
+ 174   2          temp=temp&0xf0;
+ 175   2          if(temp!=0xf0)
+ 176   2          {
+ 177   3            delay(10);
+ 178   3            if(temp!=0xf0)
+ 179   3            {
+C51 COMPILER V8.02   JISUANQI1                                                             06/23/2010 15:02:49 PAGE 4   
+
+ 180   4              temp=P3;
+ 181   4              switch(temp)
+ 182   4              {
+ 183   5                case 0xeb:
+ 184   5                     key=8;
+ 185   5                                 wei++;
+ 186   5                     break;
+ 187   5      
+ 188   5                case 0xdb:
+ 189   5                     key=9;
+ 190   5                                 wei++;
+ 191   5                     break;
+ 192   5                                 
+ 193   5                case 0xbb:
+ 194   5                     qingling=1;
+ 195   5                                 //key=10;
+ 196   5                                 //wei++;
+ 197   5                     break;
+ 198   5      
+ 199   5                case 0x7b:
+ 200   5                     dengyu=1;
+ 201   5                                 //key=11;
+ 202   5                                 //wei++;
+ 203   5                     break;
+ 204   5               }
+ 205   4              while(temp!=0xf0)
+ 206   4               {
+ 207   5                 temp=P3;
+ 208   5                 temp=temp&0xf0;
+ 209   5                 beep=0;
+ 210   5               }
+ 211   4               beep=1;
+ 212   4            }
+ 213   3            }
+ 214   2                    P3=0xf7;
+ 215   2          temp=P3;
+ 216   2          temp=temp&0xf0;
+ 217   2          if(temp!=0xf0)
+ 218   2          {
+ 219   3            delay(10);
+ 220   3            if(temp!=0xf0)
+ 221   3            {
+ 222   4              temp=P3;
+ 223   4              switch(temp)
+ 224   4              {
+ 225   5                case 0xe7:
+ 226   5                                 jia=1; 
+ 227   5                     //key=12;
+ 228   5                                // wei++;
+ 229   5                     break;
+ 230   5      
+ 231   5                case 0xd7:
+ 232   5                     jian=1;
+ 233   5                                 //key=13;
+ 234   5                                 //wei++;
+ 235   5                     break;
+ 236   5      
+ 237   5                case 0xb7:
+ 238   5                     cheng=1;
+ 239   5                                 //key=14;
+ 240   5                                 //wei++;
+ 241   5                     break;
+C51 COMPILER V8.02   JISUANQI1                                                             06/23/2010 15:02:49 PAGE 5   
+
+ 242   5      
+ 243   5                case 0x77:
+ 244   5                     chu=1;
+ 245   5                                 //key=15;
+ 246   5                                 //wei++;
+ 247   5                     break;
+ 248   5               }
+ 249   4               while(temp!=0xf0)
+ 250   4               {
+ 251   5                 temp=P3;
+ 252   5                 temp=temp&0xf0;
+ 253   5                 beep=0;
+ 254   5               }
+ 255   4               beep=1;
+ 256   4            }
+ 257   3          }
+ 258   2      }
+ 259   1      }
+ 260          
+ 261          void display0()
+ 262          {
+ 263   1              if(key!=20)
+ 264   1              {
+ 265   2              switch(wei)
+ 266   2                      {
+ 267   3                              case 1: a0=key;
+ 268   3                                              b0=16;
+ 269   3                                              c0=16;
+ 270   3                                              d0=16;
+ 271   3                                              e0=16;
+ 272   3                                              f0=16;
+ 273   3                                              break;
+ 274   3                              case 2: b0=key;
+ 275   3                                              c0=16;
+ 276   3                                              d0=16;
+ 277   3                                              e0=16;
+ 278   3                                              f0=16;
+ 279   3                                              break;
+ 280   3                              case 3: c0=key;
+ 281   3                                              d0=16;
+ 282   3                                              e0=16;
+ 283   3                                              f0=16;
+ 284   3                                              break;
+ 285   3                              case 4: d0=key;
+ 286   3                                              e0=16;
+ 287   3                                              f0=16;
+ 288   3                                              break;
+ 289   3                              case 5: e0=key;
+ 290   3                                              f0=16; 
+ 291   3                                              break;
+ 292   3                              case 6: f0=key;
+ 293   3                                              //wei=0;
+ 294   3                                              break;
+ 295   3              }
+ 296   2              key=20;
+ 297   2              }
+ 298   1              display(a0,b0,c0,d0,e0,f0);
+ 299   1              if(a0!=16) s5=a0;
+ 300   1              if(b0!=16) s4=b0;
+ 301   1              if(c0!=16) s3=c0;
+ 302   1              if(d0!=16) s2=d0;
+ 303   1              if(e0!=16) s1=e0;
+C51 COMPILER V8.02   JISUANQI1                                                             06/23/2010 15:02:49 PAGE 6   
+
+ 304   1              if(f0!=16) s0=f0;
+ 305   1      }
+ 306            void main()
+ 307            {     uchar gongneng,yunsuan;
+ 308   1              while(1)
+ 309   1              {
+ 310   2              keyscan();
+ 311   2              gongneng=jia|jian|cheng|chu|dengyu|qingling;
+ 312   2              if(gongneng==0)
+ 313   2              {
+ 314   3                      display0();     
+ 315   3              }
+ 316   2              else
+ 317   2              {       yunsuan=jia|jian|cheng|chu;
+ 318   3                      if(yunsuan)
+ 319   3                      {       
+ 320   4      
+ 321   4                              a0=16;
+ 322   4                              b0=16;
+ 323   4                              c0=16;
+ 324   4                              d0=16;
+ 325   4                              e0=16;
+ 326   4                              f0=16;
+ 327   4                              //wei=0;
+ 328   4                              if(jia)
+ 329   4                              {jia=0; jia0=1;jian0=0;cheng0=0;chu0=0;}
+ 330   4                              if(jian)
+ 331   4                              {jian=0;jia0=0;jian0=1;cheng0=0;chu0=0;}
+ 332   4                              if(cheng)
+ 333   4                              {cheng=0;jia0=0;jian0=0;cheng0=1;chu0=0;}
+ 334   4                              if(chu)
+ 335   4                              {chu=0; jia0=0;jian0=0;cheng0=0;chu0=1;}
+ 336   4                              switch(wei)
+ 337   4                              {
+ 338   5                                      case 6:
+ 339   5                                      qian=s5*100000+s4*10000+s3*1000+s2*100+s1*10+s0;break;
+ 340   5                                      case 5:
+ 341   5                                      qian=s5*10000+s4*1000+s3*100+s2*10+s1;break;
+ 342   5                                      case 4:
+ 343   5                                      qian=s5*1000+s4*100+s3*10+s2;break;
+ 344   5                                      case 3:
+ 345   5                                      qian=s5*100+s4*10+s3;break;
+ 346   5                                      case 2:
+ 347   5                                      qian=s5*10+s4;break;
+ 348   5                                      case 1:
+ 349   5                                      qian=s5;break;
+ 350   5                              }
+ 351   4                              wei=0;
+ 352   4                              s0=0;s1=0;s2=0;s3=0;s4=0;s5=0;
+ 353   4                              display(a0,b0,c0,d0,e0,f0);
+ 354   4                              //P1=0x55;
+ 355   4                      }
+ 356   3                      if(dengyu)
+ 357   3                      {
+ 358   4                               dengyu=0;
+ 359   4                               //display(16,16,16,16,16,16);
+ 360   4                               switch(wei)
+ 361   4                              {
+ 362   5                                      case 6:
+ 363   5                                      hou=s5*100000+s4*10000+s3*1000+s2*100+s1*10+s0;break;
+ 364   5                                      case 5:
+ 365   5                                      hou=s5*10000+s4*1000+s3*100+s2*10+s1;break;
+C51 COMPILER V8.02   JISUANQI1                                                             06/23/2010 15:02:49 PAGE 7   
+
+ 366   5                                      case 4:
+ 367   5                                      hou=s5*1000+s4*100+s3*10+s2;break;
+ 368   5                                      case 3:
+ 369   5                                      hou=s5*100+s4*10+s3;break;
+ 370   5                                      case 2:
+ 371   5                                      hou=s5*10+s4;break;
+ 372   5                                      case 1:
+ 373   5                                      hou=s5;break;
+ 374   5                              }
+ 375   4                              wei=0;
+ 376   4                              s0=0;s1=0;s2=0;s3=0;s4=0;s5=0;
+ 377   4                               if(jia0)
+ 378   4                               {jia0=0;       hou=qian+hou;}
+ 379   4                               if(jian0)
+ 380   4                               {jian0=0;      hou=qian-hou;}
+ 381   4                               if(cheng0)
+ 382   4                               {cheng0=0;     hou=qian*hou;}
+ 383   4                               if(chu0)
+ 384   4                               {chu0=0;       hou=qian/hou;}
+ 385   4                               if(hou<10)
+ 386   4                               {
+ 387   5                                      a0=hou;b0=16;c0=16;d0=16;e0=16;f0=16;
+ 388   5                               }
+ 389   4                               else
+ 390   4                               {
+ 391   5                                      if(hou<100)
+ 392   5                                      {a0=hou/10;b0=hou%10;c0=16;d0=16;e0=16;f0=16;}
+ 393   5                                      else
+ 394   5                                      {
+ 395   6                                              if(hou<1000)
+ 396   6                                              {a0=hou/100;b0=hou%100/10;c0=hou%10;d0=16;e0=16;f0=16;}
+ 397   6                                              else
+ 398   6                                              {
+ 399   7                                                      if(hou<10000)
+ 400   7                                                      {a0=hou/1000;b0=hou%1000/100;c0=hou%100/10;d0=hou%10;e0=16;f0=16;}
+ 401   7                                                      else
+ 402   7                                                      {
+ 403   8                                                              if(hou<100000)
+ 404   8                                                              {a0=hou/10000;b0=hou%10000/1000;c0=hou%1000/100;d0=hou%100/10;e0=hou%10;f0=16;}
+ 405   8                                                              else
+ 406   8                                                              {
+ 407   9                                                                      if(hou<1000000)
+ 408   9                                                                      {a0=hou/100000;b0=hou%100000/10000;c0=hou%10000/1000;d0=hou%1000/100;e0=hou%100/10;f0=hou%10;}
+ 409   9                                                              }
+ 410   8                                                      }
+ 411   7                                              }
+ 412   6                                      }
+ 413   5                               }
+ 414   4                               //a0=hou/100000;
+ 415   4                              // b0=(hou%100000)/10000;
+ 416   4                              // c0=(hou%10000)/1000;
+ 417   4                              // d0
+ 418   4                               display(a0,b0,c0,d0,e0,f0);
+ 419   4                               P1=hou;
+ 420   4      
+ 421   4                      }
+ 422   3                      if(qingling)
+ 423   3                      {
+ 424   4                              a0=16;b0=16;c0=16;d0=16;e0=16;f0=16;
+ 425   4                              s0=0;s1=0;s2=0;s3=0;s4=0;s5=0;
+ 426   4                              jia=0;jian=0;cheng=0;chu=0;
+ 427   4                              jia0=0;jian0=0;cheng0=0;chu0=0;
+C51 COMPILER V8.02   JISUANQI1                                                             06/23/2010 15:02:49 PAGE 8   
+
+ 428   4                              qingling=0;dengyu=0;
+ 429   4                              qian=0;hou=0;
+ 430   4                              display(a0,b0,c0,d0,e0,f0);
+ 431   4                      }
+ 432   3                      
+ 433   3              }
+ 434   2      
+ 435   2      }
+ 436   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   2504    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     36       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

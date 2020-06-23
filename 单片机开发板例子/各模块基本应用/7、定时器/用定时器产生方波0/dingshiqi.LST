@@ -1,0 +1,66 @@
+C51 COMPILER V8.02   DINGSHIQI                                                             07/03/2010 16:50:51 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE DINGSHIQI
+OBJECT MODULE PLACED IN dingshiqi.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE dingshiqi.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /***********************************************************************
+   2                                                  “天祥电子”            倾情奉献
+   3                                                                  www.txmcu.cn
+   4                                                                  www.txmcu.com
+   5          ***********************************************************************
+   6          程序功能：      本程序演示用定时器的方法产生一PWM方波，其周期为1ms(0.001s，1KHz)；
+   7                                  占空比为1/5(高电平持续200us)。若产生其他参数的PWM波，只需更改
+   8                                  程序中的相关参数即可。（同学们也可试着设计可调的PWM输出）
+   9                                  pwm波由P1^0口输出。可观察到其对应发光二极管在闪烁
+  10                                  （熄灭持续时间为200us，点亮持续时间为800us，闪烁周期为1ms）。
+  11          **************************************************************************/
+  12          
+  13          #include<reg52.h>
+  14          
+  15          #define uint unsigned int 
+  16          uint pp;
+  17          
+  18          sbit pwm=P1^0;
+  19          
+  20          void main()
+  21          {
+  22   1              TMOD=0x01;               //模式设置，00000001，可见采用的是定时器0，工作与模式1（M1=0，M0=1）。
+  23   1              TR0=1;                   //打开定时器
+  24   1              TH0=0Xff;                //定时器设置，每隔10微秒发起一次中断。
+  25   1              TL0=0Xa4;
+  26   1              ET0=1;                   //开定时器0中断
+  27   1              EA=1;                    //开总中断
+  28   1              while(1)
+  29   1              {
+  30   2                      if(pp<=2)
+  31   2                              pwm=1;
+  32   2                      else
+  33   2                              pwm=0;
+  34   2                      if(pp==10)
+  35   2                              pp=0;
+  36   2              }
+  37   1      }
+  38          
+  39          void time0() interrupt 1
+  40          {       TH0=0Xff;
+  41   1              TL0=0Xa4;
+  42   1              pp++;
+  43   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     65    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

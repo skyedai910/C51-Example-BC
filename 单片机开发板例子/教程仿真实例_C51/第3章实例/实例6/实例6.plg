@@ -1,0 +1,15 @@
+<html>
+<body>
+<pre>
+<h1>礦ision3 Build Log</h1>
+<h2>Project:</h2>
+C:\Users\CmeeLin_PC\Desktop\第3章实例-4\实例6\实例6.uv2
+Project File Date:  10/14/2017
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling 实例6.c...
+linking...
+Program Size: data=13.0 xdata=0 code=189
+creating hex file from "实例6"...
+"实例6" - 0 Error(s), 0 Warning(s).

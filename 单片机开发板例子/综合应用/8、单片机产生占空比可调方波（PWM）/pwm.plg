@@ -1,0 +1,15 @@
+<html>
+<body>
+<pre>
+<h1>礦ision2 Build Log</h1>
+<h2>Project:</h2>
+F:\天祥产品资料\TX-1C\TX-1C单片机实验板资料\TX-1C开发板例程\3. 2010年新增TX-1C程序\4、TX-1C综合应用\8、单片机产生占空比可调方波（PWM）\pwm.uv2
+Project File Date:  07/13/2010
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling pwm.c...
+linking...
+Program Size: data=13.0 xdata=0 code=332
+creating hex file from "pwm"...
+"pwm" - 0 Error(s), 0 Warning(s).

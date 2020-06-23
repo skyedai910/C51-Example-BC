@@ -1,0 +1,140 @@
+BL51 BANKED LINKER/LOCATER V5.12                                                        06/02/2012  19:50:48  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V5.12, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE Tnew.obj TO T
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  Tnew.obj (TNEW)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  T (TNEW)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0003H     UNIT         ?DT?TNEW
+            IDATA   000BH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     008CH     UNIT         ?C_C51STARTUP
+            CODE    008FH     005AH     UNIT         ?PR?_PROC_KEY?TNEW
+            CODE    00E9H     0023H     UNIT         ?PR?MAIN?TNEW
+            CODE    010CH     0011H     UNIT         ?PR?_DELAY?TNEW
+            CODE    011DH     0011H     UNIT         ?CO?TNEW
+            CODE    012EH     000AH     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   T (TNEW)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?TNEW
+  +--> ?C_INITSEG
+
+?PR?MAIN?TNEW
+  +--> ?PR?_PROC_KEY?TNEW
+
+?PR?_PROC_KEY?TNEW
+  +--> ?PR?_DELAY?TNEW
+  +--> ?CO?TNEW
+
+
+
+SYMBOL TABLE OF MODULE:  T (TNEW)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+BL51 BANKED LINKER/LOCATER V5.12                                                      06/02/2012  19:50:48  PAGE 2
+
+
+
+  -------         MODULE        TNEW
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:0008H         PUBLIC        pointer_1
+  D:0009H         PUBLIC        pointer_2
+  B:0098H.1       PUBLIC        TI
+  C:00E9H         PUBLIC        main
+  D:000AH         PUBLIC        KeyValue
+  D:0099H         PUBLIC        SBUF
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  C:008FH         PUBLIC        _proc_key
+  D:008DH         PUBLIC        TH1
+  B:0098H.3       PUBLIC        TB8
+  D:008BH         PUBLIC        TL1
+  B:0088H.6       PUBLIC        TR1
+  C:011DH         PUBLIC        str
+  C:010CH         PUBLIC        _delay
+  -------         PROC          _DELAY
+  D:0007H         SYMBOL        time
+  -------         DO            
+  D:0006H         SYMBOL        i
+  D:0005H         SYMBOL        j
+  -------         ENDDO         
+  C:010CH         LINE#         13
+  C:010CH         LINE#         15
+  C:010EH         LINE#         16
+  C:011CH         LINE#         17
+  -------         ENDPROC       _DELAY
+  -------         PROC          _PROC_KEY
+  D:0004H         SYMBOL        node_number
+  C:008FH         LINE#         19
+  C:0091H         LINE#         20
+  C:0096H         LINE#         21
+  C:0099H         LINE#         22
+  C:009CH         LINE#         23
+  C:00A2H         LINE#         24
+  C:00A4H         LINE#         26
+  C:00A6H         LINE#         27
+  C:00A8H         LINE#         28
+  C:00ABH         LINE#         29
+  C:00ADH         LINE#         30
+  C:00AFH         LINE#         31
+  C:00B9H         LINE#         32
+  C:00B9H         LINE#         33
+  C:00C3H         LINE#         34
+  C:00CDH         LINE#         35
+  C:00CEH         LINE#         36
+  C:00CEH         LINE#         37
+  C:00CEH         LINE#         38
+  C:00D8H         LINE#         39
+  C:00E2H         LINE#         40
+  C:00E3H         LINE#         41
+  C:00E3H         LINE#         42
+  C:00E3H         LINE#         44
+  C:00E5H         LINE#         48
+BL51 BANKED LINKER/LOCATER V5.12                                                      06/02/2012  19:50:48  PAGE 3
+
+
+  C:00E8H         LINE#         49
+  -------         ENDPROC       _PROC_KEY
+  -------         PROC          MAIN
+  C:00E9H         LINE#         51
+  C:00E9H         LINE#         52
+  C:00E9H         LINE#         53
+  C:00ECH         LINE#         54
+  C:00F1H         LINE#         55
+  C:00F4H         LINE#         56
+  C:00FEH         LINE#         57
+  C:0105H         LINE#         58
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        TNEW
+
+Program Size: data=12.0 xdata=0 code=312
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

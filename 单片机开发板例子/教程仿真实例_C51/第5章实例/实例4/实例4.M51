@@ -1,0 +1,151 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/23/2017  09:06:18  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE 实例4.obj TO 实例4
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例4.obj (____4)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  实例4 (____4)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     000AH     UNIT         ?DT?____4
+            IDATA   0012H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0003H     ABSOLUTE     
+            CODE    0006H     000DH     UNIT         ?C_INITSEG
+            CODE    0013H     0003H     ABSOLUTE     
+            CODE    0016H     008CH     UNIT         ?C_C51STARTUP
+            CODE    00A2H     0038H     UNIT         ?PR?KEY0?____4
+            CODE    00DAH     0038H     UNIT         ?PR?KEY1?____4
+            CODE    0112H     0024H     UNIT         ?PR?MAIN?____4
+            CODE    0136H     0020H     UNIT         ?PR?_DELAY?____4
+
+
+
+OVERLAY MAP OF MODULE:   实例4 (____4)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?PR?KEY0?____4
+  +--> ?PR?_DELAY?____4
+
+*** NEW ROOT ***************************************************
+
+?PR?KEY1?____4
+  +--> ?PR?_DELAY?____4
+
+*** NEW ROOT ***************************************************
+
+?C_C51STARTUP
+  +--> ?PR?MAIN?____4
+  +--> ?C_INITSEG
+
+?PR?MAIN?____4
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/23/2017  09:06:18  PAGE 2
+
+
+  +--> ?PR?_DELAY?____4
+
+
+
+SYMBOL TABLE OF MODULE:  实例4 (____4)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ____4
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  C:013AH         PUBLIC        _delay
+  C:0112H         PUBLIC        main
+  D:0088H         PUBLIC        TCON
+  B:0088H.1       PUBLIC        IE0
+  D:0008H         PUBLIC        led_mod
+  B:00B8H.0       PUBLIC        PX0
+  B:00B8H.2       PUBLIC        PX1
+  B:00B0H.0       PUBLIC        D1
+  C:00A2H         PUBLIC        key0
+  C:00DAH         PUBLIC        key1
+  C:0136H         SYMBOL        L?0024
+  -------         PROC          L?0023
+  -------         ENDPROC       L?0023
+  C:0136H         SYMBOL        L?0024
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        time
+  -------         DO            
+  D:0005H         SYMBOL        j
+  -------         ENDDO         
+  C:013AH         LINE#         5
+  C:013AH         LINE#         6
+  C:013CH         LINE#         7
+  C:0145H         LINE#         8
+  C:0155H         LINE#         9
+  -------         ENDPROC       _DELAY
+  -------         PROC          KEY0
+  -------         DO            
+  D:0004H         SYMBOL        i
+  -------         ENDDO         
+  C:00A2H         LINE#         10
+  C:00B3H         LINE#         12
+  C:00B8H         LINE#         13
+  C:00BAH         LINE#         14
+  C:00C1H         LINE#         15
+  C:00C4H         LINE#         16
+  C:00CBH         LINE#         17
+  -------         ENDPROC       KEY0
+  -------         PROC          KEY1
+  -------         DO            
+  D:0004H         SYMBOL        i
+  -------         ENDDO         
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/23/2017  09:06:18  PAGE 3
+
+
+  C:00DAH         LINE#         19
+  C:00EBH         LINE#         21
+  C:00EDH         LINE#         22
+  C:00F2H         LINE#         23
+  C:00F9H         LINE#         24
+  C:00FCH         LINE#         25
+  C:0103H         LINE#         26
+  -------         ENDPROC       KEY1
+  -------         PROC          MAIN
+  -------         DO            
+  D:0004H         SYMBOL        i
+  -------         ENDDO         
+  C:0112H         LINE#         28
+  C:0112H         LINE#         30
+  C:0115H         LINE#         31
+  C:0119H         LINE#         32
+  C:0121H         LINE#         33
+  C:0124H         LINE#         34
+  C:0124H         LINE#         35
+  C:0126H         LINE#         36
+  C:012DH         LINE#         37
+  C:0130H         LINE#         38
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        ____4
+
+Program Size: data=19.0 xdata=0 code=342
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

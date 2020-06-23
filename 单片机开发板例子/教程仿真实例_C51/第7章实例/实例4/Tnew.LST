@@ -1,0 +1,80 @@
+C51 COMPILER V7.50   TNEW                                                                  06/02/2012 20:26:16 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE TNEW
+OBJECT MODULE PLACED IN Tnew.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE Tnew.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          //多机通信（主机）程序
+   2          #include <reg51.h>
+   3          #define uchar unsigned char
+   4          #define NODE1_ADDR 1            //1#子机地址
+   5          #define NODE2_ADDR 2            //2#子机地址
+   6          
+   7          uchar KeyValue=0;                       //键值
+   8          uchar code str[]="0123456789ABCDEF";  //字符集
+   9          uchar pointer_1=0,pointer_2=0;          //子机当前发送字符指针
+  10          
+  11          void delay(uchar time){                         //延时
+  12   1              uchar i,j;
+  13   1              for(i=0;i<130;i++)
+  14   1                      for(j=0;j<time;j++);
+  15   1      } 
+  16          
+  17          void proc_key(uchar node_number){        //发送程序
+  18   1              delay(200);
+  19   1              SCON=0xc0;                      //串口方式3、多机通信、允许接收、中断标志清零
+  20   1              TMOD=0x20;                      //T1定时方式2
+  21   1              TH1=TL1=0xfd;           //9600bps
+  22   1              TR1=1;                          //启动T1                
+  23   1              TB8=1;                          //发送地址帧
+  24   1              SBUF=node_number;
+  25   1              while(TI==0);           //等待地址帧发送结束
+  26   1              TI=0;                           //清TI标志
+  27   1              TB8=0;                          //准备发送数据帧
+  28   1              switch(node_number){//切换子机
+  29   2                      case 1: {
+  30   3                              SBUF=str[pointer_1++];  //1#子机字符帧
+  31   3                              if(pointer_1>=16) pointer_1=0;   //修改发送指针
+  32   3                              break;
+  33   3                      }
+  34   2                      case 2: {
+  35   3                              SBUF=str[pointer_2++];  //2#子机字符帧
+  36   3                              if(pointer_2>=16) pointer_2=0;   //修改发送指针
+  37   3                              break;
+  38   3                      }
+  39   2                      default: break;
+  40   2              while(TI==0);           //等待数据帧发送结束
+  41   2              TI=0;
+  42   2      }}
+  43          
+  44          main(){
+  45   1              while(1){                                               
+  46   2                      P1=0xff;
+  47   2                      while(P1==0xff);          //检测按键
+  48   2                      switch(P1){                       //切换子机
+  49   3                              case 0xfe: proc_key(NODE1_ADDR);break;
+  50   3                              case 0xef: proc_key(NODE2_ADDR);break;
+  51   3                      }
+  52   2              }
+  53   1      }  
+  54          
+  55          
+C51 COMPILER V7.50   TNEW                                                                  06/02/2012 20:26:16 PAGE 2   
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    137    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

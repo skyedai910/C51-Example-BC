@@ -1,0 +1,87 @@
+C51 COMPILER V9.56.0.0   MENU                                                              02/22/2018 15:00:50 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE MENU
+OBJECT MODULE PLACED IN menu.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE menu.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #define MENU_ON   0
+   2          #define MENU_OFF  1
+   3          #define MENU_NUM  2
+   4          #define MENU_MAX  240
+   5          #define MENU_MIN  10
+   6          
+   7          unsigned char param_value[] = {100, 150};
+   8          unsigned char menu_status = MENU_OFF;
+   9          char _menu_name[] = {'L','H'};       //参数名的符号
+  10          unsigned char _menu_value[] = {0,0};         //供显示用的参数数组
+  11          unsigned char _menu_idx = 0;       //参数序号
+  12          
+  13          char get_key();
+  14          void print(char name, unsigned int value);
+  15          
+  16          void menu_thread(void) {
+  17   1        char i = 0;
+  18   1        char key = get_key();            
+  19   1        if (menu_status == MENU_OFF) {     
+  20   2          //当前菜单为关闭状态时
+  21   2          if (key == 0) {          //若按键0已被按下
+  22   3            menu_status = MENU_ON;     //置当前菜单为打开状态
+  23   3            _menu_idx = 0;         //设置参数序号0
+  24   3            //将所有参数当前值取出，送入供显示的参数数组中
+  25   3            for (i = 0 ; i < MENU_NUM ; i++) {    
+  26   4              _menu_value[i] = param_value[i];  
+  27   4            }
+  28   3          }
+  29   2        } else {               
+  30   2          //如果当前菜单为打开状态，则进行以下操作：
+  31   2          if (key == 0) { 
+  32   3            //若按键0按下，则不保存键值，仅切换到下一个参数
+  33   3            if (++_menu_idx == MENU_NUM) {    //判断是否所有参数都循环到了
+  34   4              menu_status = MENU_OFF;   //若已循环完成，设置菜单关闭状态
+  35   4            }
+  36   3          } else if (key == 1) { 
+  37   3            //若按键1按下，则保存键值，并切换到下一个参数
+  38   3            param_value[_menu_idx] = _menu_value[_menu_idx];
+  39   3            if (++_menu_idx == MENU_NUM) {
+  40   4              menu_status = MENU_OFF;
+  41   4            }
+  42   3          } else if (key == 2) { 
+  43   3            //若按键2按下，则参数值加10
+  44   3            _menu_value[_menu_idx] += 10;
+  45   3            if (_menu_value[_menu_idx] >= MENU_MAX) {
+  46   4              _menu_value[_menu_idx] = MENU_MAX;
+  47   4            }
+  48   3            
+  49   3          } else if (key == 3) { 
+  50   3            //若按键3按下，则参数值减10
+  51   3            _menu_value[_menu_idx] -= 10;
+  52   3            if (_menu_value[_menu_idx] <= MENU_MIN) {
+  53   4              _menu_value[_menu_idx] = MENU_MIN;
+  54   4            }
+  55   3          }
+C51 COMPILER V9.56.0.0   MENU                                                              02/22/2018 15:00:50 PAGE 2   
+
+  56   2        }
+  57   1      
+  58   1        if (menu_status == MENU_ON) {
+  59   2          //菜单状态为开时,显示参数值
+  60   2          print(_menu_name[_menu_idx], _menu_value[_menu_idx]); 
+  61   2        }
+  62   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    163    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      8       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

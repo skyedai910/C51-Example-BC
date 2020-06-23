@@ -1,0 +1,72 @@
+C51 COMPILER V8.02   ZHISHI                                                                06/25/2010 16:48:20 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE ZHISHI
+OBJECT MODULE PLACED IN zhishi.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE zhishi.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /********************************************************************
+   2                                          “天祥电子”            倾情奉献
+   3                                                          www.txmcu.com
+   4                                                          www.txmcu.cn
+   5          **********************************************************************
+   6          
+   7          程序功能：      用led指示TX-1C学习板键盘最下面一排左侧的S2键的状态。
+   8                                  当按键按下时，led亮；松开后，灭。
+   9          
+  10          **********************************************************************/
+  11          
+  12          #include<reg51.h>
+  13          
+  14          sbit s2=P3^4;
+  15          sbit s3=P3^5;
+  16          sbit s4=P3^6;
+  17          sbit s5=P3^7;
+  18          sbit led1=P1^0;
+  19          sbit led2=P1^1;
+  20          sbit led3=P1^2;
+  21          sbit led4=P1^3;
+  22          
+  23          void main()
+  24          {
+  25   1              while(1)
+  26   1              {
+  27   2                      if(s2==0)
+  28   2                              led1=0;
+  29   2                      else
+  30   2                              led1=1;
+  31   2      
+  32   2                      if(s3==0)
+  33   2                              led2=0;
+  34   2                      else
+  35   2                              led2=1;
+  36   2      
+  37   2                      if(s4==0)
+  38   2                              led3=0;
+  39   2                      else
+  40   2                              led3=1;
+  41   2      
+  42   2                      if(s5==0)
+  43   2                              led4=0;
+  44   2                      else
+  45   2                              led4=1;
+  46   2              }
+  47   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     38    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+C51 COMPILER V8.02   ZHISHI                                                                06/25/2010 16:48:20 PAGE 2   
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

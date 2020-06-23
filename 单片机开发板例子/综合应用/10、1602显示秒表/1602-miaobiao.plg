@@ -1,0 +1,20 @@
+<html>
+<body>
+<pre>
+<h1>礦ision3 Build Log</h1>
+<h2>Project:</h2>
+F:\工程\新增程序\基础小程序\1602显示秒表\1602-miaobiao.uv2
+Project File Date:  06/29/2010
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling 1602-miaobiao.c...
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?LCD_BUSY?1602_MIAOBIAO
+Program Size: data=25.1 xdata=0 code=939
+creating hex file from "1602-miaobiao"...
+"1602-miaobiao" - 0 Error(s), 1 Warning(s).
+</pre>
+</body>
+</html>

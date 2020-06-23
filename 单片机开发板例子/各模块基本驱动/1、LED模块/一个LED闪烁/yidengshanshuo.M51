@@ -1,0 +1,90 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        03/25/2020  17:28:02  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE yidengshanshuo.obj TO yidengshanshuo
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  yidengshanshuo.obj (YIDENGSHANSHUO)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  yidengshanshuo (YIDENGSHANSHUO)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0015H     UNIT         ?PR?_DELAY?YIDENGSHANSHUO
+            CODE    0018H     000FH     UNIT         ?PR?MAIN?YIDENGSHANSHUO
+            CODE    0027H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   yidengshanshuo (YIDENGSHANSHUO)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?YIDENGSHANSHUO
+
+?PR?MAIN?YIDENGSHANSHUO
+  +--> ?PR?_DELAY?YIDENGSHANSHUO
+
+
+
+SYMBOL TABLE OF MODULE:  yidengshanshuo (YIDENGSHANSHUO)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        YIDENGSHANSHUO
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:00A0H         PUBLIC        P2
+  C:0003H         PUBLIC        _delay
+  C:0018H         PUBLIC        main
+  B:00A0H.3       PUBLIC        led
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        i
+  -------         DO            
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/25/2020  17:28:02  PAGE 2
+
+
+  D:0006H         SYMBOL        j
+  D:0005H         SYMBOL        k
+  -------         ENDDO         
+  C:0003H         LINE#         10
+  C:0003H         LINE#         11
+  C:0003H         LINE#         14
+  C:000CH         LINE#         15
+  C:0017H         LINE#         16
+  -------         ENDPROC       _DELAY
+  -------         PROC          MAIN
+  -------         DO            
+  D:0004H         SYMBOL        m
+  -------         ENDDO         
+  C:0018H         LINE#         18
+  C:0018H         LINE#         19
+  C:0018H         LINE#         21
+  C:001AH         LINE#         22
+  C:001AH         LINE#         23
+  C:001CH         LINE#         24
+  C:0023H         LINE#         25
+  C:0025H         LINE#         26
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        YIDENGSHANSHUO
+
+Program Size: data=9.0 xdata=0 code=51
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

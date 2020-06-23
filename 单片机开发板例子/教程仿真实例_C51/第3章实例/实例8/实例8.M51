@@ -1,0 +1,89 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/22/2017  21:17:44  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE 实例8.obj TO 实例8
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例8.obj (____8)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C?SIDIV)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_INIT)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C?UIDIV)
+
+
+LINK MAP OF MODULE:  实例8 (____8)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0008H     UNIT         ?DT?____8
+            IDATA   0010H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     008CH     UNIT         ?C_C51STARTUP
+            CODE    008FH     008BH     UNIT         ?C?LIB_CODE
+            CODE    011AH     0064H     INBLOCK      ?PR?MAIN?____8
+            CODE    017EH     0009H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   实例8 (____8)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?____8
+  +--> ?C_INITSEG
+
+
+
+SYMBOL TABLE OF MODULE:  实例8 (____8)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ____8
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0008H         PUBLIC        sum1
+  D:000AH         PUBLIC        sum2
+  C:011AH         PUBLIC        main
+  D:000CH         PUBLIC        i
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/22/2017  21:17:44  PAGE 2
+
+
+  D:000EH         PUBLIC        j
+  -------         PROC          MAIN
+  C:011AH         LINE#         5
+  C:011AH         LINE#         6
+  C:0120H         LINE#         7
+  C:0135H         LINE#         8
+  C:0141H         LINE#         9
+  C:014FH         LINE#         10
+  C:0155H         LINE#         11
+  C:0163H         LINE#         12
+  C:016FH         LINE#         13
+  C:017DH         LINE#         14
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        ____8
+
+  -------         MODULE        ?C?SIDIV
+  C:008FH         PUBLIC        ?C?SIDIV
+  -------         ENDMOD        ?C?SIDIV
+
+  -------         MODULE        ?C?UIDIV
+  C:00C5H         PUBLIC        ?C?UIDIV
+  -------         ENDMOD        ?C?UIDIV
+
+Program Size: data=17.0 xdata=0 code=391
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

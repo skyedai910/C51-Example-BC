@@ -1,0 +1,53 @@
+C51 COMPILER V8.02   DAJVCHI                                                               07/05/2010 10:16:27 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE DAJVCHI
+OBJECT MODULE PLACED IN DAjvchi.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE DAjvchi.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          //可观察到发光二极管由灭到亮渐变，而后突然熄灭，重新开始新的循环。
+   2          //若用示波器观察IOUT引脚电平，可看到锯齿波波形。
+   3          #include<reg51.h>
+   4          sbit wela=P2^7;
+   5          sbit dula=P2^6;
+   6          sbit dawr=P3^6;
+   7          sbit csda=P3^2;
+   8          unsigned char a,j,k;
+   9          void delay(unsigned char i)
+  10          {
+  11   1        for(j=i;j>0;j--)
+  12   1          for(k=125;k>0;k--);
+  13   1      }
+  14          void main()
+  15          {
+  16   1        wela=0;
+  17   1        dula=0;
+  18   1        csda=0;
+  19   1        a=0;
+  20   1        dawr=0;
+  21   1        while(1)
+  22   1        {
+  23   2              unsigned char m;
+  24   2              for(m=0;m<255;m++)
+  25   2              {
+  26   3                      P0=m;
+  27   3                      delay(20);
+  28   3              }
+  29   2        }
+  30   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     53    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

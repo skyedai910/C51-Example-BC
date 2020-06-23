@@ -1,0 +1,38 @@
+C51 COMPILER V8.02   0                                                                     06/25/2010 16:20:56 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 0
+OBJECT MODULE PLACED IN 0.OBJ
+COMPILER INVOKED BY: D:\¥¶¿Ì»Ìº˛\keil\C51\BIN\C51.EXE 0.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg51.h>
+   2          
+   3          sbit s2=P3^4;
+   4          sbit led=P1^0;
+   5          
+   6          void main()
+   7          {
+   8   1              while(1)
+   9   1              {
+  10   2                      if(s2==0)
+  11   2                              led=0;
+  12   2                      else
+  13   2                              led=1;
+  14   2              }
+  15   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     11    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

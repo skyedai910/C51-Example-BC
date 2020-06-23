@@ -1,0 +1,349 @@
+C51 COMPILER V8.02   CLOCK                                                                 06/22/2010 09:13:31 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE CLOCK
+OBJECT MODULE PLACED IN clock.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE clock.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          //该例程为数码管显示可调钟表，用到TX-1C开发板中矩阵键盘的上三排按键。
+   2          //若要更改时钟初始值（即时钟校准），可先按下矩阵键盘中的S16键（第三排第三列），此时时钟会暂停。
+   3          //然后按S6---S15中的键修改矫正当前值，S6--S15分别先后对应数字0到9。
+   4          //矫正完后，按下S17（第三排最后一个），时钟可继续工作。
+   5          //注意晶振需为11.0592M。
+   6          //若为其他数值晶振，请改变TH0与TL0参数值，否则计时会有很大误差 。
+   7          
+   8          #include<reg51.h>
+   9          
+  10          #define uchar unsigned char
+  11          
+  12          sbit dula=P2^6;
+  13          sbit wela=P2^7;
+  14          sbit beep=P2^3;
+  15          unsigned char j,k,a1,a0,b1,b0,c1,c0,s,f,m,key=10,temp,qq;
+  16          uchar shi20,shi10,fen20,fen10,miao20,miao10,new,ok=1,wei;
+  17          unsigned int pp;
+  18          unsigned char code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,
+  19                                  0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};
+  20          
+  21          void delay(unsigned char i)
+  22          {
+  23   1        for(j=i;j>0;j--)
+  24   1          for(k=125;k>0;k--);
+  25   1      }
+  26          void display(uchar shi2,uchar shi1,uchar fen2,uchar fen1,uchar miao2,uchar miao1)
+  27          {
+  28   1         dula=0;
+  29   1         P0=table[shi2];
+  30   1         dula=1;
+  31   1         dula=0;
+  32   1         
+  33   1         wela=0;
+  34   1         P0=0xfe;
+  35   1         wela=1;
+  36   1         wela=0;
+  37   1         delay(5);
+  38   1         
+  39   1         P0=table[shi1]|0x80;
+  40   1         dula=1;
+  41   1         dula=0;
+  42   1         
+  43   1         P0=0xfd;
+  44   1         wela=1;
+  45   1         wela=0;
+  46   1         delay(5);
+  47   1      
+  48   1         P0=table[fen2];
+  49   1         dula=1;
+  50   1         dula=0;
+  51   1         
+  52   1         P0=0xfb;
+  53   1         wela=1;
+  54   1         wela=0;
+  55   1         delay(5);
+C51 COMPILER V8.02   CLOCK                                                                 06/22/2010 09:13:31 PAGE 2   
+
+  56   1         
+  57   1         P0=table[fen1]|0x80;
+  58   1         dula=1;
+  59   1         dula=0;
+  60   1         
+  61   1         P0=0xf7;
+  62   1         wela=1;
+  63   1         wela=0;
+  64   1         delay(5);
+  65   1         
+  66   1         P0=table[miao2];
+  67   1         dula=1;
+  68   1         dula=0;
+  69   1         
+  70   1         P0=0xef;
+  71   1         wela=1;
+  72   1         wela=0;
+  73   1         delay(5);
+  74   1         
+  75   1         P0=table[miao1];
+  76   1         dula=1;
+  77   1         dula=0;
+  78   1         
+  79   1         P0=0xdf;
+  80   1         wela=1;
+  81   1         wela=0;
+  82   1         delay(5);
+  83   1      }
+  84          
+  85          void keyscan0()
+  86          {
+  87   1          P3=0xfb;
+  88   1          temp=P3;
+  89   1          temp=temp&0xf0;
+  90   1          if(temp!=0xf0)
+  91   1          {
+  92   2            delay(10);
+  93   2            if(temp!=0xf0)
+  94   2            {
+  95   3              temp=P3;
+  96   3              switch(temp)
+  97   3              {
+  98   4                case 0xbb:
+  99   4                     ok=0;
+ 100   4                     break;
+ 101   4      
+ 102   4                case 0x7b:
+ 103   4                     ok=1;
+ 104   4                     break;
+ 105   4               }
+ 106   3            }
+ 107   2            } 
+ 108   1      }
+ 109          
+ 110          
+ 111          void keyscan()
+ 112          {
+ 113   1        {     
+ 114   2          P3=0xfe;
+ 115   2          temp=P3;
+ 116   2          temp=temp&0xf0;
+ 117   2          if(temp!=0xf0)
+C51 COMPILER V8.02   CLOCK                                                                 06/22/2010 09:13:31 PAGE 3   
+
+ 118   2          {
+ 119   3            delay(10);
+ 120   3            if(temp!=0xf0)
+ 121   3            { 
+ 122   4              temp=P3;
+ 123   4              switch(temp)
+ 124   4              {
+ 125   5                case 0xee:
+ 126   5                     key=0;
+ 127   5                                 wei++;
+ 128   5                     break;
+ 129   5      
+ 130   5                case 0xde:
+ 131   5                     key=1;
+ 132   5                                 wei++;
+ 133   5                     break;
+ 134   5      
+ 135   5                case 0xbe:
+ 136   5                     key=2;
+ 137   5                                 wei++;
+ 138   5                     break;
+ 139   5      
+ 140   5                case 0x7e:
+ 141   5                     key=3;
+ 142   5                                 wei++;
+ 143   5                     break;
+ 144   5               }
+ 145   4               while(temp!=0xf0) 
+ 146   4              {
+ 147   5                 temp=P3;
+ 148   5                 temp=temp&0xf0;
+ 149   5                 beep=0;
+ 150   5               }
+ 151   4               beep=1;
+ 152   4            }
+ 153   3          }
+ 154   2          P3=0xfd;
+ 155   2          temp=P3;
+ 156   2          temp=temp&0xf0;
+ 157   2          if(temp!=0xf0)
+ 158   2          {
+ 159   3            delay(10);
+ 160   3            if(temp!=0xf0)
+ 161   3            {
+ 162   4              temp=P3;
+ 163   4              switch(temp)
+ 164   4              {
+ 165   5                case 0xed:
+ 166   5                     key=4;
+ 167   5                                 wei++;
+ 168   5                     break;
+ 169   5      
+ 170   5                case 0xdd:
+ 171   5                     key=5;
+ 172   5                                 wei++;
+ 173   5                     break;
+ 174   5      
+ 175   5                case 0xbd:
+ 176   5                     key=6;
+ 177   5                                 wei++;
+ 178   5                     break;
+ 179   5      
+C51 COMPILER V8.02   CLOCK                                                                 06/22/2010 09:13:31 PAGE 4   
+
+ 180   5                case 0x7d:
+ 181   5                     key=7;
+ 182   5                                 wei++;
+ 183   5                     break;
+ 184   5               }
+ 185   4               while(temp!=0xf0)
+ 186   4               {
+ 187   5                 temp=P3;
+ 188   5                 temp=temp&0xf0;
+ 189   5                 beep=0;
+ 190   5               }
+ 191   4               beep=1;
+ 192   4            }
+ 193   3            }
+ 194   2          P3=0xfb;
+ 195   2          temp=P3;
+ 196   2          temp=temp&0xf0;
+ 197   2          if(temp!=0xf0)
+ 198   2          {
+ 199   3            delay(10);
+ 200   3            if(temp!=0xf0)
+ 201   3            {
+ 202   4              temp=P3;
+ 203   4              switch(temp)
+ 204   4              {
+ 205   5                case 0xeb:
+ 206   5                     key=8;
+ 207   5                                 wei++;
+ 208   5                     break;
+ 209   5      
+ 210   5                case 0xdb:
+ 211   5                     key=9;
+ 212   5                                 wei++;
+ 213   5                     break;
+ 214   5               }
+ 215   4              while(temp!=0xf0)
+ 216   4               {
+ 217   5                 temp=P3;
+ 218   5                 temp=temp&0xf0;
+ 219   5                 beep=0;
+ 220   5               }
+ 221   4               beep=1;
+ 222   4            }
+ 223   3            }
+ 224   2      }
+ 225   1      }
+ 226          
+ 227          void main()
+ 228          {
+ 229   1              TMOD=0x01;
+ 230   1      
+ 231   1              TH0=(65536-46080)/256;// 由于晶振为11.0592,故所记次数应为46080，计时器每隔50000微秒发起一次中断。
+ 232   1              TL0=(65536-46080)%256;//46080的来历，为50000*11.0592/12
+ 233   1              ET0=1;
+ 234   1              EA=1;
+ 235   1              
+ 236   1              while(1)
+ 237   1              {       keyscan0();
+ 238   2                      
+ 239   2                      if(ok==1)
+ 240   2                      {       TR0=1;
+ 241   3                              wei=0;
+C51 COMPILER V8.02   CLOCK                                                                 06/22/2010 09:13:31 PAGE 5   
+
+ 242   3                      
+ 243   3                      if(pp==20)
+ 244   3                      {       pp=0;
+ 245   4                              m++;
+ 246   4                              if(m==60)
+ 247   4                              {
+ 248   5                                      m=0;
+ 249   5                                      f++;
+ 250   5                                      if(f==60)
+ 251   5                                      {
+ 252   6                                              f=0;
+ 253   6                                              s++;
+ 254   6                                              if(s==24)  //为24h一个循环，若要12h，只需在此改为12即可。
+ 255   6                                              {
+ 256   7                                                      s=0;
+ 257   7                                              }
+ 258   6                                      }
+ 259   5                              }
+ 260   4                      }
+ 261   3                      
+ 262   3                      a0=s%10;
+ 263   3                      a1=s/10;
+ 264   3                      b0=f%10;
+ 265   3                      b1=f/10;
+ 266   3                      c0=m%10;
+ 267   3                      c1=m/10;
+ 268   3                      display(a1,a0,b1,b0,c1,c0);
+ 269   3              }
+ 270   2              else
+ 271   2              {       TR0=0;
+ 272   3                      keyscan();
+ 273   3                      if(key!=10)
+ 274   3                      {
+ 275   4                      
+ 276   4                      switch(wei)
+ 277   4                      {
+ 278   5                              case 1: if(key<3)               //小时最高位为2
+ 279   5                                              a1=key;
+ 280   5                                              else
+ 281   5                                              wei--;
+ 282   5                                              break;
+ 283   5                              case 2: if(a1==1|a1==0)
+ 284   5                                              a0=key;
+ 285   5                                              else
+ 286   5                                              if(key<5)
+ 287   5                                              a0=key;            //当小时最高位为2时，低位最高为4
+ 288   5                                              break;
+ 289   5                              case 3: if(key<7)               //分钟最高位为6
+ 290   5                                              b1=key;
+ 291   5                                              else
+ 292   5                                              wei--;
+ 293   5                                              break;
+ 294   5                              case 4: b0=key; break;
+ 295   5                              case 5: if(key<7)               //秒最高位为6
+ 296   5                                              c1=key; 
+ 297   5                                              else
+ 298   5                                              wei--;
+ 299   5                                              break;
+ 300   5                              case 6: c0=key; break;
+ 301   5                      }
+ 302   4                      key=10;
+ 303   4                      }
+C51 COMPILER V8.02   CLOCK                                                                 06/22/2010 09:13:31 PAGE 6   
+
+ 304   3                              m=c1*10+c0;
+ 305   3                              f=b1*10+b0;
+ 306   3                              s=a1*10+a0;
+ 307   3                      display(a1,a0,b1,b0,c1,c0);
+ 308   3              }       
+ 309   2              }
+ 310   1      }
+ 311          
+ 312          void time0() interrupt 1
+ 313          {       TH0=(65536-46080)/256;
+ 314   1              TL0=(65536-46080)%256;
+ 315   1              pp++;
+ 316   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    759    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     25       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,23 @@
+C51 COMPILER V7.50   实例2B                                                                03/07/2014 20:11:52 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE 实例2B
+OBJECT MODULE PLACED IN 实例2b.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE 实例2b.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     20    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,24 @@
+C51 COMPILER V9.56.0.0   ____12                                                            12/22/2017 21:11:31 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE ____12
+OBJECT MODULE PLACED IN ÊµÀý12.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ÊµÀý12.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+*** WARNING C290 IN LINE 10 OF ÊµÀ12.c: missing return value
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    105    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     22       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

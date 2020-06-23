@@ -1,0 +1,333 @@
+C51 COMPILER V8.02   GUANGGAOXIAOGUO                                                       06/22/2010 15:05:31 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE GUANGGAOXIAOGUO
+OBJECT MODULE PLACED IN guanggaoxiaoguo.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE guanggaoxiaoguo.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /******************************************************************
+   2                                          “天祥电子”    倾情奉献
+   3                                                          www.txmcu.com
+   4                                                          www.txmcu.cn
+   5          *******************************************************************
+   6          
+   7          程序功能：按下键盘矩阵后，在六个数码管上依次显示所按下的键所代表的数字。
+   8                            按复位键可以清空显示为0
+   9          ******************************************************************/
+  10          #include<reg51.h>
+  11          
+  12          #define uchar unsigned char
+  13          
+  14          uchar a=0,b=1,c=2,d=3,e=4,f=5,temp,key,k,m,n;
+  15          unsigned long i,j;
+  16          
+  17          sbit dula=P2^6;
+  18          sbit wela=P2^7;
+  19          sbit beep=P2^3;
+  20          
+  21          unsigned char code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,
+  22                                  0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71,0x00};
+  23                                                           //最后一个0x00代表无显示。
+  24          void delay(unsigned long i)
+  25          {
+  26   1              for(j=i;j>0;j--)
+  27   1              for(k=125;k>0;k--);
+  28   1      }
+  29          
+  30          void display(uchar wei,uchar shu)//在任意一位显示任意的数字
+  31          {
+  32   1         dula=0;
+  33   1         P0=table[shu];
+  34   1         dula=1;
+  35   1         dula=0;
+  36   1         
+  37   1         wela=0;
+  38   1         switch(wei)
+  39   1         {
+  40   2              case 1:
+  41   2                              P0=0xfe;
+  42   2                              wela=1;
+  43   2                              wela=0;
+  44   2                              delay(5);
+  45   2                              break;
+  46   2              case 2:
+  47   2                              P0=0xfd;
+  48   2                         wela=1;
+  49   2                         wela=0;
+  50   2                         delay(5);
+  51   2                         break;
+  52   2         case 3:
+  53   2                         P0=0xfb;
+  54   2                         wela=1;
+  55   2                         wela=0;
+C51 COMPILER V8.02   GUANGGAOXIAOGUO                                                       06/22/2010 15:05:31 PAGE 2   
+
+  56   2                         delay(5);
+  57   2                         break;
+  58   2         case 4:           
+  59   2                         P0=0xf7;
+  60   2                         wela=1;
+  61   2                         wela=0;
+  62   2                         delay(5);
+  63   2                         break;
+  64   2         case 5:
+  65   2                         P0=0xef;
+  66   2                         wela=1;
+  67   2                         wela=0;
+  68   2                         delay(5);
+  69   2                         break;
+  70   2         case 6:
+  71   2                         P0=0xdf;
+  72   2                         wela=1;
+  73   2                         wela=0;
+  74   2                         delay(5);
+  75   2                         break;
+  76   2         }
+  77   1      }
+  78          void display0(uchar a,uchar b,uchar c,uchar d,uchar e,uchar f)
+  79          {                                                 //一次显示六个数字，且每位显示数字可自定。
+  80   1         dula=0;
+  81   1         P0=table[a];
+  82   1         dula=1;
+  83   1         dula=0;
+  84   1         
+  85   1         wela=0;
+  86   1         P0=0xfe;
+  87   1         wela=1;
+  88   1         wela=0;
+  89   1         delay(5);
+  90   1         
+  91   1         P0=table[b];
+  92   1         dula=1;
+  93   1         dula=0;
+  94   1         
+  95   1         P0=0xfd;
+  96   1         wela=1;
+  97   1         wela=0;
+  98   1         delay(5);
+  99   1      
+ 100   1         P0=table[c];
+ 101   1         dula=1;
+ 102   1         dula=0;
+ 103   1         
+ 104   1         P0=0xfb;
+ 105   1         wela=1;
+ 106   1         wela=0;
+ 107   1         delay(5);
+ 108   1         
+ 109   1         P0=table[d];
+ 110   1         dula=1;
+ 111   1         dula=0;
+ 112   1         
+ 113   1         P0=0xf7;
+ 114   1         wela=1;
+ 115   1         wela=0;
+ 116   1         delay(5);
+ 117   1         
+C51 COMPILER V8.02   GUANGGAOXIAOGUO                                                       06/22/2010 15:05:31 PAGE 3   
+
+ 118   1         P0=table[e];
+ 119   1         dula=1;
+ 120   1         dula=0;
+ 121   1         
+ 122   1         P0=0xef;
+ 123   1         wela=1;
+ 124   1         wela=0;
+ 125   1         delay(5);
+ 126   1         
+ 127   1         P0=table[f];
+ 128   1         dula=1;
+ 129   1         dula=0;
+ 130   1         
+ 131   1         P0=0xdf;
+ 132   1         wela=1;
+ 133   1         wela=0;
+ 134   1         delay(5);
+ 135   1      }
+ 136            
+ 137            void main()
+ 138            {
+ 139   1              while(1)
+ 140   1              {                        
+ 141   2                      display(6,0);                            //一次只有一位在显示
+ 142   2                      delay(500);
+ 143   2                      display(5,0);
+ 144   2                      delay(500);
+ 145   2                      display(4,0);
+ 146   2                      delay(500);
+ 147   2                      display(3,0);
+ 148   2                      delay(500);
+ 149   2                      display(2,0);
+ 150   2                      delay(500);
+ 151   2                      display(1,0);
+ 152   2                      delay(500);
+ 153   2                      display(6,1);
+ 154   2                      delay(500);
+ 155   2                      display(5,1);
+ 156   2                      delay(500);
+ 157   2                      display(4,1);
+ 158   2                      delay(500);
+ 159   2                      display(3,1);
+ 160   2                      delay(500);
+ 161   2                      display(2,1);
+ 162   2                      delay(500);
+ 163   2                      display(6,2);
+ 164   2                      delay(500);
+ 165   2                      display(5,2);
+ 166   2                      delay(500);
+ 167   2                      display(4,2);
+ 168   2                      delay(500);
+ 169   2                      display(3,2);
+ 170   2                      delay(500);
+ 171   2                      display(6,3);
+ 172   2                      delay(500);
+ 173   2                      display(5,3);
+ 174   2                      delay(500);
+ 175   2                      display(4,3);
+ 176   2                      delay(500);
+ 177   2                      display(6,4);
+ 178   2                      delay(500);
+ 179   2                      display(5,4);
+C51 COMPILER V8.02   GUANGGAOXIAOGUO                                                       06/22/2010 15:05:31 PAGE 4   
+
+ 180   2                      delay(500);
+ 181   2                      display(6,5);
+ 182   2                      delay(500);        
+ 183   2                      for(m=50;m>0;m--)                 //借助一次显示六位函数实现
+ 184   2                      {
+ 185   3                      display0(16,16,16,16,16,0);             //16代表无显示
+ 186   3                      delay(2);
+ 187   3                      }
+ 188   2                      for(m=50;m>0;m--)
+ 189   2                      {
+ 190   3                      display0(16,16,16,16,0,16);
+ 191   3                      delay(2);
+ 192   3                      }
+ 193   2                      for(m=50;m>0;m--)
+ 194   2                      {
+ 195   3                      display0(16,16,16,0,16,16);
+ 196   3                      delay(2);
+ 197   3                      }
+ 198   2                      for(m=50;m>0;m--)
+ 199   2                      {
+ 200   3                      display0(16,16,0,16,16,16);
+ 201   3                      delay(2);
+ 202   3                      }
+ 203   2                      for(m=50;m>0;m--)
+ 204   2                      {
+ 205   3                      display0(16,0,16,16,16,16);
+ 206   3                      delay(2);
+ 207   3                      }
+ 208   2                      for(m=50;m>0;m--)
+ 209   2                      {
+ 210   3                      display0(0,16,16,16,16,16);
+ 211   3                      delay(2);
+ 212   3                      }
+ 213   2                      for(m=50;m>0;m--)
+ 214   2                      {
+ 215   3                      display0(0,16,16,16,16,1);
+ 216   3                      delay(2);
+ 217   3                      }
+ 218   2                      for(m=50;m>0;m--)
+ 219   2                      {
+ 220   3                      display0(0,16,16,16,1,16);
+ 221   3                      delay(2);
+ 222   3                      }
+ 223   2                      for(m=50;m>0;m--)
+ 224   2                      {
+ 225   3                      display0(0,16,16,1,16,16);
+ 226   3                      delay(2);
+ 227   3                      }
+ 228   2                      for(m=50;m>0;m--)
+ 229   2                      {
+ 230   3                      display0(0,16,1,16,16,16);
+ 231   3                      delay(2);
+ 232   3                      }
+ 233   2                      for(m=50;m>0;m--)
+ 234   2                      {
+ 235   3                      display0(0,1,16,16,16,16);
+ 236   3                      delay(2);
+ 237   3                      }
+ 238   2                      for(m=50;m>0;m--)
+ 239   2                      {
+ 240   3                      display0(0,1,16,16,16,2);
+ 241   3                      delay(2);
+C51 COMPILER V8.02   GUANGGAOXIAOGUO                                                       06/22/2010 15:05:31 PAGE 5   
+
+ 242   3                      }
+ 243   2                      for(m=50;m>0;m--)
+ 244   2                      {
+ 245   3                      display0(0,1,16,16,2,16);
+ 246   3                      delay(2);
+ 247   3                      }
+ 248   2                      for(m=50;m>0;m--)
+ 249   2                      {
+ 250   3                      display0(0,1,16,2,16,16);
+ 251   3                      delay(2);
+ 252   3                      }
+ 253   2                      for(m=50;m>0;m--)
+ 254   2                      {
+ 255   3                      display0(0,1,2,16,16,16);
+ 256   3                      delay(2);
+ 257   3                      }
+ 258   2                      for(m=50;m>0;m--)
+ 259   2                      {
+ 260   3                      display0(0,1,2,16,16,3);
+ 261   3                      delay(2);
+ 262   3                      }
+ 263   2                      for(m=50;m>0;m--)
+ 264   2                      {
+ 265   3                      display0(0,1,2,16,3,16);
+ 266   3                      delay(2);                  
+ 267   3                      }
+ 268   2                      for(m=50;m>0;m--)
+ 269   2                      {
+ 270   3                      display0(0,1,2,3,16,16);
+ 271   3                      delay(2);
+ 272   3                      }
+ 273   2                      for(m=50;m>0;m--)
+ 274   2                      {
+ 275   3                      display0(0,1,2,3,16,4);
+ 276   3                      delay(2);
+ 277   3                      }
+ 278   2                      for(m=50;m>0;m--)
+ 279   2                      {
+ 280   3                      display0(0,1,2,3,4,16);
+ 281   3                      delay(2);
+ 282   3                      }
+ 283   2                      for(m=50;m>0;m--)
+ 284   2                      {
+ 285   3                      display0(0,1,2,3,4,5);
+ 286   3                      delay(2);
+ 287   3                      }
+ 288   2                      for(n=4;n>0;n--)         //闪烁
+ 289   2                      {
+ 290   3                              for(m=100;m>0;m--)
+ 291   3                              {
+ 292   4                                      display0(0,1,2,3,4,5);
+ 293   4                              }
+ 294   3                              for(m=100;m>0;m--)
+ 295   3                              {
+ 296   4                                      display0(16,16,16,16,16,16);
+ 297   4                              }
+ 298   3                      }
+ 299   2              }
+ 300   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+C51 COMPILER V8.02   GUANGGAOXIAOGUO                                                       06/22/2010 15:05:31 PAGE 6   
+
+   CODE SIZE        =   1282    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     19       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

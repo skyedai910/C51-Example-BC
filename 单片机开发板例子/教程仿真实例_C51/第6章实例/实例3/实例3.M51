@@ -1,0 +1,107 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        02/27/2014  11:03:12  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE 实例3.obj TO 实例3
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例3.obj (实例3)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  实例3 (实例3)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0001H     UNIT         ?DT?实例3
+            IDATA   0009H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0008H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+                    000EH     07F2H                  *** GAP ***
+            CODE    0800H     008CH     UNIT         ?C_C51STARTUP
+            CODE    088CH     0036H     UNIT         ?PR?INT0_SRV?实例3
+            CODE    08C2H     001BH     UNIT         ?PR?MAIN?实例3
+            CODE    08DDH     000AH     UNIT         ?CO?实例3
+            CODE    08E7H     0004H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   实例3 (实例3)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?PR?INT0_SRV?实例3
+  +--> ?CO?实例3
+
+*** NEW ROOT ***************************************************
+
+?C_C51STARTUP
+  +--> ?PR?MAIN?实例3
+  +--> ?C_INITSEG
+
+?PR?MAIN?实例3
+  +--> ?CO?实例3
+
+
+
+SYMBOL TABLE OF MODULE:  实例3 (实例3)
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/27/2014  11:03:12  PAGE 2
+
+
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        实例3
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+  B:00A8H.7       PUBLIC        EA
+  C:08DDH         PUBLIC        table
+  C:08C2H         PUBLIC        main
+  D:0008H         PUBLIC        count
+  D:0089H         PUBLIC        TMOD
+  C:088CH         PUBLIC        int0_srv
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  B:0088H.4       PUBLIC        TR0
+  -------         PROC          INT0_SRV
+  C:088CH         LINE#         6
+  C:0896H         LINE#         7
+  C:08A0H         LINE#         8
+  C:08ACH         LINE#         9
+  C:08B7H         LINE#         10
+  -------         ENDPROC       INT0_SRV
+  -------         PROC          MAIN
+  C:08C2H         LINE#         12
+  C:08C2H         LINE#         13
+  C:08CCH         LINE#         14
+  C:08CFH         LINE#         15
+  C:08D5H         LINE#         16
+  C:08D7H         LINE#         17
+  C:08D9H         LINE#         18
+  C:08DBH         LINE#         19
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        实例3
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0061H BYTE ( 4%) *
+******************************************************************************
+
+Program Size: data=10.0 xdata=0 code=241
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

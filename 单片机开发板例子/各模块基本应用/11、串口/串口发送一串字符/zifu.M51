@@ -1,0 +1,220 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        10/28/2019  23:38:56  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE zifu.obj TO zifu
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  zifu.obj (ZIFU)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\KEIL\C51\LIB\C51S.LIB (?C?CLDPTR)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  zifu (ZIFU)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     000FH     UNIT         ?DT?ZIFU
+            IDATA   0017H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0020H                  *** GAP ***
+            CODE    0023H     0003H     ABSOLUTE     
+                    0026H     07DAH                  *** GAP ***
+            CODE    0800H     008CH     UNIT         ?C_C51STARTUP
+            CODE    088CH     0031H     UNIT         ?PR?MAIN?ZIFU
+            CODE    08BDH     001DH     UNIT         ?PR?INIT?ZIFU
+            CODE    08DAH     0019H     UNIT         ?C?LIB_CODE
+            CODE    08F3H     0013H     UNIT         ?PR?_SENDC?ZIFU
+            CODE    0906H     0010H     UNIT         ?C_INITSEG
+            CODE    0916H     000FH     UNIT         ?PR?UART?ZIFU
+            CODE    0925H     000EH     UNIT         ?PR?_DELAY?ZIFU
+            CODE    0933H     000AH     UNIT         ?PR?_SEND?ZIFU
+            CODE    093DH     0003H     UNIT         ?PR?_RESEV?ZIFU
+
+
+
+OVERLAY MAP OF MODULE:   zifu (ZIFU)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?ZIFU
+  +--> ?C_INITSEG
+
+?PR?MAIN?ZIFU
+  +--> ?PR?INIT?ZIFU
+  +--> ?PR?_DELAY?ZIFU
+  +--> ?PR?_SENDC?ZIFU
+  +--> ?PR?_RESEV?ZIFU
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/28/2019  23:38:56  PAGE 2
+
+
+
+?PR?_SENDC?ZIFU
+  +--> ?PR?_SEND?ZIFU
+
+
+
+SYMBOL TABLE OF MODULE:  zifu (ZIFU)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ZIFU
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+  D:00A8H         PUBLIC        IE
+  C:08F3H         PUBLIC        _sendc
+  C:0925H         PUBLIC        _delay
+  B:00A8H.4       PUBLIC        ES
+  D:00B8H         PUBLIC        IP
+  B:0098H.0       PUBLIC        RI
+  B:0098H.1       PUBLIC        TI
+  B:00B0H.4       PUBLIC        s2
+  B:00B0H.5       PUBLIC        s3
+  C:088CH         PUBLIC        main
+  C:093DH         PUBLIC        _resev
+  C:0933H         PUBLIC        _send
+  D:0099H         PUBLIC        SBUF
+  D:0087H         PUBLIC        PCON
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  C:08BDH         PUBLIC        init
+  C:0916H         PUBLIC        uart
+  D:008DH         PUBLIC        TH1
+  D:0008H         PUBLIC        rev
+  D:008BH         PUBLIC        TL1
+  D:0009H         PUBLIC        zifuchuan
+  B:0088H.6       PUBLIC        TR1
+  B:0098H.4       PUBLIC        REN
+  D:00C8H         PUBLIC        T2CON
+  D:0016H         PUBLIC        sending
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          _DELAY
+  D:0007H         SYMBOL        i
+  -------         DO            
+  D:0007H         SYMBOL        j
+  D:0006H         SYMBOL        k
+  -------         ENDDO         
+  C:0925H         LINE#         22
+  C:0925H         LINE#         23
+  C:0925H         LINE#         25
+  C:092BH         LINE#         26
+  C:0932H         LINE#         27
+  -------         ENDPROC       _DELAY
+  -------         PROC          INIT
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/28/2019  23:38:56  PAGE 3
+
+
+  C:08BDH         LINE#         28
+  C:08BDH         LINE#         29
+  C:08BDH         LINE#         30
+  C:08BFH         LINE#         31
+  C:08C2H         LINE#         32
+  C:08C5H         LINE#         33
+  C:08C8H         LINE#         34
+  C:08CBH         LINE#         35
+  C:08CEH         LINE#         36
+  C:08D1H         LINE#         37
+  C:08D3H         LINE#         38
+  C:08D5H         LINE#         39
+  C:08D7H         LINE#         40
+  C:08D9H         LINE#         41
+  -------         ENDPROC       INIT
+  -------         PROC          _SEND
+  D:0007H         SYMBOL        d
+  C:0933H         LINE#         43
+  C:0933H         LINE#         44
+  C:0933H         LINE#         46
+  C:0935H         LINE#         47
+  C:0938H         LINE#         48
+  C:093CH         LINE#         49
+  -------         ENDPROC       _SEND
+  -------         PROC          _SENDC
+  D:0001H         SYMBOL        pd
+  C:08F3H         LINE#         51
+  C:08F3H         LINE#         52
+  C:08F3H         LINE#         53
+  C:08F9H         LINE#         54
+  C:08F9H         LINE#         55
+  C:08FCH         LINE#         56
+  C:0903H         LINE#         57
+  C:0905H         LINE#         58
+  -------         ENDPROC       _SENDC
+  -------         PROC          _RESEV
+  D:0006H         SYMBOL        rev
+  C:093DH         LINE#         60
+  C:093DH         LINE#         61
+  C:093DH         LINE#         62
+  C:093FH         LINE#         63
+  -------         ENDPROC       _RESEV
+  -------         PROC          MAIN
+  C:088CH         LINE#         64
+  C:088CH         LINE#         65
+  C:088CH         LINE#         66
+  C:088FH         LINE#         67
+  C:088FH         LINE#         68
+  C:088FH         LINE#         69
+  C:0892H         LINE#         70
+  C:0892H         LINE#         71
+  C:0897H         LINE#         72
+  C:089AH         LINE#         73
+  C:089AH         LINE#         74
+  C:089DH         LINE#         75
+  C:08A6H         LINE#         76
+  C:08A6H         LINE#         77
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/28/2019  23:38:56  PAGE 4
+
+
+  C:08A6H         LINE#         78
+  C:08A9H         LINE#         79
+  C:08A9H         LINE#         80
+  C:08AEH         LINE#         81
+  C:08B1H         LINE#         82
+  C:08B1H         LINE#         83
+  C:08B4H         LINE#         84
+  C:08BBH         LINE#         85
+  C:08BBH         LINE#         86
+  C:08BBH         LINE#         88
+  -------         ENDPROC       MAIN
+  -------         PROC          UART
+  C:0916H         LINE#         91
+  C:0916H         LINE#         93
+  C:0919H         LINE#         94
+  C:0919H         LINE#         95
+  C:091BH         LINE#         96
+  C:091EH         LINE#         98
+  C:091FH         LINE#         100
+  C:091FH         LINE#         101
+  C:0921H         LINE#         102
+  C:0924H         LINE#         103
+  C:0924H         LINE#         104
+  -------         ENDPROC       UART
+  -------         ENDMOD        ZIFU
+
+  -------         MODULE        ?C?CLDPTR
+  C:08DAH         PUBLIC        ?C?CLDPTR
+  -------         ENDMOD        ?C?CLDPTR
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 009DH BYTE ( 7%) *
+******************************************************************************
+
+Program Size: data=24.0 xdata=0 code=326
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

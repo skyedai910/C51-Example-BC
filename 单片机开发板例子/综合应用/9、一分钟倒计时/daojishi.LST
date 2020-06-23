@@ -1,0 +1,93 @@
+C51 COMPILER V8.02   DAOJISHI                                                              06/21/2010 13:04:34 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE DAOJISHI
+OBJECT MODULE PLACED IN daojishi.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE daojishi.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg51.h>
+   2          
+   3          sbit dula=P2^6;
+   4          sbit wela=P2^7;
+   5          sbit beep=P2^3;
+   6          unsigned char j,k,a1,a0,s=60;
+   7          unsigned int m;
+   8          unsigned char code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,
+   9                                  0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};
+  10          
+  11          void delay(unsigned char i)
+  12          {
+  13   1        for(j=i;j>0;j--)
+  14   1          for(k=125;k>0;k--);
+  15   1      }
+  16          void display(unsigned char sh_c,unsigned char g_c)
+  17          {
+  18   1         dula=0;
+  19   1         P0=table[sh_c];
+  20   1         dula=1;
+  21   1         dula=0;
+  22   1         
+  23   1         wela=0;
+  24   1         P0=0xfe;
+  25   1         wela=1;
+  26   1         wela=0;
+  27   1         delay(5);
+  28   1         
+  29   1         P0=table[g_c];
+  30   1         dula=1;
+  31   1         dula=0;
+  32   1         
+  33   1         P0=0xfd;
+  34   1         wela=1;
+  35   1         wela=0;
+  36   1         delay(5);
+  37   1      }
+  38          
+  39          void main()
+  40          {
+  41   1              TMOD=0x01;
+  42   1              TR0=1;
+  43   1              TH0=(65536-46080)/256;// 由于晶振为11.0592,故所记次数应为46080，计时器每隔50000微秒发起一次中断。
+  44   1              TL0=(65536-46080)%256;//46080的来历，为50000*11.0592/12
+  45   1              ET0=1;
+  46   1              EA=1;
+  47   1              while(1)
+  48   1              {
+  49   2                      if(m==20)
+  50   2                      {       m=0;
+  51   3                              s--;
+  52   3                      }
+  53   2                      a0=s%10;
+  54   2                      a1=s/10;
+  55   2                      display(a1,a0);
+C51 COMPILER V8.02   DAOJISHI                                                              06/21/2010 13:04:34 PAGE 2   
+
+  56   2                      if(s==0)
+  57   2                      {
+  58   3                              TR0=0;//时间到，定时器关闭
+  59   3                              beep=0;//蜂鸣器响，报时。
+  60   3                      }       
+  61   2              }
+  62   1      }
+  63          
+  64          void time0() interrupt 1
+  65          {TH0=(65536-46080)/256;
+  66   1              TL0=(65536-46080)%256;
+  67   1              m++;
+  68   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    148    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      7    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

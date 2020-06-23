@@ -1,0 +1,44 @@
+C51 COMPILER V9.56.0.0   EXA4                                                              12/23/2017 08:44:47 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE EXA4
+OBJECT MODULE PLACED IN exa4.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE exa4.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          //实例4 流水灯
+   2          #include <reg51.h>  
+   3          #include <intrins.h> //包含右循环移位库函数的头文件
+   4          
+   5          void delay(void)   //定义延时函数
+   6          { unsigned char i,j;
+   7   1        for(i=1;i<=100;i++)
+   8   1          for(j=1;j<=200;j++);
+   9   1      }
+  10          
+  11          void main()
+  12          { P2=0x7f;    //P2初值，即01111111B，对应于D8亮其余灭
+  13   1        delay();    //延时
+  14   1        while(1){     //无限循环
+  15   2          P2 =_cror_(P2,1); //调用右循环移位库函数将P2右循环1位
+  16   2          delay();  //延时
+  17   2        }
+  18   1      }
+  19          
+  20             
+  21            
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     40    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

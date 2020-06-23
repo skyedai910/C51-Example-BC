@@ -1,0 +1,102 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        06/19/2010  10:36:16  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE DAsin.obj TO DAsin RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  DAsin.obj (DASIN)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  DAsin (DASIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0002H     UNIT         ?DT?DASIN
+            DATA    000AH     0001H     UNIT         _DATA_GROUP_
+            IDATA   000BH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0106H     UNIT         ?CO?DASIN
+            CODE    0109H     0029H     UNIT         ?PR?MAIN?DASIN
+            CODE    0132H     0014H     UNIT         ?PR?_DELAY?DASIN
+            CODE    0146H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   DAsin (DASIN)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?DASIN
+
+?PR?MAIN?DASIN                 000AH    0001H
+  +--> ?CO?DASIN
+  +--> ?PR?_DELAY?DASIN
+
+
+
+SYMBOL TABLE OF MODULE:  DAsin (DASIN)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        DASIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/19/2010  10:36:16  PAGE 2
+
+
+  B:00B0H.2       PUBLIC        csda
+  C:0109H         PUBLIC        main
+  B:00A0H.6       PUBLIC        dula
+  B:00A0H.7       PUBLIC        wela
+  B:00B0H.6       PUBLIC        dawr
+  C:0003H         PUBLIC        dat
+  D:0008H         PUBLIC        j
+  D:0009H         PUBLIC        k
+  C:0132H         PUBLIC        _delay
+  -------         PROC          _DELAY
+  D:0007H         SYMBOL        i
+  C:0132H         LINE#         29
+  C:0132H         LINE#         30
+  C:0132H         LINE#         31
+  C:013BH         LINE#         32
+  C:0145H         LINE#         33
+  -------         ENDPROC       _DELAY
+  -------         PROC          MAIN
+  -------         DO            
+  D:000AH         SYMBOL        m
+  -------         ENDDO         
+  C:0109H         LINE#         34
+  C:0109H         LINE#         35
+  C:0109H         LINE#         36
+  C:010BH         LINE#         37
+  C:010DH         LINE#         38
+  C:010FH         LINE#         39
+  C:0111H         LINE#         40
+  C:0111H         LINE#         41
+  C:0111H         LINE#         43
+  C:011FH         LINE#         44
+  C:012BH         LINE#         45
+  C:0130H         LINE#         46
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        DASIN
+
+Program Size: data=12.0 xdata=0 code=338
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,294 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        11/25/2019  00:44:35  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE 24c02.obj TO 24c02
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  24c02.obj (24C02)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  24c02 (24C02)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     07FDH                  *** GAP ***
+            CODE    0800H     0027H     UNIT         ?PR?READBYTE?24C02
+            CODE    0827H     0027H     UNIT         ?PR?_READ24C02?24C02
+            CODE    084EH     0023H     UNIT         ?PR?CLOCK?24C02
+            CODE    0871H     001EH     UNIT         ?PR?_WRITEBYTE?24C02
+            CODE    088FH     001CH     UNIT         ?PR?_WRITE24C02?24C02
+            CODE    08ABH     0013H     UNIT         ?PR?MAIN?24C02
+            CODE    08BEH     0012H     UNIT         ?PR?_DELAY1?24C02
+            CODE    08D0H     000FH     UNIT         ?PR?START?24C02
+            CODE    08DFH     000CH     UNIT         ?C_C51STARTUP
+            CODE    08EBH     000AH     UNIT         ?PR?INIT?24C02
+            CODE    08F5H     000AH     UNIT         ?PR?STOP?24C02
+            CODE    08FFH     0008H     UNIT         ?PR?NOP?24C02
+
+
+
+OVERLAY MAP OF MODULE:   24c02 (24C02)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?24C02
+
+?PR?MAIN?24C02
+  +--> ?PR?INIT?24C02
+  +--> ?PR?_WRITE24C02?24C02
+  +--> ?PR?_READ24C02?24C02
+
+?PR?INIT?24C02
+  +--> ?PR?NOP?24C02
+
+?PR?_WRITE24C02?24C02
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/25/2019  00:44:35  PAGE 2
+
+
+  +--> ?PR?START?24C02
+  +--> ?PR?_WRITEBYTE?24C02
+  +--> ?PR?CLOCK?24C02
+  +--> ?PR?STOP?24C02
+  +--> ?PR?_DELAY1?24C02
+
+?PR?START?24C02
+  +--> ?PR?NOP?24C02
+
+?PR?_WRITEBYTE?24C02
+  +--> ?PR?NOP?24C02
+
+?PR?CLOCK?24C02
+  +--> ?PR?_WRITEBYTE?24C02
+  +--> ?PR?NOP?24C02
+
+?PR?STOP?24C02
+  +--> ?PR?NOP?24C02
+
+?PR?_READ24C02?24C02
+  +--> ?PR?START?24C02
+  +--> ?PR?CLOCK?24C02
+  +--> ?PR?_WRITEBYTE?24C02
+  +--> ?PR?READBYTE?24C02
+  +--> ?PR?STOP?24C02
+  +--> ?PR?_DELAY1?24C02
+
+?PR?READBYTE?24C02
+  +--> ?PR?NOP?24C02
+
+
+
+SYMBOL TABLE OF MODULE:  24c02 (24C02)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        24C02
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  C:0859H         PUBLIC        clock
+  B:00D0H.7       PUBLIC        CY
+  C:08ABH         PUBLIC        main
+  C:08D0H         PUBLIC        start
+  C:08EBH         PUBLIC        init
+  B:00A0H.0       PUBLIC        sda
+  C:08BEH         PUBLIC        _delay1
+  B:00A0H.1       PUBLIC        scl
+  C:08F5H         PUBLIC        stop
+  C:0827H         PUBLIC        _read24c02
+  C:0904H         PUBLIC        nop
+  C:0800H         PUBLIC        readbyte
+  C:088FH         PUBLIC        _write24c02
+  C:0871H         PUBLIC        _writebyte
+  C:08FFH         SYMBOL        L?0030
+  -------         PROC          L?0029
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/25/2019  00:44:35  PAGE 3
+
+
+  -------         ENDPROC       L?0029
+  C:08FFH         SYMBOL        L?0030
+  -------         PROC          NOP
+  C:0904H         LINE#         14
+  C:0904H         LINE#         15
+  C:0904H         LINE#         16
+  C:0905H         LINE#         17
+  C:0906H         LINE#         18
+  -------         ENDPROC       NOP
+  -------         PROC          _DELAY1
+  D:0006H         SYMBOL        m
+  -------         DO            
+  D:0004H         SYMBOL        n
+  -------         ENDDO         
+  C:08BEH         LINE#         20
+  C:08BEH         LINE#         21
+  C:08BEH         LINE#         22
+  C:08CFH         LINE#         23
+  -------         ENDPROC       _DELAY1
+  -------         PROC          INIT
+  C:08EBH         LINE#         25
+  C:08EBH         LINE#         26
+  C:08EBH         LINE#         27
+  C:08EDH         LINE#         28
+  C:08F0H         LINE#         29
+  C:08F2H         LINE#         30
+  -------         ENDPROC       INIT
+  -------         PROC          START
+  C:08D0H         LINE#         33
+  C:08D0H         LINE#         34
+  C:08D0H         LINE#         35
+  C:08D2H         LINE#         36
+  C:08D2H         LINE#         37
+  C:08D2H         LINE#         38
+  C:08D5H         LINE#         39
+  C:08D7H         LINE#         40
+  C:08DAH         LINE#         41
+  C:08DCH         LINE#         42
+  -------         ENDPROC       START
+  -------         PROC          STOP
+  C:08F5H         LINE#         45
+  C:08F5H         LINE#         46
+  C:08F5H         LINE#         47
+  C:08F7H         LINE#         48
+  C:08F7H         LINE#         49
+  C:08F7H         LINE#         50
+  C:08FAH         LINE#         51
+  C:08FCH         LINE#         52
+  -------         ENDPROC       STOP
+  -------         PROC          _WRITEBYTE
+  D:0007H         SYMBOL        j
+  -------         DO            
+  D:0006H         SYMBOL        i
+  D:0007H         SYMBOL        temp
+  -------         ENDDO         
+  C:0871H         LINE#         55
+  C:0871H         LINE#         56
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/25/2019  00:44:35  PAGE 4
+
+
+  C:0871H         LINE#         58
+  C:0871H         LINE#         59
+  C:0873H         LINE#         60
+  C:0873H         LINE#         61
+  C:0877H         LINE#         62
+  C:0879H         LINE#         63
+  C:087CH         LINE#         64
+  C:087EH         LINE#         65
+  C:087EH         LINE#         66
+  C:087EH         LINE#         67
+  C:0881H         LINE#         68
+  C:0885H         LINE#         69
+  C:0887H         LINE#         70
+  C:088AH         LINE#         71
+  C:088CH         LINE#         72
+  -------         ENDPROC       _WRITEBYTE
+  -------         PROC          READBYTE
+  -------         DO            
+  D:0005H         SYMBOL        i
+  D:0007H         SYMBOL        j
+  D:0006H         SYMBOL        k
+  -------         ENDDO         
+  C:0800H         LINE#         75
+  C:0800H         LINE#         76
+  C:0800H         LINE#         77
+  C:0802H         LINE#         78
+  C:0809H         LINE#         79
+  C:080AH         LINE#         80
+  C:080AH         LINE#         81
+  C:080DH         LINE#         82
+  C:0810H         LINE#         83
+  C:0814H         LINE#         85
+  C:0816H         LINE#         86
+  C:081BH         LINE#         87
+  C:081DH         LINE#         88
+  C:0821H         LINE#         89
+  C:0824H         LINE#         90
+  C:0826H         LINE#         91
+  -------         ENDPROC       READBYTE
+  -------         PROC          L?0028
+  -------         ENDPROC       L?0028
+  -------         PROC          CLOCK
+  -------         DO            
+  D:0007H         SYMBOL        i
+  -------         ENDDO         
+  C:0859H         LINE#         93
+  C:0859H         LINE#         94
+  C:0859H         LINE#         95
+  C:085BH         LINE#         96
+  C:085DH         LINE#         97
+  C:0860H         LINE#         98
+  C:0869H         LINE#         99
+  C:086CH         LINE#         100
+  C:086EH         LINE#         101
+  -------         ENDPROC       CLOCK
+  -------         PROC          _READ24C02
+  D:0005H         SYMBOL        address
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/25/2019  00:44:35  PAGE 5
+
+
+  -------         DO            
+  D:0003H         SYMBOL        i
+  -------         ENDDO         
+  C:0827H         LINE#         105
+  C:0829H         LINE#         106
+  C:0829H         LINE#         108
+  C:082CH         LINE#         109
+  C:082EH         LINE#         110
+  C:082EH         LINE#         111
+  C:082EH         LINE#         112
+  C:0831H         LINE#         113
+  C:0834H         LINE#         114
+  C:0839H         LINE#         115
+  C:083CH         LINE#         116
+  C:0841H         LINE#         117
+  C:0844H         LINE#         118
+  C:084BH         LINE#         119
+  C:084DH         LINE#         120
+  -------         ENDPROC       _READ24C02
+  -------         PROC          _WRITE24C02
+  D:0004H         SYMBOL        address
+  D:0005H         SYMBOL        info
+  C:088FH         LINE#         123
+  C:0891H         LINE#         124
+  C:0891H         LINE#         125
+  C:0894H         LINE#         126
+  C:0899H         LINE#         127
+  C:089CH         LINE#         128
+  C:089EH         LINE#         129
+  C:089EH         LINE#         130
+  C:089EH         LINE#         131
+  C:08A1H         LINE#         132
+  C:08A4H         LINE#         133
+  -------         ENDPROC       _WRITE24C02
+  -------         PROC          MAIN
+  C:08ABH         LINE#         136
+  C:08ABH         LINE#         137
+  C:08ABH         LINE#         138
+  C:08AEH         LINE#         139
+  C:08B5H         LINE#         140
+  C:08BCH         LINE#         141
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        24C02
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 00FBH BYTE (12%) *
+******************************************************************************
+
+Program Size: data=9.0 xdata=0 code=266
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

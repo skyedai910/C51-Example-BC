@@ -1,0 +1,72 @@
+C51 COMPILER V9.00   CHUANKOU                                                              10/31/2019 00:08:08 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE CHUANKOU
+OBJECT MODULE PLACED IN chuankou.OBJ
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE chuankou.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*****************************************************************
+   2           程序功能：      计算机通过串口向单片机发送数据，单片机接受后会将接受到
+   3                                   的数据重新发送给计算机。
+   4                                   本程序需用到串口调试助手软件，下载程序后，在发送区发送
+   5                                   数据后，会在上面的接受区显示单片机返回来的数据。
+   6          *****************************************************************/
+   7          
+   8          #include <reg52.h>
+   9                  
+  10          #define uchar  unsigned char 
+  11          #define uint   unsigned int
+  12          
+  13          uchar buf;
+  14          
+  15          void senddata(uchar dat)
+  16          {
+  17   1           SBUF =dat;
+  18   1           while(!TI);
+  19   1           TI = 0;
+  20   1      }
+  21          
+  22          void main(void) 
+  23          {
+  24   1          SCON=0x50;           //设定串口工作方式
+  25   1          PCON=0x00;           //波特率不倍增
+  26   1                              
+  27   1          TMOD=0x20;           //定时器1工作于8位自动重载模式, 用于产生波特率
+  28   1          EA=1;
+  29   1          ES = 1;              //允许串口中断
+  30   1          TL1=0xfd;
+  31   1          TH1=0xfd;             //波特率9600
+  32   1          TR1=1;
+  33   1          while(1);        
+  34   1      }
+  35          /*********************************************************
+  36          
+  37            串行中断服务函数
+  38          
+  39          *********************************************************/
+  40          void  serial() interrupt 4 
+  41          {
+  42   1         ES = 0;                //关闭串行中断
+  43   1         RI = 0;                //清除串行接受标志位
+  44   1         buf = SBUF;            //从串口缓冲区取得数据
+  45   1         senddata(buf);  
+  46   1         ES = 1;    //允许串口中断
+  47   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     57    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+C51 COMPILER V9.00   CHUANKOU                                                              10/31/2019 00:08:08 PAGE 2   
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

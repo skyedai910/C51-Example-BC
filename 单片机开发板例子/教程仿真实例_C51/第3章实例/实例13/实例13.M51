@@ -1,0 +1,109 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/22/2017  21:54:12  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE 实例13.obj TO 实例13
+
+
+MEMORY MODEL: SMALL WITH FLOATING POINT ARITHMETIC
+
+
+INPUT MODULES INCLUDED:
+  实例13.obj (____13)
+  C:\KEIL_V5\C51\LIB\C51FPS.LIB (?C?FPADD)
+  C:\KEIL_V5\C51\LIB\C51FPS.LIB (?C?FPDIV)
+  C:\KEIL_V5\C51\LIB\C51FPS.LIB (?C?FCAST)
+  C:\KEIL_V5\C51\LIB\C51FPS.LIB (?C?FPGETOPN)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C?ILDPTR)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C?LNEG)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  实例13 (____13)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0019H     UNIT         ?DT?____13
+            DATA    0021H     0004H     UNIT         _DATA_GROUP_
+            IDATA   0025H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0259H     UNIT         ?C?LIB_CODE
+            CODE    025CH     008CH     UNIT         ?C_C51STARTUP
+            CODE    02E8H     007AH     UNIT         ?PR?MAIN?____13
+            CODE    0362H     0017H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   实例13 (____13)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?____13
+  +--> ?C_INITSEG
+
+?PR?MAIN?____13                0021H    0004H
+
+
+
+SYMBOL TABLE OF MODULE:  实例13 (____13)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/22/2017  21:54:12  PAGE 2
+
+
+
+  -------         MODULE        ____13
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:02E8H         PUBLIC        main
+  D:0008H         PUBLIC        app
+  D:000BH         PUBLIC        a
+  D:001FH         PUBLIC        i
+  -------         PROC          MAIN
+  -------         DO            
+  D:0021H         SYMBOL        result
+  -------         ENDDO         
+  C:02E8H         LINE#         6
+  C:02E8H         LINE#         7
+  C:02F1H         LINE#         8
+  C:0307H         LINE#         9
+  C:0347H         LINE#         10
+  C:0361H         LINE#         11
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        ____13
+
+  -------         MODULE        ?C?FPADD
+  C:000AH         PUBLIC        ?C?FPADD
+  C:0006H         PUBLIC        ?C?FPSUB
+  -------         ENDMOD        ?C?FPADD
+
+  -------         MODULE        ?C?FPDIV
+  C:00FEH         PUBLIC        ?C?FPDIV
+  -------         ENDMOD        ?C?FPDIV
+
+  -------         MODULE        ?C?FCAST
+  C:01A5H         PUBLIC        ?C?FCASTC
+  C:01A0H         PUBLIC        ?C?FCASTI
+  C:019BH         PUBLIC        ?C?FCASTL
+  -------         ENDMOD        ?C?FCAST
+
+  -------         MODULE        ?C?ILDPTR
+  C:0223H         PUBLIC        ?C?ILDPTR
+  -------         ENDMOD        ?C?ILDPTR
+
+  -------         MODULE        ?C?LNEG
+  C:024EH         PUBLIC        ?C?LNEG
+  -------         ENDMOD        ?C?LNEG
+
+Program Size: data=38.0 xdata=0 code=889
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,93 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        01/18/2014  14:51:51  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE 实例2B.obj TO 实例2B
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例2B.obj (实例2B)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  实例2B (实例2B)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0028H     UNIT         ?PR?MAIN?实例2B
+            CODE    002BH     000CH     UNIT         ?C_C51STARTUP
+            CODE    0037H     000AH     UNIT         ?CO?实例2B
+
+
+
+OVERLAY MAP OF MODULE:   实例2B (实例2B)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?实例2B
+
+?PR?MAIN?实例2B
+  +--> ?CO?实例2B
+
+
+
+SYMBOL TABLE OF MODULE:  实例2B (实例2B)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        实例2B
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:00A0H         PUBLIC        P2
+  B:0098H.0       PUBLIC        RI
+  B:0098H.1       PUBLIC        TI
+  C:0003H         PUBLIC        main
+  D:0099H         PUBLIC        SBUF
+  D:0087H         PUBLIC        PCON
+  D:0098H         PUBLIC        SCON
+BL51 BANKED LINKER/LOCATER V6.00                                                      01/18/2014  14:51:51  PAGE 2
+
+
+  D:0089H         PUBLIC        TMOD
+  C:0037H         PUBLIC        map
+  D:008DH         PUBLIC        TH1
+  D:008BH         PUBLIC        TL1
+  B:0088H.6       PUBLIC        TR1
+  -------         PROC          MAIN
+  -------         DO            
+  D:0007H         SYMBOL        receiv
+  -------         ENDDO         
+  C:0003H         LINE#         7
+  C:0003H         LINE#         9
+  C:0006H         LINE#         10
+  C:000CH         LINE#         11
+  C:000FH         LINE#         12
+  C:0012H         LINE#         13
+  C:0014H         LINE#         14
+  C:0014H         LINE#         15
+  C:0017H         LINE#         16
+  C:0019H         LINE#         17
+  C:001BH         LINE#         18
+  C:001DH         LINE#         19
+  C:0020H         LINE#         20
+  C:0022H         LINE#         21
+  C:0029H         LINE#         22
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        实例2B
+
+Program Size: data=9.0 xdata=0 code=65
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

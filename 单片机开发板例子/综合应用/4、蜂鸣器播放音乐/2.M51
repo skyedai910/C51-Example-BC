@@ -1,0 +1,169 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        06/19/2010  14:29:58  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE 单音音乐.obj TO 2 RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  单音音乐.obj (单____乐)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  2 (单____乐)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0003H     UNIT         ?DT?单____乐
+            DATA    000BH     0001H     UNIT         _DATA_GROUP_
+                    000CH     0014H                  *** GAP ***
+            BIT     0020H.0   0000H.1   UNIT         ?BI?单____乐
+                    0020H.1   0000H.7                *** GAP ***
+            IDATA   0021H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0008H     UNIT         ?PR?INIT?单____乐
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     008CH     UNIT         ?C_C51STARTUP
+            CODE    009AH     0065H     UNIT         ?PR?MAIN?单____乐
+            CODE    00FFH     0061H     UNIT         ?CO?单____乐
+            CODE    0160H     0020H     UNIT         ?PR?_DELAYMS?单____乐
+            CODE    0180H     0013H     UNIT         ?PR?COUNT1?单____乐
+            CODE    0193H     0004H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   2 (单____乐)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?单____乐
+  +--> ?C_INITSEG
+
+?PR?MAIN?单____乐              000BH    0001H
+  +--> ?PR?INIT?单____乐
+  +--> ?CO?单____乐
+  +--> ?PR?_DELAYMS?单____乐
+
+
+
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/19/2010  14:29:58  PAGE 2
+
+
+SYMBOL TABLE OF MODULE:  2 (单____乐)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        单____乐
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  B:00A8H.7       PUBLIC        EA
+  C:0160H         PUBLIC        _DelayMs
+  B:00A0H.3       PUBLIC        P2_3
+  C:0003H         PUBLIC        Init
+  B:0020H.0       PUBLIC        flag
+  D:0008H         PUBLIC        high
+  C:00FFH         PUBLIC        music
+  C:009AH         PUBLIC        main
+  D:0089H         PUBLIC        TMOD
+  C:0180H         PUBLIC        Count1
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  D:0009H         PUBLIC        low
+  B:0088H.4       PUBLIC        TR0
+  D:000AH         PUBLIC        ptr
+  -------         PROC          MAIN
+  -------         DO            
+  D:000BH         SYMBOL        time
+  -------         ENDDO         
+  C:009AH         LINE#         33
+  C:009AH         LINE#         34
+  C:009AH         LINE#         36
+  C:009DH         LINE#         37
+  C:00A0H         LINE#         38
+  C:00A3H         LINE#         39
+  C:00A3H         LINE#         40
+  C:00A3H         LINE#         41
+  C:00B0H         LINE#         42
+  C:00B0H         LINE#         43
+  C:00B2H         LINE#         44
+  C:00B4H         LINE#         45
+  C:00BBH         LINE#         46
+  C:00BDH         LINE#         47
+  C:00C5H         LINE#         48
+  C:00CBH         LINE#         49
+  C:00CEH         LINE#         50
+  C:00CEH         LINE#         51
+  C:00CEH         LINE#         52
+  C:00D0H         LINE#         53
+  C:00D9H         LINE#         54
+  C:00D9H         LINE#         55
+  C:00E1H         LINE#         56
+  C:00E7H         LINE#         57
+  C:00EDH         LINE#         58
+  C:00EFH         LINE#         61
+  C:00EFH         LINE#         62
+  C:00F1H         LINE#         63
+  C:00F3H         LINE#         64
+  C:00FAH         LINE#         65
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/19/2010  14:29:58  PAGE 3
+
+
+  C:00FDH         LINE#         66
+  C:00FDH         LINE#         67
+  -------         ENDPROC       MAIN
+  -------         PROC          COUNT1
+  C:0180H         LINE#         73
+  C:0180H         LINE#         75
+  C:0183H         LINE#         76
+  C:0186H         LINE#         77
+  C:0189H         LINE#         78
+  C:0189H         LINE#         79
+  C:018BH         LINE#         80
+  C:018DH         LINE#         81
+  C:018EH         LINE#         83
+  C:018EH         LINE#         84
+  C:0190H         LINE#         85
+  C:0192H         LINE#         86
+  C:0192H         LINE#         87
+  -------         ENDPROC       COUNT1
+  -------         PROC          INIT
+  C:0003H         LINE#         92
+  C:0003H         LINE#         93
+  C:0003H         LINE#         94
+  C:0006H         LINE#         95
+  C:0008H         LINE#         96
+  C:000AH         LINE#         97
+  -------         ENDPROC       INIT
+  -------         PROC          _DELAYMS
+  D:0006H         SYMBOL        time
+  -------         DO            
+  D:0002H         SYMBOL        i
+  D:0004H         SYMBOL        j
+  -------         ENDDO         
+  C:0160H         LINE#         102
+  C:0160H         LINE#         103
+  C:0160H         LINE#         106
+  C:016AH         LINE#         107
+  C:016AH         LINE#         108
+  C:016DH         LINE#         109
+  C:0178H         LINE#         110
+  C:017FH         LINE#         111
+  -------         ENDPROC       _DELAYMS
+  -------         ENDMOD        单____乐
+
+Program Size: data=13.1 xdata=0 code=407
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

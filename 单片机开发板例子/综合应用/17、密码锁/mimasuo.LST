@@ -1,0 +1,398 @@
+C51 COMPILER V8.02   MIMASUO                                                               07/14/2010 14:24:02 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE MIMASUO
+OBJECT MODULE PLACED IN mimasuo.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE mimasuo.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*******************************************************************************
+   2                                                  “天祥电子”    倾情奉献
+   3                                                                  www.txmcu.cn
+   4                                                                  www.txmcu.com
+   5          ********************************************************************************
+   6                                                                          功能键
+   7                                                          S6---S15        数字键0-9
+   8                                          S16---更改密码          S17---更改密码完毕后确认
+   9                                          S18---重试密码、重新设定        S19---关闭密码锁
+  10                                          初始密码：000000        密码位数：6位
+  11                                          注意：掉电后，所设密码会丢失，重新上点时，密码恢复为原始的000000
+  12                                          与P1相连的8位发光LED点亮代表锁被打开；熄灭代表锁被锁上
+  13          
+  14          程序功能：
+  15                            1、开锁：
+  16                            下载程序后，直接按六次S7（即代表数字1），8位LED亮，锁被打开，输入密码时，
+  17                            六位数码管依次显示小横杠。
+  18                            2、更改密码：
+  19                            只有当开锁（LED亮）后，该功能方可使用。
+  20                            首先按下更改密码键S16，然后设置相应密码，此时六位数码管会显示设置密码对应
+  21                            的数字。最后设置完六位后，按下S17确认密码更改，此后新密码即生效。
+  22                            3、重试密码：
+  23                            当输入密码时，密码输错后按下键S18，可重新输入六位密码。
+  24                            当设置密码时，设置中途想更改密码，也可按下此键重新设置。
+  25                            4、关闭密码锁：
+  26                            按下S19即可将打开的密码锁关闭。
+  27          推荐初级演示步骤：输入原始密码111111---按下更改密码按键S16---按0到9设置密码---按S17
+  28                                  确认密码更改---按S18关闭密码锁---输入新的密码打开密码锁
+  29          *******************************************************************************/
+  30          #include<reg52.h>
+  31          
+  32          #define uchar unsigned char
+  33          #define uint unsigned int
+  34          
+  35          uchar old1,old2,old3,old4,old5,old6; //原始密码
+  36          uchar new1,new2,new3,new4,new5,new6;  //每次MCU采集到的密码输入
+  37          uchar a=16,b=16,c=16,d=16,e=16,f=16; //送入数码管显示的变量
+  38          uchar wei,key,temp;
+  39          
+  40          bit allow,genggai,ok,wanbi,retry,close;  //各个状态位
+  41          
+  42          sbit dula=P2^6;
+  43          sbit wela=P2^7;
+  44          sbit beep=P2^3;
+  45          
+  46          unsigned char code table[]=
+  47          {0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,
+  48          0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71,0x00,0x40};
+  49          
+  50          void delay(unsigned char i)
+  51          {
+  52   1              uchar j,k;
+  53   1        for(j=i;j>0;j--)
+  54   1          for(k=125;k>0;k--);
+  55   1      }
+C51 COMPILER V8.02   MIMASUO                                                               07/14/2010 14:24:02 PAGE 2   
+
+  56          
+  57          void display(uchar a,uchar b,uchar c,uchar d,uchar e,uchar f)
+  58          {
+  59   1         dula=0;
+  60   1         P0=table[a];
+  61   1         dula=1;
+  62   1         dula=0;
+  63   1         
+  64   1         wela=0;
+  65   1         P0=0xfe;
+  66   1         wela=1;
+  67   1         wela=0;
+  68   1         delay(5);
+  69   1         
+  70   1         P0=table[b];
+  71   1         dula=1;
+  72   1         dula=0;
+  73   1         
+  74   1         P0=0xfd;
+  75   1         wela=1;
+  76   1         wela=0;
+  77   1         delay(5);
+  78   1      
+  79   1         P0=table[c];
+  80   1         dula=1;
+  81   1         dula=0;
+  82   1         
+  83   1         P0=0xfb;
+  84   1         wela=1;
+  85   1         wela=0;
+  86   1         delay(5);
+  87   1         
+  88   1         P0=table[d];
+  89   1         dula=1;
+  90   1         dula=0;
+  91   1         
+  92   1         P0=0xf7;
+  93   1         wela=1;
+  94   1         wela=0;
+  95   1         delay(5);
+  96   1         
+  97   1         P0=table[e];
+  98   1         dula=1;
+  99   1         dula=0;
+ 100   1         
+ 101   1         P0=0xef;
+ 102   1         wela=1;
+ 103   1         wela=0;
+ 104   1         delay(5);
+ 105   1         
+ 106   1         P0=table[f];
+ 107   1         dula=1;
+ 108   1         dula=0;
+ 109   1         
+ 110   1         P0=0xdf;
+ 111   1         wela=1;
+ 112   1         wela=0;
+ 113   1         delay(5);
+ 114   1      }
+ 115          
+ 116          
+ 117          void keyscan()
+C51 COMPILER V8.02   MIMASUO                                                               07/14/2010 14:24:02 PAGE 3   
+
+ 118          {
+ 119   1        {     
+ 120   2          P3=0xfe;
+ 121   2          temp=P3;
+ 122   2          temp=temp&0xf0;
+ 123   2          if(temp!=0xf0)
+ 124   2          {
+ 125   3            delay(10);
+ 126   3            if(temp!=0xf0)
+ 127   3            { 
+ 128   4              temp=P3;
+ 129   4              switch(temp)
+ 130   4              {
+ 131   5                case 0xee:
+ 132   5                     key=0;
+ 133   5                                 wei++;
+ 134   5                     break;
+ 135   5      
+ 136   5                case 0xde:
+ 137   5                     key=1;
+ 138   5                                 wei++;
+ 139   5                     break;
+ 140   5      
+ 141   5                case 0xbe:
+ 142   5                     key=2;
+ 143   5                                 wei++;
+ 144   5                     break;
+ 145   5      
+ 146   5                case 0x7e:
+ 147   5                     key=3;
+ 148   5                                 wei++;
+ 149   5                     break;
+ 150   5               }
+ 151   4               while(temp!=0xf0) 
+ 152   4              {
+ 153   5                 temp=P3;
+ 154   5                 temp=temp&0xf0;
+ 155   5                 beep=0;
+ 156   5               }
+ 157   4               beep=1;
+ 158   4            }
+ 159   3          }
+ 160   2          P3=0xfd;
+ 161   2          temp=P3;
+ 162   2          temp=temp&0xf0;
+ 163   2          if(temp!=0xf0)
+ 164   2          {
+ 165   3            delay(10);
+ 166   3            if(temp!=0xf0)
+ 167   3            {
+ 168   4              temp=P3;
+ 169   4              switch(temp)
+ 170   4              {
+ 171   5                case 0xed:
+ 172   5                     key=4;
+ 173   5                                 wei++;
+ 174   5                     break;
+ 175   5      
+ 176   5                case 0xdd:
+ 177   5                     key=5;
+ 178   5                                 wei++;
+ 179   5                     break;
+C51 COMPILER V8.02   MIMASUO                                                               07/14/2010 14:24:02 PAGE 4   
+
+ 180   5      
+ 181   5                case 0xbd:
+ 182   5                     key=6;
+ 183   5                                 wei++;
+ 184   5                     break;
+ 185   5      
+ 186   5                case 0x7d:
+ 187   5                     key=7;
+ 188   5                                 wei++;
+ 189   5                     break;
+ 190   5               }
+ 191   4               while(temp!=0xf0)
+ 192   4               {
+ 193   5                 temp=P3;
+ 194   5                 temp=temp&0xf0;
+ 195   5                 beep=0;
+ 196   5               }
+ 197   4               beep=1;
+ 198   4            }
+ 199   3            }
+ 200   2          P3=0xfb;
+ 201   2          temp=P3;
+ 202   2          temp=temp&0xf0;
+ 203   2          if(temp!=0xf0)
+ 204   2          {
+ 205   3            delay(10);
+ 206   3            if(temp!=0xf0)
+ 207   3            {
+ 208   4              temp=P3;
+ 209   4              switch(temp)
+ 210   4              {
+ 211   5                case 0xeb:
+ 212   5                     key=8;
+ 213   5                                 wei++;
+ 214   5                     break;
+ 215   5      
+ 216   5                case 0xdb:
+ 217   5                     key=9;
+ 218   5                                 wei++;
+ 219   5                     break;
+ 220   5                                 
+ 221   5                case 0xbb:
+ 222   5                     genggai=1;
+ 223   5                                 wei=0;
+ 224   5                     break;
+ 225   5      
+ 226   5                case 0x7b:
+ 227   5                                 if(allow)
+ 228   5                     ok=1;
+ 229   5                     break;
+ 230   5               }
+ 231   4              while(temp!=0xf0)
+ 232   4               {
+ 233   5                 temp=P3;
+ 234   5                 temp=temp&0xf0;
+ 235   5                 beep=0;
+ 236   5               }
+ 237   4               beep=1;
+ 238   4            }
+ 239   3            }
+ 240   2                P3=0xf7;
+ 241   2          temp=P3;
+C51 COMPILER V8.02   MIMASUO                                                               07/14/2010 14:24:02 PAGE 5   
+
+ 242   2          temp=temp&0xf0;
+ 243   2          if(temp!=0xf0)
+ 244   2          {
+ 245   3            delay(10);
+ 246   3            if(temp!=0xf0)
+ 247   3            {
+ 248   4              temp=P3;
+ 249   4              switch(temp)
+ 250   4              {
+ 251   5                case 0xe7:
+ 252   5                                 retry=1;
+ 253   5                     break;
+ 254   5      
+ 255   5                case 0xd7:
+ 256   5                                 close=1;
+ 257   5                     break;
+ 258   5               }
+ 259   4              while(temp!=0xf0)
+ 260   4               {
+ 261   5                 temp=P3;
+ 262   5                 temp=temp&0xf0;
+ 263   5                 beep=0;
+ 264   5               }
+ 265   4               beep=1;
+ 266   4            }
+ 267   3            }
+ 268   2      }
+ 269   1      }
+ 270          
+ 271          void shumima()          //对按键采集来的数据进行分配
+ 272          {
+ 273   1              if(!wanbi)
+ 274   1              {
+ 275   2              switch(wei)
+ 276   2              {
+ 277   3                      case 1:new1=key; 
+ 278   3                                  if(!allow)  a=17;
+ 279   3                                 else a=key;  break;
+ 280   3                      case 2:new2=key;
+ 281   3                                      if(a==17) b=17;
+ 282   3                                      else b=key;     break;
+ 283   3                      case 3:new3=key; 
+ 284   3                                      if(a==17) c=17;
+ 285   3                                      else c=key;     break;
+ 286   3                      case 4:new4=key;
+ 287   3                                      if(a==17) d=17;
+ 288   3                                      else d=key;     break;
+ 289   3                      case 5:new5=key; 
+ 290   3                                      if(a==17) e=17;
+ 291   3                                      else e=key;     break;
+ 292   3                      case 6:new6=key; 
+ 293   3                                      if(a==17) f=17;
+ 294   3                                      else f=key;
+ 295   3                                      wanbi=1;        break;
+ 296   3              }
+ 297   2              }
+ 298   1      }
+ 299          
+ 300          void yanzheng()   //验证密码是否正确
+ 301          {
+ 302   1              if(wanbi)        //只有当六位密码均输入完毕后方进行验证
+ 303   1              {
+C51 COMPILER V8.02   MIMASUO                                                               07/14/2010 14:24:02 PAGE 6   
+
+ 304   2              if((new1==old1)&(new2==old2)&(new3==old3)&(new4==old4)&(new5==old5)&(new6==old6))
+ 305   2                      allow=1;        //当输入的密码正确，会得到allowe置一
+ 306   2              }
+ 307   1      }
+ 308          
+ 309          void main()
+ 310          {
+ 311   1              while(1)
+ 312   1              {
+ 313   2                      keyscan();
+ 314   2                      shumima();
+ 315   2                      yanzheng();
+ 316   2                      if(allow)        //验证完后，若allow为1，则开锁
+ 317   2                      {
+ 318   3                              P1=0x00;
+ 319   3                              if(!genggai)
+ 320   3                                      wanbi=0;
+ 321   3                      }
+ 322   2                      if(genggai)       //当S16更改密码键被按下，genggai会被置一
+ 323   2                      {
+ 324   3                              if(allow)        //若已经把锁打开，才有更改密码的权限
+ 325   3                              {
+ 326   4                                      while(!wanbi)   //当新的六位密码没有设定完，则一直在这里循环
+ 327   4                                      {
+ 328   5                                              keyscan();
+ 329   5                                              shumima();
+ 330   5                                              if(retry|close)  //而当探测到重试键S18或者关闭密码锁键S19被按下时，则跳出
+ 331   5                                              {       wanbi=1;
+ 332   6                                                      break;
+ 333   6                                              }
+ 334   5                                              display(a,b,c,d,e,f);
+ 335   5                                      }
+ 336   4                              }
+ 337   3                      }
+ 338   2                      if(ok)    //更改密码时，当所有六位新密码均被按下时，可以按下此键，结束密码更改
+ 339   2                      {                 //其他时间按下此键无效
+ 340   3                              ok=0; wei=0;
+ 341   3                              genggai=0;
+ 342   3                              old1=new1;old2=new2;old3=new3; //此时，旧的密码将被代替
+ 343   3                              old4=new4;old5=new5;old6=new6;
+ 344   3                              a=16;b=16;c=16;d=16;e=16;f=16;
+ 345   3                      }
+ 346   2                      if(retry)       //当重试按键S18被按下，retry会被置位
+ 347   2                      {
+ 348   3                      retry=0; wei=0;wanbi=0;
+ 349   3                      a=16;b=16;c=16;d=16;e=16;f=16;
+ 350   3                      new1=0;new2=0;new3=0;new4=0;new5=0;new6=0;              
+ 351   3                      }
+ 352   2                      if(close)  //当关闭密码锁按键被按下，close会被置位
+ 353   2                      {
+ 354   3                              close=0;genggai=0;//所有变量均被清零。
+ 355   3                              wei=0;  wanbi=0;
+ 356   3                              allow=0;
+ 357   3                              P1=0xff;
+ 358   3                              a=16;b=16;c=16;d=16;e=16;f=16;
+ 359   3                              new1=0;new2=0;new3=0;new4=0;new5=0;new6=0;
+ 360   3                      }
+ 361   2                      display(a,b,c,d,e,f); //实时显示
+ 362   2              }
+ 363   1      }
+
+
+C51 COMPILER V8.02   MIMASUO                                                               07/14/2010 14:24:02 PAGE 7   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    871    ----
+   CONSTANT SIZE    =     18    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     21       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      6    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

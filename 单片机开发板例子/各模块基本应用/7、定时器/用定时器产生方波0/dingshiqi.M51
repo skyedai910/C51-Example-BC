@@ -1,0 +1,104 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        07/03/2010  16:50:51  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE dingshiqi.obj TO dingshiqi
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  dingshiqi.obj (DINGSHIQI)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  dingshiqi (DINGSHIQI)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0002H     UNIT         ?DT?DINGSHIQI
+            IDATA   000AH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0008H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     002EH     UNIT         ?PR?MAIN?DINGSHIQI
+            CODE    003CH     0013H     UNIT         ?PR?TIME0?DINGSHIQI
+            CODE    004FH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   dingshiqi (DINGSHIQI)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?DINGSHIQI
+
+
+
+SYMBOL TABLE OF MODULE:  dingshiqi (DINGSHIQI)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        DINGSHIQI
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  C:000EH         PUBLIC        main
+  D:0098H         PUBLIC        SCON
+BL51 BANKED LINKER/LOCATER V6.00                                                      07/03/2010  16:50:51  PAGE 2
+
+
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  B:0090H.0       PUBLIC        pwm
+  B:0088H.4       PUBLIC        TR0
+  D:0008H         PUBLIC        pp
+  C:003CH         PUBLIC        time0
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          MAIN
+  C:000EH         LINE#         20
+  C:000EH         LINE#         21
+  C:000EH         LINE#         22
+  C:0011H         LINE#         23
+  C:0013H         LINE#         24
+  C:0016H         LINE#         25
+  C:0019H         LINE#         26
+  C:001BH         LINE#         27
+  C:001DH         LINE#         28
+  C:001DH         LINE#         29
+  C:001DH         LINE#         30
+  C:0028H         LINE#         31
+  C:002CH         LINE#         33
+  C:002EH         LINE#         34
+  C:0036H         LINE#         35
+  C:003AH         LINE#         36
+  -------         ENDPROC       MAIN
+  -------         PROC          TIME0
+  C:003CH         LINE#         39
+  C:003EH         LINE#         40
+  C:0041H         LINE#         41
+  C:0044H         LINE#         42
+  C:004CH         LINE#         43
+  -------         ENDPROC       TIME0
+  -------         ENDMOD        DINGSHIQI
+
+Program Size: data=11.0 xdata=0 code=83
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

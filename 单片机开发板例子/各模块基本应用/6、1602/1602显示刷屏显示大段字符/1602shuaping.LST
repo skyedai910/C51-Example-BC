@@ -1,0 +1,217 @@
+C51 COMPILER V8.02   1602SHUAPING                                                          06/28/2010 16:56:37 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 1602SHUAPING
+OBJECT MODULE PLACED IN 1602shuaping.OBJ
+COMPILER INVOKED BY: D:\¥¶¿Ì»Ìº˛\keil\C51\BIN\C51.EXE 1602shuaping.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg52.h>
+   2          
+   3          
+   4          /*********************************************************************
+   5                  ≥Ã–Ú÷–1602À˘”√÷∏¡ÓÀµ√˜
+   6                  write_com(0x01);      «Â∆¡√¸¡Ó 
+   7              write_com(0x80);      …Ë1602µ⁄“ª––µÿ÷∑ 
+   8              write_com(0x80+0x40); …Ë1602µ⁄∂˛––µÿ÷∑ 
+   9              “™œÎ»√∆¡ƒª ˝æ›¥””“√ÊœÚ◊Û±ﬂ“∆π˝¿¥ 
+  10              write_com(0x80+0x10);      œ»…Ë1602µ⁄“ª––µÿ÷∑ 
+  11              write_com(0x80+0x40+0x10); ‘Ÿ…Ë1602µ⁄∂˛––µÿ÷∑ 
+  12              write_com(0x18);–¥√¸¡Ó»√∆¡ƒª¥””“œÚ◊Û“∆∂Ø£¨À˚÷ª“∆∂Ø“ªŒª£¨“™»√◊÷∑˚¥””“œÚ◊ÛΩ¯ΩÁ √ÊæÕ“™—≠ª∑16¥Œ£®œÍº˚1602”
+             -¢Œƒ ˝æ› ÷≤·µ⁄12“≥£© 
+  13          *************************************************************************/
+  14          #define uchar unsigned char
+  15          #define uint unsigned int
+  16          sbit beep=P2^3;
+  17          uchar code table []="I want to bring ";
+  18          uchar code table1[]="out the secret  ";
+  19          uchar code table2[]="of nature and   ";
+  20          uchar code table3[]="apply them for  ";
+  21          uchar code table4[]="the happiness of";
+  22          uchar code table5[]="man.I don't know";
+  23          uchar code table6[]="of any better s-";
+  24          uchar code table7[]="-ervice to offer";
+  25          uchar code table8[]="for the short t-";
+  26          uchar code table9[]="-ime we are in  ";
+  27          uchar code table10[]="the world.      ";
+  28          uchar code table11[]="---Thomas Edison";
+  29          
+  30          sbit lcden=P3^4;
+  31          sbit lcdrs=P3^5;
+  32          sbit dula=P2^6;
+  33          sbit wela=P2^7;
+  34          uchar num;
+  35          
+  36          void delay(uint z)
+  37          {
+  38   1              uint x,y;
+  39   1              for(x=z;x>0;x--)
+  40   1                      for(y=110;y>0;y--);
+  41   1      }
+  42          
+  43          void write_com(uchar com)
+  44          {
+  45   1              lcdrs=0;
+  46   1              P0=com;
+  47   1              delay(5);
+  48   1              lcden=1;
+  49   1              delay(5);
+  50   1              lcden=0;
+  51   1      }
+  52          
+  53          void write_data(uchar date)
+  54          {
+C51 COMPILER V8.02   1602SHUAPING                                                          06/28/2010 16:56:37 PAGE 2   
+
+  55   1              lcdrs=1;
+  56   1              P0=date;
+  57   1              delay(5);
+  58   1              lcden=1;
+  59   1              delay(5);
+  60   1              lcden=0;
+  61   1      }
+  62          
+  63          void init()
+  64          {       dula=0;
+  65   1         wela=0;
+  66   1              lcden=0;
+  67   1              write_com(0x38);
+  68   1              write_com(0x0e);
+  69   1              write_com(0x06);
+  70   1              write_com(0x01);
+  71   1              write_com(0x80);
+  72   1      }
+  73          void main()
+  74          {
+  75   1              init();
+  76   1              for(num=0;num<16;num++)    //µ⁄“ª∆¡
+  77   1              {
+  78   2                      beep=0;
+  79   2                      write_data(table[num]);
+  80   2                      delay(100);
+  81   2                      beep=1;
+  82   2                      delay(50);
+  83   2              }
+  84   1      //      write_com(0x01);
+  85   1              write_com(0x80+0x40);
+  86   1                      for(num=0;num<16;num++)
+  87   1              {
+  88   2                      beep=0;
+  89   2                      write_data(table1[num]);
+  90   2                      delay(100);
+  91   2                      beep=1;
+  92   2                      delay(50);
+  93   2              }
+  94   1              write_com(0x01);
+  95   1         write_com(0x80);
+  96   1              for(num=0;num<16;num++)    // µ⁄∂˛∆¡
+  97   1              {       beep=0;
+  98   2                      write_data(table2[num]);
+  99   2                      delay(100);
+ 100   2                      beep=1;
+ 101   2                      delay(50);
+ 102   2              }
+ 103   1      //      write_com(0x01);
+ 104   1              write_com(0x80+0x40);
+ 105   1                      for(num=0;num<16;num++)
+ 106   1              {       beep=0;
+ 107   2                      write_data(table3[num]);
+ 108   2                      delay(100);
+ 109   2                      beep=1;
+ 110   2                      delay(50);
+ 111   2              }
+ 112   1         write_com(0x80);
+ 113   1              write_com(0x01);
+ 114   1              for(num=0;num<16;num++)    //µ⁄»˝∆¡
+ 115   1              {       beep=0;
+ 116   2                      write_data(table4[num]);
+C51 COMPILER V8.02   1602SHUAPING                                                          06/28/2010 16:56:37 PAGE 3   
+
+ 117   2                      delay(100);
+ 118   2                      beep=1;
+ 119   2                      delay(50);
+ 120   2              }
+ 121   1      //      write_com(0x01);
+ 122   1              write_com(0x80+0x40);
+ 123   1                      for(num=0;num<16;num++)
+ 124   1              {       beep=0;
+ 125   2                      write_data(table5[num]);
+ 126   2                      delay(100);
+ 127   2                      beep=1;
+ 128   2                      delay(50);
+ 129   2              }
+ 130   1              write_com(0x01);
+ 131   1         write_com(0x80);
+ 132   1              for(num=0;num<16;num++)   //µ⁄Àƒ∆¡
+ 133   1              {       beep=0;
+ 134   2                      write_data(table6[num]);
+ 135   2                      delay(100);
+ 136   2                      beep=1;
+ 137   2                      delay(50);
+ 138   2              }
+ 139   1      //      write_com(0x01);
+ 140   1              write_com(0x80+0x40);
+ 141   1                      for(num=0;num<16;num++)
+ 142   1              {       beep=0;
+ 143   2                      write_data(table7[num]);
+ 144   2                      delay(100);
+ 145   2                      beep=1;
+ 146   2                      delay(50);
+ 147   2              }
+ 148   1              write_com(0x01);
+ 149   1         write_com(0x80);
+ 150   1              for(num=0;num<16;num++)   //µ⁄ŒÂ∆¡
+ 151   1              {       beep=0;
+ 152   2                      write_data(table8[num]);
+ 153   2                      delay(100);
+ 154   2                      beep=1;
+ 155   2                      delay(50);
+ 156   2              }
+ 157   1      //      write_com(0x01);
+ 158   1              write_com(0x80+0x40);
+ 159   1                      for(num=0;num<16;num++)
+ 160   1              {       beep=0;
+ 161   2                      write_data(table9[num]);
+ 162   2                      delay(100);
+ 163   2                      beep=1;
+ 164   2                      delay(50);
+ 165   2              }
+ 166   1              write_com(0x01);
+ 167   1         write_com(0x80);
+ 168   1      
+ 169   1         for(num=0;num<16;num++)   //µ⁄¡˘∆¡
+ 170   1              {       beep=0;
+ 171   2                      write_data(table10[num]);
+ 172   2                      delay(100);
+ 173   2                      beep=1;
+ 174   2                      delay(50);
+ 175   2              }
+ 176   1      //      write_com(0x01);
+ 177   1              write_com(0x80+0x40);
+ 178   1                      for(num=0;num<16;num++)
+C51 COMPILER V8.02   1602SHUAPING                                                          06/28/2010 16:56:37 PAGE 4   
+
+ 179   1              {       beep=0;
+ 180   2                      write_data(table11[num]);
+ 181   2                      delay(100);
+ 182   2                      beep=1;
+ 183   2                      delay(50);
+ 184   2              }
+ 185   1        
+ 186   1              while(1);
+ 187   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    451    ----
+   CONSTANT SIZE    =    204    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

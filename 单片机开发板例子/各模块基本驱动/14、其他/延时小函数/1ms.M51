@@ -1,0 +1,151 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        06/29/2010  10:27:50  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE 1ms.obj TO 1ms
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  1ms.obj (1MS)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  1ms (1MS)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     000CH     UNIT         ?C_C51STARTUP
+            CODE    000FH     000AH     UNIT         ?PR?MAIN?1MS
+            CODE    0019H     0009H     UNIT         ?PR?DELAY100MS?1MS
+            CODE    0022H     0009H     UNIT         ?PR?DELAY10MS?1MS
+            CODE    002BH     0009H     UNIT         ?PR?DELAY1MS?1MS
+            CODE    0034H     0009H     UNIT         ?PR?DELAY100US?1MS
+            CODE    003DH     0005H     UNIT         ?PR?DELAY10US?1MS
+
+
+
+OVERLAY MAP OF MODULE:   1ms (1MS)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?1MS
+
+?PR?MAIN?1MS
+  +--> ?PR?DELAY10MS?1MS
+
+
+
+SYMBOL TABLE OF MODULE:  1ms (1MS)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        1MS
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:0019H         PUBLIC        delay100ms
+  C:0034H         PUBLIC        delay100us
+  C:002BH         PUBLIC        delay1ms
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/29/2010  10:27:50  PAGE 2
+
+
+  C:000FH         PUBLIC        main
+  C:0022H         PUBLIC        delay10ms
+  C:003DH         PUBLIC        delay10us
+  -------         PROC          DELAY100MS
+  -------         DO            
+  D:0006H         SYMBOL        a
+  D:0007H         SYMBOL        b
+  -------         ENDDO         
+  C:0019H         LINE#         13
+  C:0019H         LINE#         14
+  C:0019H         LINE#         16
+  C:001BH         LINE#         17
+  C:0021H         LINE#         18
+  -------         ENDPROC       DELAY100MS
+  -------         PROC          DELAY10MS
+  -------         DO            
+  D:0006H         SYMBOL        a
+  D:0007H         SYMBOL        b
+  -------         ENDDO         
+  C:0022H         LINE#         20
+  C:0022H         LINE#         21
+  C:0022H         LINE#         23
+  C:0024H         LINE#         24
+  C:002AH         LINE#         25
+  -------         ENDPROC       DELAY10MS
+  -------         PROC          DELAY1MS
+  -------         DO            
+  D:0006H         SYMBOL        a
+  D:0007H         SYMBOL        b
+  -------         ENDDO         
+  C:002BH         LINE#         27
+  C:002BH         LINE#         28
+  C:002BH         LINE#         30
+  C:002DH         LINE#         31
+  C:0033H         LINE#         32
+  -------         ENDPROC       DELAY1MS
+  -------         PROC          DELAY100US
+  -------         DO            
+  D:0006H         SYMBOL        a
+  D:0007H         SYMBOL        b
+  -------         ENDDO         
+  C:0034H         LINE#         34
+  C:0034H         LINE#         35
+  C:0034H         LINE#         37
+  C:0036H         LINE#         38
+  C:003CH         LINE#         39
+  -------         ENDPROC       DELAY100US
+  -------         PROC          DELAY10US
+  -------         DO            
+  D:0007H         SYMBOL        a
+  -------         ENDDO         
+  C:003DH         LINE#         41
+  C:003DH         LINE#         42
+  C:003DH         LINE#         44
+  C:0041H         LINE#         45
+  -------         ENDPROC       DELAY10US
+  -------         PROC          MAIN
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/29/2010  10:27:50  PAGE 3
+
+
+  -------         DO            
+  D:0005H         SYMBOL        m
+  -------         ENDDO         
+  C:000FH         LINE#         47
+  C:000FH         LINE#         48
+  C:000FH         LINE#         50
+  C:0011H         LINE#         51
+  C:0011H         LINE#         52
+  C:0014H         LINE#         53
+  C:0018H         LINE#         54
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        1MS
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DELAY100MS?1MS
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DELAY1MS?1MS
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DELAY100US?1MS
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DELAY10US?1MS
+
+Program Size: data=9.0 xdata=0 code=66
+LINK/LOCATE RUN COMPLETE.  4 WARNING(S),  0 ERROR(S)

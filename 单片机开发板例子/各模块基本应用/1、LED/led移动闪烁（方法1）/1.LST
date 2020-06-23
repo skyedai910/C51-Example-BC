@@ -1,0 +1,58 @@
+C51 COMPILER V9.00   1                                                                     03/26/2020 00:21:10 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE 1
+OBJECT MODULE PLACED IN 1.OBJ
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE 1.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /********************************************************************
+   2                                          
+   3          程序功能：      使八位LED逐位移动并不断循环。
+   4                                  这种方法最简单。
+   5          
+   6          **********************************************************************/
+   7          #include <reg51.h>
+   8          #include <intrins.h>  //这个头文件是这个方法的核心，它包含了逐步移位函数功能
+   9                                                    //即程序中的_crol_(P1,y)
+  10          
+  11          sbit led=P1^0;
+  12          
+  13          void delay(unsigned int i)
+  14          {
+  15   1              unsigned int j;
+  16   1              unsigned char k;
+  17   1              for(j=i;j>0;j--)                //约300ms
+  18   1                      for(k=144;k>0;k--);      //132，11.0592MHz，约0.3ms
+  19   1      }
+  20          
+  21          void main()
+  22          {       P1=0xfe;
+  23   1              delay(1000);
+  24   1              while(1)
+  25   1              {
+  26   2                      unsigned char m;
+  27   2                      P1=0xfe;
+  28   2                      delay(1000);
+  29   2                      for(m=7;m>0;m--)
+  30   2                      {
+  31   3                              P1=_crol_(P1,1);   //P1逐步左移一位。
+  32   3                              delay(1000);
+  33   3                      }
+  34   2              }
+  35   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     64    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

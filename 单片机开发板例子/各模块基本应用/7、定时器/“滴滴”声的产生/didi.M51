@@ -1,0 +1,125 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        06/28/2010  14:54:24  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE didi.obj TO didi
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  didi.obj (DIDI)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  didi (DIDI)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0003H     UNIT         ?DT?DIDI
+                    000BH     0015H                  *** GAP ***
+            BIT     0020H.0   0000H.1   UNIT         ?BI?DIDI
+                    0020H.1   0000H.7                *** GAP ***
+            IDATA   0021H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0008H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     0043H     UNIT         ?PR?MAIN?DIDI
+            CODE    0051H     000CH     UNIT         ?C_C51STARTUP
+            CODE    005DH     0009H     UNIT         ?PR?TIME0?DIDI
+
+
+
+OVERLAY MAP OF MODULE:   didi (DIDI)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?DIDI
+
+
+
+SYMBOL TABLE OF MODULE:  didi (DIDI)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        DIDI
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/28/2010  14:54:24  PAGE 2
+
+
+  D:00A8H         PUBLIC        IE
+  B:0020H.0       PUBLIC        close
+  D:00B8H         PUBLIC        IP
+  B:00A0H.3       PUBLIC        didi
+  C:000EH         PUBLIC        main
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  D:0008H         PUBLIC        aa
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  B:0088H.4       PUBLIC        TR0
+  D:000AH         PUBLIC        pp
+  C:005DH         PUBLIC        time0
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          MAIN
+  C:000EH         LINE#         23
+  C:000EH         LINE#         24
+  C:000EH         LINE#         25
+  C:0011H         LINE#         26
+  C:0013H         LINE#         27
+  C:0016H         LINE#         28
+  C:0019H         LINE#         29
+  C:001BH         LINE#         30
+  C:001DH         LINE#         31
+  C:001DH         LINE#         32
+  C:001DH         LINE#         33
+  C:0022H         LINE#         34
+  C:0022H         LINE#         35
+  C:0025H         LINE#         36
+  C:0028H         LINE#         37
+  C:002AH         LINE#         38
+  C:0032H         LINE#         39
+  C:0032H         LINE#         40
+  C:003AH         LINE#         41
+  C:003AH         LINE#         42
+  C:003CH         LINE#         43
+  C:003EH         LINE#         44
+  C:003EH         LINE#         45
+  C:0048H         LINE#         46
+  C:0048H         LINE#         47
+  C:004AH         LINE#         48
+  C:004FH         LINE#         49
+  C:004FH         LINE#         50
+  -------         ENDPROC       MAIN
+  -------         PROC          TIME0
+  C:005DH         LINE#         53
+  C:005DH         LINE#         54
+  C:0060H         LINE#         55
+  C:0063H         LINE#         56
+  C:0065H         LINE#         57
+  -------         ENDPROC       TIME0
+  -------         ENDMOD        DIDI
+
+Program Size: data=12.1 xdata=0 code=94
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/28/2010  14:54:24  PAGE 3
+
+
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

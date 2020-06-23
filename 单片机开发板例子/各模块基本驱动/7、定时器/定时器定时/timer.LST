@@ -1,0 +1,59 @@
+C51 COMPILER V8.02   TIMER                                                                 07/16/2010 15:38:52 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE TIMER
+OBJECT MODULE PLACED IN timer.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE timer.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /***********************************************************************
+   2                                                  “天祥电子”            倾情奉献
+   3                                                                  www.txmcu.cn
+   4                                                                  www.txmcu.com
+   5          ***********************************************************************
+   6          程序功能：      本程序为定时器的基本驱动示例，定时器工作于方式1。
+   7          **************************************************************************/
+   8          
+   9          #include<reg52.h>
+  10          
+  11          #define uint unsigned int 
+  12          uint pp;
+  13          
+  14          sbit led=P1^0;
+  15          
+  16          
+  17          void main()
+  18          {
+  19   1              TMOD=0x01;               //模式设置，00000001，可见采用的是定时器0，工作与模式1（M1=0，M0=1）。
+  20   1              TR0=1;                   //打开定时器
+  21   1              TH0=0Xff;                //定时器设置，每隔100微秒发起一次中断。
+  22   1              TL0=0Xa4;
+  23   1              ET0=1;                   //开定时器0中断
+  24   1              EA=1;                    //开总中断
+  25   1              while(1)
+  26   1              {
+  27   2                      if(pp==30000)   //时隔3s后，led被点亮。
+  28   2                              led=0;
+  29   2              }
+  30   1      }
+  31          
+  32          void time0() interrupt 1
+  33          {       TH0=0Xff;
+  34   1              TL0=0Xa4;
+  35   1              pp++;
+  36   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     48    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

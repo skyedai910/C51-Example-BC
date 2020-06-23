@@ -1,0 +1,120 @@
+C51 COMPILER V9.00   AD                                                                    11/18/2019 12:23:39 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE AD
+OBJECT MODULE PLACED IN AD.OBJ
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE AD.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          //拧动电位器，会在数码管的前三位显示0-255之间的数值。这就是把模拟电压转换成数字信号。
+   2          //有些拧动电位器后数码管数可能不会动态变化，请用户按下实验板上的S22复位按键可更新数据
+   3          //这种显象产生的原因是和AD芯片自身的一些特性有关。
+   4          #include<reg51.h>
+   5          #include <intrins.h>
+   6          #define uint unsigned int
+   7          #define uchar unsigned char
+   8          sbit adrd=P3^7;                          //IO口定义
+   9          sbit adwr=P3^6;
+  10          sbit diola=P2^5;
+  11          sbit dula=P2^6;
+  12          sbit wela=P2^7;
+  13          sbit CS=P0^7;
+  14          unsigned char j,k,adval;
+  15          void delay(unsigned char i)             //延时程序
+  16          {
+  17   1        for(j=i;j>0;j--)
+  18   1          for(k=125;k>0;k--);
+  19   1      }
+  20          uchar code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,                         //数码管编码
+  21                                  0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};
+  22          void display(uchar bai_c,uchar sh_c,uchar g_c)                  //显示程序
+  23          {  
+  24   1         P0=table[bai_c];             //显示百位
+  25   1         dula=1;
+  26   1         dula=0;
+  27   1      
+  28   1         P0=0xfe;
+  29   1         wela=1;
+  30   1         wela=0;
+  31   1         delay(5);
+  32   1      
+  33   1         dula=0;
+  34   1         P0=table[sh_c];              //显示十位
+  35   1         dula=1;
+  36   1         dula=0;
+  37   1      
+  38   1         wela=0;
+  39   1         P0=0xfd;
+  40   1         wela=1;
+  41   1         wela=0;
+  42   1         delay(5);
+  43   1      
+  44   1         P0=table[g_c];               //显示个位
+  45   1         dula=1;
+  46   1         dula=0;
+  47   1      
+  48   1         P0=0xfb;
+  49   1         wela=1;
+  50   1         wela=0;
+  51   1         delay(5);
+  52   1      }
+  53          
+  54          
+  55          void main()             //      主程序
+C51 COMPILER V9.00   AD                                                                    11/18/2019 12:23:39 PAGE 2   
+
+  56          {
+  57   1      
+  58   1        uchar a,A1,A2,A2t,A3;
+  59   1          while(1)
+  60   1        {
+  61   2          wela=1;
+  62   2          P0=0;                       //选通ADCS
+  63   2          adwr=0;                     //AD写入（随便写个什么都行，主要是为了启动AD转换）
+  64   2          _nop_();
+  65   2          adwr=1;
+  66   2          P0=0xff;                    //关闭ADCS
+  67   2          //CS=1;
+  68   2              delay(10);
+  69   2          wela=0;                     //关闭有AD片选信号锁存器的锁存端以防止在操作数码管时使AD的片选发生变化
+  70   2               adwr=0;
+  71   2      
+  72   2             for(a=20;a>0;a--)        //需要注意的是ADC0804在写和读之间的时间间隔要足够长否则无法读出数据
+  73   2          {                           //这里把显示部分放这里的原因也是为了增加写读之间的时间间隔                
+             -                                                                                                                        
+             -                                                                                   
+  74   3              display(A1,A2,A3);
+  75   3           }  //送去显示各位。
+  76   2           wela=1;                   //重新打开有AD片选信号锁存器的锁存端
+  77   2           P1=0xff;                    //读取P1口之前先给其写全1
+  78   2           //P0=0;                       //选通ADCS
+  79   2           CS=0;
+  80   2               adrd=0;                     //AD读使能
+  81   2           adval=P1;                  //AD数据读取赋给P1口
+  82   2           adrd=1;
+  83   2           //P0=0xff;                     //关闭ADCS
+  84   2           CS=1;
+  85   2           wela=0;     
+  86   2                
+  87   2               P1=adval;                    //同时把AD的值送八个发光二极显示
+  88   2           A1=adval/100;              //分出百，十，和个位
+  89   2           A2t=adval%100;
+  90   2           A2=A2t/10;
+  91   2           A3=A2t%10;
+  92   2         };
+  93   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    170    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

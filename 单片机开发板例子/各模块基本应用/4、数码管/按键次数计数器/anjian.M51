@@ -1,0 +1,229 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        06/26/2010  13:58:03  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE anjian.obj TO anjian
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  anjian.obj (ANJIAN)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C?ULDIV)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C?ULCMP)
+
+
+LINK MAP OF MODULE:  anjian (ANJIAN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     000CH     UNIT         ?DT?ANJIAN
+            DATA    0014H     0006H     UNIT         _DATA_GROUP_
+            IDATA   001AH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     02F9H     UNIT         ?PR?MAIN?ANJIAN
+            CODE    02FCH     00DFH     UNIT         ?C?LIB_CODE
+            CODE    03DBH     0064H     UNIT         ?PR?_DISPLAY?ANJIAN
+            CODE    043FH     002BH     UNIT         ?PR?KEYSCAN?ANJIAN
+            CODE    046AH     001AH     UNIT         ?PR?_DELAY?ANJIAN
+            CODE    0484H     0011H     UNIT         ?CO?ANJIAN
+            CODE    0495H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   anjian (ANJIAN)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?ANJIAN
+
+?PR?MAIN?ANJIAN                -----    -----
+  +--> ?PR?KEYSCAN?ANJIAN
+  +--> ?PR?_DISPLAY?ANJIAN
+
+?PR?_DISPLAY?ANJIAN            0014H    0006H
+  +--> ?CO?ANJIAN
+  +--> ?PR?_DELAY?ANJIAN
+
+
+
+SYMBOL TABLE OF MODULE:  anjian (ANJIAN)
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/26/2010  13:58:03  PAGE 2
+
+
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ANJIAN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  C:0484H         PUBLIC        table
+  D:00A8H         PUBLIC        IE
+  D:0008H         PUBLIC        a0
+  D:0009H         PUBLIC        b0
+  D:000AH         PUBLIC        c0
+  D:000BH         PUBLIC        d0
+  D:000CH         PUBLIC        e0
+  D:000DH         PUBLIC        f0
+  D:00B8H         PUBLIC        IP
+  B:00B0H.4       PUBLIC        s2
+  B:00B0H.5       PUBLIC        s3
+  C:0003H         PUBLIC        main
+  B:00A0H.6       PUBLIC        dula
+  B:00A0H.7       PUBLIC        wela
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  D:000EH         PUBLIC        num
+  C:03DBH         PUBLIC        _display
+  D:00C8H         PUBLIC        T2CON
+  D:0012H         PUBLIC        j
+  D:0013H         PUBLIC        k
+  C:0470H         PUBLIC        _delay
+  C:043FH         PUBLIC        keyscan
+  D:00D0H         PUBLIC        PSW
+  C:046AH         SYMBOL        L?0035
+  -------         PROC          L?0034
+  -------         ENDPROC       L?0034
+  C:046AH         SYMBOL        L?0035
+  -------         PROC          _DELAY
+  D:0007H         SYMBOL        i
+  C:0470H         LINE#         26
+  C:0470H         LINE#         27
+  C:0470H         LINE#         28
+  C:0479H         LINE#         29
+  C:0483H         LINE#         30
+  -------         ENDPROC       _DELAY
+  -------         PROC          _DISPLAY
+  D:0007H         SYMBOL        a
+  D:0005H         SYMBOL        b
+  D:0003H         SYMBOL        c
+  D:0017H         SYMBOL        d
+  D:0018H         SYMBOL        e
+  D:0019H         SYMBOL        f
+  C:03DBH         LINE#         32
+  C:03DBH         LINE#         33
+  C:03DBH         LINE#         34
+  C:03DDH         LINE#         35
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/26/2010  13:58:03  PAGE 3
+
+
+  C:03E4H         LINE#         36
+  C:03E6H         LINE#         37
+  C:03E8H         LINE#         39
+  C:03EAH         LINE#         40
+  C:03EDH         LINE#         41
+  C:03EDH         LINE#         42
+  C:03EDH         LINE#         43
+  C:03F0H         LINE#         45
+  C:03F4H         LINE#         46
+  C:03F6H         LINE#         47
+  C:03F8H         LINE#         49
+  C:03FBH         LINE#         50
+  C:03FBH         LINE#         51
+  C:03FBH         LINE#         52
+  C:03FEH         LINE#         54
+  C:0402H         LINE#         55
+  C:0404H         LINE#         56
+  C:0406H         LINE#         58
+  C:0409H         LINE#         59
+  C:0409H         LINE#         60
+  C:0409H         LINE#         61
+  C:040CH         LINE#         63
+  C:0411H         LINE#         64
+  C:0413H         LINE#         65
+  C:0415H         LINE#         67
+  C:0418H         LINE#         68
+  C:0418H         LINE#         69
+  C:0418H         LINE#         70
+  C:041BH         LINE#         72
+  C:0420H         LINE#         73
+  C:0422H         LINE#         74
+  C:0424H         LINE#         76
+  C:0427H         LINE#         77
+  C:0427H         LINE#         78
+  C:0427H         LINE#         79
+  C:042AH         LINE#         81
+  C:042FH         LINE#         82
+  C:0431H         LINE#         83
+  C:0433H         LINE#         85
+  C:0436H         LINE#         86
+  C:0438H         LINE#         87
+  C:043AH         LINE#         88
+  -------         ENDPROC       _DISPLAY
+  -------         PROC          KEYSCAN
+  C:043FH         LINE#         91
+  C:043FH         LINE#         92
+  C:043FH         LINE#         93
+  C:0442H         LINE#         94
+  C:0442H         LINE#         95
+  C:0445H         LINE#         96
+  C:045AH         LINE#         97
+  C:045AH         LINE#         98
+  C:045DH         LINE#         99
+  C:045DH         LINE#         100
+  C:0460H         LINE#         101
+  C:0469H         LINE#         102
+  C:0469H         LINE#         103
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/26/2010  13:58:03  PAGE 4
+
+
+  -------         ENDPROC       KEYSCAN
+  -------         PROC          MAIN
+  C:0003H         LINE#         105
+  C:0003H         LINE#         106
+  C:0003H         LINE#         107
+  C:0003H         LINE#         108
+  C:0006H         LINE#         109
+  C:001AH         LINE#         110
+  C:001AH         LINE#         111
+  C:0020H         LINE#         112
+  C:0022H         LINE#         114
+  C:0022H         LINE#         115
+  C:0036H         LINE#         116
+  C:0063H         LINE#         118
+  C:0063H         LINE#         119
+  C:0078H         LINE#         120
+  C:00CAH         LINE#         122
+  C:00CAH         LINE#         123
+  C:00DFH         LINE#         124
+  C:0157H         LINE#         126
+  C:0157H         LINE#         127
+  C:0170H         LINE#         128
+  C:020EH         LINE#         130
+  C:020EH         LINE#         131
+  C:0227H         LINE#         132
+  C:02E7H         LINE#         133
+  C:02E7H         LINE#         134
+  C:02E7H         LINE#         135
+  C:02E7H         LINE#         136
+  C:02E7H         LINE#         137
+  C:02E7H         LINE#         138
+  C:02F9H         LINE#         139
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        ANJIAN
+
+  -------         MODULE        ?C?ULDIV
+  C:0338H         PUBLIC        ?C?ULDIV
+  -------         ENDMOD        ?C?ULDIV
+
+  -------         MODULE        ?C?ULCMP
+  C:03CAH         PUBLIC        ?C?ULCMP
+  -------         ENDMOD        ?C?ULCMP
+
+Program Size: data=27.0 xdata=0 code=1185
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

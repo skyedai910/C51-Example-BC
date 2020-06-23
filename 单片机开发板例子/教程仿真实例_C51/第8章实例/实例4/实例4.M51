@@ -1,0 +1,76 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/23/2017  19:19:58  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE 实例4.obj TO 实例4
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例4.obj (____4)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  实例4 (____4)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *  X D A T A   M E M O R Y  * * * * * * *
+                    0000H     7CFFH                  *** GAP ***
+            XDATA   7CFFH     0001H     ABSOLUTE     
+                    7D00H     00FFH                  *** GAP ***
+            XDATA   7DFFH     0001H     ABSOLUTE     
+                    7E00H     01FFH                  *** GAP ***
+            XDATA   7FFFH     0001H     ABSOLUTE     
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0010H     UNIT         ?PR?MAIN?____4
+            CODE    0013H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   实例4 (____4)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?____4
+
+
+
+SYMBOL TABLE OF MODULE:  实例4 (____4)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ____4
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  X:7CFFH         PUBLIC        PORTA
+  X:7DFFH         PUBLIC        PORTB
+  C:0003H         PUBLIC        main
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/23/2017  19:19:58  PAGE 2
+
+
+  X:7FFFH         PUBLIC        CONW
+  -------         PROC          MAIN
+  C:0003H         LINE#         7
+  C:0003H         LINE#         8
+  C:0009H         LINE#         9
+  C:0009H         LINE#         10
+  C:0011H         LINE#         11
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        ____4
+
+Program Size: data=9.0 xdata=3 code=31
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

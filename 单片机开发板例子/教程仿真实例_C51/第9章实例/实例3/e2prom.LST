@@ -1,0 +1,449 @@
+A51 MACRO ASSEMBLER  E2PROM                                                               12/28/2017 09:11:48 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.5.0
+OBJECT MODULE PLACED IN e2prom.OBJ
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE e2prom.asm SET(SMALL) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     PUBLIC _READ_E2PROM
+
+                       2     PUBLIC _WRITE_E2PROM
+
+                       3     DE SEGMENT CODE
+
+----                   4     RSEG DE
+
+                       5     
+
+  00B0                 6     CAT24C021_CLK BIT P3.0
+
+  00B1                 7     CAT24C021_DIO BIT P3.1
+
+                       8     
+
+0000                   9     _READ_E2PROM:
+
+0000 EF               10             MOV     A,R7
+
+0001 FA               11             MOV     R2,A
+
+0002 ED               12             MOV     A,R5
+
+0003 F8               13             MOV     R0,A
+
+0004 1100     F       14             ACALL   STR_24C021
+
+0006 74A0             15             MOV     A,#0A0H
+
+0008 1100     F       16             ACALL   WBYTE_24C021
+
+000A 4047             17             JC      READFAIL
+
+000C EA               18             MOV     A,R2
+
+000D 1100     F       19             ACALL   WBYTE_24C021
+
+000F 4042             20             JC      READFAIL
+
+0011 1100     F       21             ACALL   STR_24C021
+
+0013 74A1             22             MOV     A,#0A1H
+
+0015 1100     F       23             ACALL   WBYTE_24C021
+
+0017 403A             24             JC      READFAIL
+
+0019 C2D5             25             CLR     F0
+
+001B DB02             26             DJNZ    R3,RD24C021_NEXT
+
+001D 8006             27             SJMP    RD24C021_LAST
+
+001F                  28     RD24C021_NEXT:
+
+001F 1100     F       29             ACALL   RDBYTE_24C021
+
+0021 F6               30             MOV     @R0,A
+
+0022 08               31             INC     R0
+
+0023 DBFA             32             DJNZ    R3,RD24C021_NEXT
+
+0025                  33     RD24C021_LAST:
+
+0025 D2D5             34             SETB    F0
+
+0027 1100     F       35             ACALL   RDBYTE_24C021
+
+0029 F6               36             MOV     @R0,A
+
+002A 1100     F       37             ACALL   STOP_24C021
+
+002C 7400             38             MOV     A,#00H
+
+002E 22               39             RET
+
+                      40     
+
+002F                  41     _WRITE_E2PROM:
+
+002F EF               42             MOV     A,R7
+
+0030 FA               43             MOV     R2,A
+
+0031 ED               44             MOV     A,R5
+
+0032 F8               45             MOV     R0,A                
+
+0033 1100     F       46             ACALL   STR_24C021
+
+0035 74A0             47             MOV     A,#0A0H
+
+0037 1100     F       48             ACALL   WBYTE_24C021
+
+0039 401D             49             JC      WRITEFAIL
+
+003B EA               50             MOV     A,R2
+
+003C 1100     F       51             ACALL   WBYTE_24C021
+
+003E 4018             52             JC      WRITEFAIL
+
+                      53     
+
+0040                  54     WR24C021_NEXT:
+
+0040 E6               55             MOV     A,@R0
+
+0041 1100     F       56             ACALL   WBYTE_24C021
+
+                      57             ;JC     WRITEFAIL
+
+0043 08               58             INC     R0
+
+A51 MACRO ASSEMBLER  E2PROM                                                               12/28/2017 09:11:48 PAGE     2
+
+0044 DBFA             59             DJNZ    R3,WR24C021_NEXT
+
+0046 1100     F       60             ACALL   STOP_24C021
+
+                      61     
+
+0048 7F30             62             MOV     R7,#30H
+
+004A                  63     DELAY2:
+
+004A 7E34             64             MOV     R6,#34H
+
+004C                  65     DELAY1:
+
+004C DEFE             66             DJNZ    R6,DELAY1
+
+004E DFFA             67             DJNZ    R7,DELAY2
+
+0050 7400             68             MOV     A,#00H
+
+0052 22               69             RET
+
+                      70     
+
+                      71     ;================================================
+
+                      72     ;以下为I2C总线模拟子程序
+
+0053                  73     READFAIL:
+
+0053 1100     F       74             ACALL   STOP_24C021
+
+0055 74FF             75             MOV     A,#0FFH
+
+0057 22               76             RET
+
+                      77     
+
+0058                  78     WRITEFAIL:
+
+0058 1100     F       79             ACALL   STOP_24C021
+
+005A 74FF             80             MOV     A,#0FFH
+
+005C 22               81             RET
+
+                      82     
+
+005D                  83     STR_24C021:
+
+005D D2B1             84             SETB    CAT24C021_DIO
+
+005F 00               85             NOP
+
+0060 D2B0             86             SETB    CAT24C021_CLK
+
+0062 00               87             NOP
+
+0063 00               88             NOP
+
+0064 00               89             NOP
+
+0065 00               90             NOP
+
+0066 C2B1             91             CLR     CAT24C021_DIO
+
+0068 00               92             NOP
+
+0069 00               93             NOP
+
+006A 00               94             NOP
+
+006B 00               95             NOP
+
+006C C2B0             96             CLR     CAT24C021_CLK
+
+006E 22               97             RET
+
+                      98     ;________________________________________
+
+006F                  99     STOP_24C021:
+
+006F C2B1            100             CLR     CAT24C021_DIO
+
+0071 00              101             NOP
+
+0072 00              102             NOP
+
+0073 00              103             NOP
+
+0074 00              104             NOP
+
+0075 D2B0            105             SETB    CAT24C021_CLK
+
+0077 00              106             NOP
+
+0078 00              107             NOP
+
+0079 00              108             NOP
+
+007A 00              109             NOP
+
+007B D2B1            110             SETB    CAT24C021_DIO
+
+007D 00              111             NOP
+
+007E 00              112             NOP
+
+007F 00              113             NOP
+
+0080 00              114             NOP
+
+0081 22              115             RET
+
+                     116     ;*****************************************
+
+0082                 117     WBYTE_24C021:
+
+0082 7F08            118             MOV     R7,#08H
+
+0084                 119     WBYO:
+
+0084 33              120             RLC     A
+
+0085 4004            121             JC      WBY_ONE
+
+0087 C2B1            122             CLR     CAT24C021_DIO
+
+0089 8003            123             SJMP    WBY_ZERO
+
+008B                 124     WBY_ONE:
+
+A51 MACRO ASSEMBLER  E2PROM                                                               12/28/2017 09:11:48 PAGE     3
+
+008B D2B1            125             SETB    CAT24C021_DIO
+
+008D 00              126             NOP
+
+008E                 127     WBY_ZERO:
+
+008E 00              128             NOP
+
+008F D2B0            129             SETB    CAT24C021_CLK
+
+0091 00              130             NOP
+
+0092 00              131             NOP
+
+0093 00              132             NOP
+
+0094 00              133             NOP
+
+0095 C2B0            134             CLR     CAT24C021_CLK
+
+0097 DFEB            135             DJNZ    R7,WBYO
+
+0099 7E05            136             MOV     R6,#5
+
+009B                 137     WAITLOOP:
+
+009B D2B1            138             SETB    CAT24C021_DIO
+
+009D 00              139             NOP
+
+009E 00              140             NOP
+
+009F D2B0            141             SETB    CAT24C021_CLK
+
+00A1 00              142             NOP
+
+00A2 00              143             NOP
+
+00A3 00              144             NOP
+
+00A4 20B104          145             JB      CAT24C021_DIO,NOACK
+
+00A7 C3              146             CLR     C
+
+00A8 C2B0            147             CLR     CAT24C021_CLK
+
+00AA 22              148             RET
+
+                     149     
+
+00AB DEEE            150     NOACK:  DJNZ    R6,WAITLOOP
+
+00AD D3              151             SETB    C
+
+00AE C2B0            152             CLR     CAT24C021_CLK
+
+00B0 22              153             RET
+
+                     154     ;*******************************
+
+00B1                 155     RDBYTE_24C021:
+
+00B1 D2B1            156             SETB    CAT24C021_DIO
+
+00B3 7F08            157             MOV     R7,#08H
+
+00B5                 158     RD24C021_CY1:
+
+00B5 00              159             NOP
+
+00B6 C2B0            160             CLR     CAT24C021_CLK
+
+00B8 00              161             NOP
+
+00B9 00              162             NOP
+
+00BA 00              163             NOP
+
+00BB 00              164             NOP
+
+00BC D2B0            165             SETB    CAT24C021_CLK
+
+00BE 00              166             NOP
+
+00BF 00              167             NOP
+
+00C0 C3              168             CLR     C
+
+00C1 30B101          169             JNB     CAT24C021_DIO,RD24C021_ZERO
+
+00C4 D3              170             SETB    C
+
+00C5                 171     RD24C021_ZERO:
+
+00C5 33              172             RLC     A
+
+00C6 00              173             NOP
+
+00C7 00              174             NOP
+
+00C8 DFEB            175             DJNZ    R7,RD24C021_CY1
+
+                     176     
+
+00CA C2B0            177             CLR     CAT24C021_CLK
+
+00CC 00              178             NOP
+
+00CD 00              179             NOP
+
+00CE 00              180             NOP
+
+00CF C2B1            181             CLR     CAT24C021_DIO
+
+00D1 30D502          182             JNB     F0,RD_ACK
+
+00D4 D2B1            183             SETB    CAT24C021_DIO
+
+00D6                 184     RD_ACK:
+
+00D6 00              185             NOP
+
+00D7 00              186             NOP
+
+00D8 D2B0            187             SETB    CAT24C021_CLK
+
+00DA 00              188             NOP
+
+00DB 00              189             NOP
+
+00DC 00              190             NOP
+
+A51 MACRO ASSEMBLER  E2PROM                                                               12/28/2017 09:11:48 PAGE     4
+
+00DD C2B0            191             CLR     CAT24C021_CLK
+
+00DF 00              192             NOP
+
+00E0 00              193             NOP
+
+00E1 C2D5            194             CLR     F0
+
+00E3 C2B1            195             CLR     CAT24C021_DIO
+
+00E5 22              196             RET
+
+                     197             END
+
+A51 MACRO ASSEMBLER  E2PROM                                                               12/28/2017 09:11:48 PAGE     5
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+CAT24C021_CLK. . .  B ADDR   00B0H.0 A   
+CAT24C021_DIO. . .  B ADDR   00B0H.1 A   
+DE . . . . . . . .  C SEG    00E6H       REL=UNIT
+DELAY1 . . . . . .  C ADDR   004CH   R   SEG=DE
+DELAY2 . . . . . .  C ADDR   004AH   R   SEG=DE
+F0 . . . . . . . .  B ADDR   00D0H.5 A   
+NOACK. . . . . . .  C ADDR   00ABH   R   SEG=DE
+P3 . . . . . . . .  D ADDR   00B0H   A   
+RD24C021_CY1 . . .  C ADDR   00B5H   R   SEG=DE
+RD24C021_LAST. . .  C ADDR   0025H   R   SEG=DE
+RD24C021_NEXT. . .  C ADDR   001FH   R   SEG=DE
+RD24C021_ZERO. . .  C ADDR   00C5H   R   SEG=DE
+RDBYTE_24C021. . .  C ADDR   00B1H   R   SEG=DE
+RD_ACK . . . . . .  C ADDR   00D6H   R   SEG=DE
+READFAIL . . . . .  C ADDR   0053H   R   SEG=DE
+STOP_24C021. . . .  C ADDR   006FH   R   SEG=DE
+STR_24C021 . . . .  C ADDR   005DH   R   SEG=DE
+WAITLOOP . . . . .  C ADDR   009BH   R   SEG=DE
+WBYO . . . . . . .  C ADDR   0084H   R   SEG=DE
+WBYTE_24C021 . . .  C ADDR   0082H   R   SEG=DE
+WBY_ONE. . . . . .  C ADDR   008BH   R   SEG=DE
+WBY_ZERO . . . . .  C ADDR   008EH   R   SEG=DE
+WR24C021_NEXT. . .  C ADDR   0040H   R   SEG=DE
+WRITEFAIL. . . . .  C ADDR   0058H   R   SEG=DE
+_READ_E2PROM . . .  C ADDR   0000H   R   SEG=DE
+_WRITE_E2PROM. . .  C ADDR   002FH   R   SEG=DE
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

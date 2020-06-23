@@ -1,0 +1,22 @@
+<html>
+<body>
+<pre>
+<h1>礦ision3 Build Log</h1>
+<h2>Project:</h2>
+F:\工程\新增程序\基础小程序\常用延时函数\延时1ms\1ms.uv2
+Project File Date:  06/29/2010
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling 1ms.c...
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DELAY100MS?1MS
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DELAY1MS?1MS
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DELAY100US?1MS
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DELAY10US?1MS
+Program Size: data=9.0 xdata=0 code=66
+"1ms" - 0 Error(s), 4 Warning(s).

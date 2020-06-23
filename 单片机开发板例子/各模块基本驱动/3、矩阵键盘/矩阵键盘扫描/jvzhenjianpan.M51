@@ -1,0 +1,249 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        09/30/2019  01:01:54  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE jvzhenjianpan.obj TO jvzhenjianpan RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  jvzhenjianpan.obj (JVZHENJIANPAN)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  jvzhenjianpan (JVZHENJIANPAN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0005H     UNIT         ?DT?JVZHENJIANPAN
+            IDATA   000DH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     07FDH                  *** GAP ***
+            CODE    0800H     0146H     UNIT         ?PR?MAIN?JVZHENJIANPAN
+            CODE    0946H     008CH     UNIT         ?C_C51STARTUP
+            CODE    09D2H     0014H     UNIT         ?PR?_DELAY?JVZHENJIANPAN
+            CODE    09E6H     0013H     UNIT         ?PR?_DISPLAY?JVZHENJIANPAN
+            CODE    09F9H     0010H     UNIT         ?CO?JVZHENJIANPAN
+            CODE    0A09H     0004H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   jvzhenjianpan (JVZHENJIANPAN)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?JVZHENJIANPAN
+  +--> ?C_INITSEG
+
+?PR?MAIN?JVZHENJIANPAN
+  +--> ?PR?_DELAY?JVZHENJIANPAN
+  +--> ?PR?_DISPLAY?JVZHENJIANPAN
+
+?PR?_DISPLAY?JVZHENJIANPAN
+  +--> ?CO?JVZHENJIANPAN
+
+
+
+SYMBOL TABLE OF MODULE:  jvzhenjianpan (JVZHENJIANPAN)
+
+  VALUE           TYPE          NAME
+BL51 BANKED LINKER/LOCATER V6.22                                                      09/30/2019  01:01:54  PAGE 2
+
+
+  ----------------------------------
+
+  -------         MODULE        JVZHENJIANPAN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  C:09F9H         PUBLIC        table
+  C:09D2H         PUBLIC        _delay
+  B:00A0H.3       PUBLIC        beep
+  C:0800H         PUBLIC        main
+  B:00A0H.6       PUBLIC        dula
+  B:00A0H.7       PUBLIC        wela
+  D:0008H         PUBLIC        temp
+  D:0009H         PUBLIC        key
+  D:000AH         PUBLIC        i
+  D:000BH         PUBLIC        j
+  D:000CH         PUBLIC        k
+  C:09E6H         PUBLIC        _display
+  -------         PROC          _DELAY
+  D:0007H         SYMBOL        i
+  C:09D2H         LINE#         8
+  C:09D2H         LINE#         9
+  C:09D2H         LINE#         10
+  C:09DBH         LINE#         11
+  C:09E5H         LINE#         12
+  -------         ENDPROC       _DELAY
+  -------         PROC          _DISPLAY
+  D:0007H         SYMBOL        num
+  C:09E6H         LINE#         15
+  C:09E6H         LINE#         16
+  C:09E6H         LINE#         17
+  C:09EDH         LINE#         18
+  C:09EFH         LINE#         19
+  C:09F1H         LINE#         20
+  C:09F4H         LINE#         21
+  C:09F6H         LINE#         22
+  C:09F8H         LINE#         23
+  -------         ENDPROC       _DISPLAY
+  -------         PROC          MAIN
+  C:0800H         LINE#         24
+  C:0800H         LINE#         25
+  C:0800H         LINE#         26
+  C:0802H         LINE#         27
+  C:0804H         LINE#         28
+  C:0804H         LINE#         29
+  C:0804H         LINE#         31
+  C:0807H         LINE#         32
+  C:080AH         LINE#         33
+  C:080DH         LINE#         34
+  C:0813H         LINE#         36
+  C:0813H         LINE#         37
+  C:0818H         LINE#         38
+  C:081EH         LINE#         40
+  C:081EH         LINE#         41
+  C:0821H         LINE#         42
+BL51 BANKED LINKER/LOCATER V6.22                                                      09/30/2019  01:01:54  PAGE 3
+
+
+  C:0833H         LINE#         43
+  C:0833H         LINE#         44
+  C:0833H         LINE#         45
+  C:0836H         LINE#         46
+  C:0838H         LINE#         48
+  C:0838H         LINE#         49
+  C:083BH         LINE#         50
+  C:083DH         LINE#         52
+  C:083DH         LINE#         53
+  C:0840H         LINE#         54
+  C:0842H         LINE#         56
+  C:0842H         LINE#         57
+  C:0845H         LINE#         58
+  C:0845H         LINE#         59
+  C:0845H         LINE#         67
+  C:084AH         LINE#         68
+  C:084DH         LINE#         69
+  C:084DH         LINE#         70
+  C:084DH         LINE#         72
+  C:0850H         LINE#         73
+  C:0853H         LINE#         74
+  C:0856H         LINE#         75
+  C:085CH         LINE#         77
+  C:085CH         LINE#         78
+  C:0861H         LINE#         79
+  C:0867H         LINE#         81
+  C:0867H         LINE#         82
+  C:086AH         LINE#         83
+  C:087CH         LINE#         84
+  C:087CH         LINE#         85
+  C:087CH         LINE#         86
+  C:087FH         LINE#         87
+  C:0881H         LINE#         89
+  C:0881H         LINE#         90
+  C:0884H         LINE#         91
+  C:0886H         LINE#         93
+  C:0886H         LINE#         94
+  C:0889H         LINE#         95
+  C:088BH         LINE#         97
+  C:088BH         LINE#         98
+  C:088EH         LINE#         99
+  C:088EH         LINE#         100
+  C:088EH         LINE#         108
+  C:0893H         LINE#         109
+  C:0896H         LINE#         110
+  C:0896H         LINE#         111
+  C:0896H         LINE#         113
+  C:0899H         LINE#         114
+  C:089CH         LINE#         115
+  C:089FH         LINE#         116
+  C:08A5H         LINE#         118
+  C:08A5H         LINE#         119
+  C:08AAH         LINE#         120
+  C:08B0H         LINE#         122
+  C:08B0H         LINE#         123
+  C:08B3H         LINE#         124
+  C:08C5H         LINE#         125
+BL51 BANKED LINKER/LOCATER V6.22                                                      09/30/2019  01:01:54  PAGE 4
+
+
+  C:08C5H         LINE#         126
+  C:08C5H         LINE#         127
+  C:08C8H         LINE#         128
+  C:08CAH         LINE#         130
+  C:08CAH         LINE#         131
+  C:08CDH         LINE#         132
+  C:08CFH         LINE#         134
+  C:08CFH         LINE#         135
+  C:08D2H         LINE#         136
+  C:08D4H         LINE#         138
+  C:08D4H         LINE#         139
+  C:08D7H         LINE#         140
+  C:08D7H         LINE#         141
+  C:08D7H         LINE#         149
+  C:08DCH         LINE#         150
+  C:08DFH         LINE#         151
+  C:08DFH         LINE#         152
+  C:08DFH         LINE#         154
+  C:08E2H         LINE#         155
+  C:08E5H         LINE#         156
+  C:08E8H         LINE#         157
+  C:08F1H         LINE#         159
+  C:08F1H         LINE#         160
+  C:08F6H         LINE#         161
+  C:08FFH         LINE#         164
+  C:08FFH         LINE#         165
+  C:0902H         LINE#         166
+  C:0914H         LINE#         167
+  C:0914H         LINE#         168
+  C:0914H         LINE#         169
+  C:0917H         LINE#         170
+  C:0919H         LINE#         172
+  C:0919H         LINE#         173
+  C:091CH         LINE#         174
+  C:091EH         LINE#         176
+  C:091EH         LINE#         177
+  C:0921H         LINE#         178
+  C:0923H         LINE#         180
+  C:0923H         LINE#         181
+  C:0926H         LINE#         182
+  C:0926H         LINE#         183
+  C:0926H         LINE#         184
+  C:092CH         LINE#         186
+  C:092FH         LINE#         187
+  C:0932H         LINE#         188
+  C:0935H         LINE#         189
+  C:0937H         LINE#         190
+  C:093CH         LINE#         191
+  C:093FH         LINE#         192
+  C:0941H         LINE#         193
+  C:0943H         LINE#         194
+  C:0943H         LINE#         195
+  C:0943H         LINE#         197
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        JVZHENJIANPAN
+
+******************************************************************************
+BL51 BANKED LINKER/LOCATER V6.22                                                      09/30/2019  01:01:54  PAGE 5
+
+
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0180H BYTE (18%) *
+******************************************************************************
+
+Program Size: data=14.0 xdata=0 code=528
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

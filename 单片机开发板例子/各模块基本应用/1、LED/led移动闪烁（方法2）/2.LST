@@ -1,0 +1,59 @@
+C51 COMPILER V8.02   2                                                                     06/25/2010 17:20:49 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 2
+OBJECT MODULE PLACED IN 2.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE 2.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /********************************************************************
+   2                                          “天祥电子”            倾情奉献
+   3                                                          www.txmcu.com
+   4                                                          www.txmcu.cn
+   5          **********************************************************************
+   6          
+   7          程序功能：      使八位LED逐位移动并不断循环。
+   8                                  该方法采用逐个查表赋值的方法
+   9          
+  10          **********************************************************************/
+  11          #include <reg51.h>
+  12          
+  13          
+  14          
+  15          unsigned char table[]={0xfe,0xfd,0xfb,0xf7,0xef,0xdf,0xbf,0x7f};
+  16          
+  17          void delay(unsigned int i)
+  18          {
+  19   1              unsigned int j;
+  20   1              unsigned char k;
+  21   1              for(j=i;j>0;j--)
+  22   1                      for(k=125;k>0;k--);
+  23   1      }
+  24          
+  25          void main()
+  26          {
+  27   1              while(1)
+  28   1              {
+  29   2                      unsigned char m;
+  30   2                      for(m=0;m<8;m++)
+  31   2                      {
+  32   3                              P1=table[m];
+  33   3                              delay(2000);
+  34   3                      }
+  35   2              }
+  36   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     50    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      8       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,94 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        07/05/2010  11:16:48  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE maichong.obj TO maichong
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  maichong.obj (MAICHONG)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  maichong (MAICHONG)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     000CH     UNIT         ?PR?MAIN?MAICHONG
+            CODE    000FH     000CH     UNIT         ?C_C51STARTUP
+            CODE    001BH     0009H     UNIT         ?PR?DELAY600US?MAICHONG
+
+
+
+OVERLAY MAP OF MODULE:   maichong (MAICHONG)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?MAICHONG
+
+?PR?MAIN?MAICHONG
+  +--> ?PR?DELAY600US?MAICHONG
+
+
+
+SYMBOL TABLE OF MODULE:  maichong (MAICHONG)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAICHONG
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  C:001BH         PUBLIC        delay600us
+  D:00B8H         PUBLIC        IP
+  C:0003H         PUBLIC        main
+  D:0098H         PUBLIC        SCON
+BL51 BANKED LINKER/LOCATER V6.00                                                      07/05/2010  11:16:48  PAGE 2
+
+
+  D:0088H         PUBLIC        TCON
+  B:0090H.0       PUBLIC        maichong
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          DELAY600US
+  -------         DO            
+  D:0006H         SYMBOL        a
+  D:0007H         SYMBOL        b
+  -------         ENDDO         
+  C:001BH         LINE#         13
+  C:001BH         LINE#         14
+  C:001BH         LINE#         16
+  C:001DH         LINE#         17
+  C:0023H         LINE#         18
+  -------         ENDPROC       DELAY600US
+  -------         PROC          MAIN
+  C:0003H         LINE#         21
+  C:0003H         LINE#         22
+  C:0003H         LINE#         23
+  C:0003H         LINE#         24
+  C:0003H         LINE#         25
+  C:0005H         LINE#         26
+  C:0008H         LINE#         27
+  C:000AH         LINE#         28
+  C:000DH         LINE#         29
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MAICHONG
+
+Program Size: data=9.0 xdata=0 code=36
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,115 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/23/2017  08:51:00  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE 实例8.obj TO 实例8
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例8.obj (____8)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C?COPY)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  实例8 (____8)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0020H     UNIT         ?DT?____8
+            DATA    0028H     0004H     UNIT         _DATA_GROUP_
+            IDATA   002CH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     00F6H     UNIT         ?C?LIB_CODE
+            CODE    00F9H     008CH     UNIT         ?C_C51STARTUP
+            CODE    0185H     003DH     UNIT         ?PR?GETKEY?____8
+            CODE    01C2H     0025H     UNIT         ?C_INITSEG
+            CODE    01E7H     0014H     UNIT         ?PR?MAIN?____8
+            CODE    01FBH     0004H     UNIT         ?CO?____8
+
+
+
+OVERLAY MAP OF MODULE:   实例8 (____8)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?____8
+  +--> ?C_INITSEG
+
+?PR?MAIN?____8                 -----    -----
+  +--> ?PR?GETKEY?____8
+
+?PR?GETKEY?____8               0028H    0004H
+  +--> ?CO?____8
+
+
+
+SYMBOL TABLE OF MODULE:  实例8 (____8)
+
+  VALUE           TYPE          NAME
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/23/2017  08:51:00  PAGE 2
+
+
+  ----------------------------------
+
+  -------         MODULE        ____8
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+  C:01E7H         PUBLIC        main
+  C:01FBH         SYMBOL        _?ix1000
+  D:0008H         PUBLIC        led_mod
+  D:0018H         PUBLIC        key_buf
+  C:0185H         PUBLIC        getKey
+  -------         PROC          GETKEY
+  -------         DO            
+  D:0028H         SYMBOL        key_scan
+  D:0007H         SYMBOL        i
+  D:0006H         SYMBOL        j
+  -------         ENDDO         
+  C:0185H         LINE#         6
+  C:0185H         LINE#         7
+  C:0198H         LINE#         8
+  C:019BH         LINE#         9
+  C:019BH         LINE#         10
+  C:01A2H         LINE#         11
+  C:01AAH         LINE#         12
+  C:01ACH         LINE#         13
+  C:01B7H         LINE#         14
+  C:01BBH         LINE#         15
+  C:01BBH         LINE#         16
+  C:01BFH         LINE#         17
+  C:01C1H         LINE#         18
+  -------         ENDPROC       GETKEY
+  -------         PROC          MAIN
+  -------         DO            
+  D:0007H         SYMBOL        key
+  -------         ENDDO         
+  C:01E7H         LINE#         19
+  C:01E7H         LINE#         20
+  C:01E9H         LINE#         21
+  C:01EBH         LINE#         22
+  C:01EBH         LINE#         23
+  C:01EEH         LINE#         24
+  C:01F9H         LINE#         25
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        ____8
+
+  -------         MODULE        ?C?COPY
+  C:00D3H         PUBLIC        ?C?COPY
+  -------         ENDMOD        ?C?COPY
+
+Program Size: data=45.0 xdata=0 code=511
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

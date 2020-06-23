@@ -1,0 +1,102 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        06/26/2010  14:34:55  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE baojing.obj TO baojing
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  baojing.obj (BAOJING)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  baojing (BAOJING)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0002H     UNIT         _DATA_GROUP_
+            IDATA   000AH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0044H     UNIT         ?PR?MAIN?BAOJING
+            CODE    0047H     000CH     UNIT         ?C_C51STARTUP
+            CODE    0053H     0006H     UNIT         ?PR?DELAY?BAOJING
+
+
+
+OVERLAY MAP OF MODULE:   baojing (BAOJING)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?BAOJING
+
+?PR?MAIN?BAOJING               0008H    0002H
+  +--> ?PR?DELAY?BAOJING
+
+
+
+SYMBOL TABLE OF MODULE:  baojing (BAOJING)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        BAOJING
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  C:0053H         PUBLIC        delay
+  B:00A0H.3       PUBLIC        beep
+  C:0003H         PUBLIC        main
+  B:00B0H.4       PUBLIC        kaiguan
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/26/2010  14:34:55  PAGE 2
+
+
+  -------         PROC          DELAY
+  -------         DO            
+  D:0007H         SYMBOL        a
+  -------         ENDDO         
+  C:0053H         LINE#         20
+  C:0053H         LINE#         21
+  C:0053H         LINE#         23
+  C:0055H         LINE#         24
+  C:0055H         LINE#         25
+  C:0056H         LINE#         26
+  C:0058H         LINE#         27
+  -------         ENDPROC       DELAY
+  -------         PROC          MAIN
+  -------         DO            
+  D:0008H         SYMBOL        m
+  -------         ENDDO         
+  C:0003H         LINE#         28
+  C:0003H         LINE#         29
+  C:0003H         LINE#         30
+  C:0003H         LINE#         31
+  C:0003H         LINE#         32
+  C:0006H         LINE#         33
+  C:0006H         LINE#         35
+  C:000CH         LINE#         36
+  C:000CH         LINE#         37
+  C:000EH         LINE#         38
+  C:0011H         LINE#         39
+  C:0024H         LINE#         40
+  C:0035H         LINE#         41
+  C:0035H         LINE#         42
+  C:0037H         LINE#         43
+  C:003AH         LINE#         44
+  C:003DH         LINE#         45
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        BAOJING
+
+Program Size: data=11.0 xdata=0 code=89
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

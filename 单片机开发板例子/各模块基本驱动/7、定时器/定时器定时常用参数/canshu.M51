@@ -1,0 +1,95 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        06/29/2010  10:47:00  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE canshu.obj TO canshu
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  canshu.obj (CANSHU)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  canshu (CANSHU)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0007H     UNIT         ?PR?TIMER0INTERRUPT?CANSHU
+                    000AH     0001H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     0010H     UNIT         ?PR?INITTIMER0?CANSHU
+            CODE    001EH     000CH     UNIT         ?C_C51STARTUP
+            CODE    002AH     0003H     UNIT         ?PR?MAIN?CANSHU
+
+
+
+OVERLAY MAP OF MODULE:   canshu (CANSHU)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?CANSHU
+
+?PR?MAIN?CANSHU
+  +--> ?PR?INITTIMER0?CANSHU
+
+
+
+SYMBOL TABLE OF MODULE:  canshu (CANSHU)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        CANSHU
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  B:00A8H.7       PUBLIC        EA
+  C:0003H         PUBLIC        Timer0Interrupt
+  C:002AH         PUBLIC        main
+  D:0089H         PUBLIC        TMOD
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/29/2010  10:47:00  PAGE 2
+
+
+  B:00A8H.1       PUBLIC        ET0
+  C:000EH         PUBLIC        InitTimer0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  B:0088H.4       PUBLIC        TR0
+  -------         PROC          INITTIMER0
+  C:000EH         LINE#         12
+  C:000EH         LINE#         13
+  C:000EH         LINE#         14
+  C:0011H         LINE#         15
+  C:0014H         LINE#         16
+  C:0017H         LINE#         24
+  C:0019H         LINE#         25
+  C:001BH         LINE#         26
+  C:001DH         LINE#         27
+  -------         ENDPROC       INITTIMER0
+  -------         PROC          MAIN
+  C:002AH         LINE#         29
+  C:002AH         LINE#         30
+  C:002AH         LINE#         31
+  -------         ENDPROC       MAIN
+  -------         PROC          TIMER0INTERRUPT
+  C:0003H         LINE#         34
+  C:0003H         LINE#         36
+  C:0006H         LINE#         37
+  C:0009H         LINE#         38
+  -------         ENDPROC       TIMER0INTERRUPT
+  -------         ENDMOD        CANSHU
+
+Program Size: data=9.0 xdata=0 code=44
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

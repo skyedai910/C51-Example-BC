@@ -1,0 +1,104 @@
+BL51 BANKED LINKER/LOCATER V5.12                                                        11/05/2012  23:13:19  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V5.12, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE 实例3.obj TO 实例补充
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例3.obj (实例3)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  实例补充 (实例3)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0001H     UNIT         ?DT?实例3
+            IDATA   0009H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0004H     UNIT         ?C_INITSEG
+                    0007H     0004H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     008CH     UNIT         ?C_C51STARTUP
+            CODE    009AH     0036H     UNIT         ?PR?INT0_SRV?实例3
+            CODE    00D0H     001BH     UNIT         ?PR?MAIN?实例3
+            CODE    00EBH     000AH     UNIT         ?CO?实例3
+
+
+
+OVERLAY MAP OF MODULE:   实例补充 (实例3)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?PR?INT0_SRV?实例3
+  +--> ?CO?实例3
+
+*** NEW ROOT ***************************************************
+
+?C_C51STARTUP
+  +--> ?PR?MAIN?实例3
+  +--> ?C_INITSEG
+
+?PR?MAIN?实例3
+  +--> ?CO?实例3
+
+
+
+SYMBOL TABLE OF MODULE:  实例补充 (实例3)
+
+BL51 BANKED LINKER/LOCATER V5.12                                                      11/05/2012  23:13:19  PAGE 2
+
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        实例3
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  B:00A8H.7       PUBLIC        EA
+  C:00EBH         PUBLIC        table
+  C:00D0H         PUBLIC        main
+  D:0008H         PUBLIC        count
+  D:0089H         PUBLIC        TMOD
+  C:009AH         PUBLIC        int0_srv
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  B:0088H.4       PUBLIC        TR0
+  -------         PROC          INT0_SRV
+  C:009AH         LINE#         7
+  C:00A4H         LINE#         8
+  C:00A6H         LINE#         9
+  C:00AEH         LINE#         10
+  C:00BAH         LINE#         11
+  C:00C5H         LINE#         12
+  -------         ENDPROC       INT0_SRV
+  -------         PROC          MAIN
+  C:00D0H         LINE#         14
+  C:00D0H         LINE#         15
+  C:00DAH         LINE#         16
+  C:00DDH         LINE#         17
+  C:00E3H         LINE#         18
+  C:00E5H         LINE#         19
+  C:00E7H         LINE#         20
+  C:00E9H         LINE#         21
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        实例3
+
+Program Size: data=10.0 xdata=0 code=241
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

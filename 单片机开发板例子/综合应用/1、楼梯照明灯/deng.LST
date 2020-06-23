@@ -1,0 +1,54 @@
+C51 COMPILER V8.02   DENG                                                                  07/05/2010 08:42:55 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE DENG
+OBJECT MODULE PLACED IN deng.OBJ
+COMPILER INVOKED BY: D:\¥¶¿Ì»Ìº˛\keil\C51\BIN\C51.EXE deng.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <reg52.h>
+   2          
+   3          sbit light=P1^0;
+   4          sbit s1=P3^4;
+   5          sbit s2=P3^5;
+   6          
+   7          bit change,s1sta,s2sta;
+   8          
+   9          bit keyscan()
+  10          {
+  11   1              if((s1^s1sta)||(s2^s2sta))
+  12   1                      change=1;
+  13   1              return change;
+  14   1      }
+  15          
+  16          void main()
+  17          {       
+  18   1              s1sta=s1;
+  19   1              s2sta=s2;
+  20   1              while(1)
+  21   1              {
+  22   2                      keyscan();
+  23   2                      if(change)
+  24   2                      {
+  25   3                              change=0;
+  26   3                              light=~light;
+  27   3                              s1sta=s1;
+  28   3                              s2sta=s2;
+  29   3                      }       
+  30   2              }
+  31   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     49    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      3    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

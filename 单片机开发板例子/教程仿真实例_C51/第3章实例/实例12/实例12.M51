@@ -1,0 +1,103 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/22/2017  21:11:32  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE 实例12.obj TO 实例12
+
+
+MEMORY MODEL: SMALL WITH FLOATING POINT ARITHMETIC
+
+
+INPUT MODULES INCLUDED:
+  实例12.obj (____12)
+  C:\KEIL_V5\C51\LIB\C51FPS.LIB (?C?FPADD)
+  C:\KEIL_V5\C51\LIB\C51FPS.LIB (?C?FPDIV)
+  C:\KEIL_V5\C51\LIB\C51FPS.LIB (?C?FCAST)
+  C:\KEIL_V5\C51\LIB\C51FPS.LIB (?C?FPGETOPN)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C?LNEG)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  实例12 (____12)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0016H     UNIT         ?DT?____12
+            DATA    001EH     0004H     UNIT         _DATA_GROUP_
+            IDATA   0022H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     022EH     UNIT         ?C?LIB_CODE
+            CODE    0231H     008CH     UNIT         ?C_C51STARTUP
+            CODE    02BDH     0069H     UNIT         ?PR?MAIN?____12
+            CODE    0326H     0017H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   实例12 (____12)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?____12
+  +--> ?C_INITSEG
+
+?PR?MAIN?____12                001EH    0004H
+
+
+
+SYMBOL TABLE OF MODULE:  实例12 (____12)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/22/2017  21:11:32  PAGE 2
+
+
+  -------         MODULE        ____12
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:02BDH         PUBLIC        main
+  D:0008H         PUBLIC        a
+  D:001CH         PUBLIC        i
+  -------         PROC          MAIN
+  -------         DO            
+  D:001EH         SYMBOL        result
+  -------         ENDDO         
+  C:02BDH         LINE#         5
+  C:02BDH         LINE#         6
+  C:02C6H         LINE#         7
+  C:02CAH         LINE#         8
+  C:030BH         LINE#         9
+  C:0325H         LINE#         10
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        ____12
+
+  -------         MODULE        ?C?FPADD
+  C:000AH         PUBLIC        ?C?FPADD
+  C:0006H         PUBLIC        ?C?FPSUB
+  -------         ENDMOD        ?C?FPADD
+
+  -------         MODULE        ?C?FPDIV
+  C:00FEH         PUBLIC        ?C?FPDIV
+  -------         ENDMOD        ?C?FPDIV
+
+  -------         MODULE        ?C?FCAST
+  C:01A5H         PUBLIC        ?C?FCASTC
+  C:01A0H         PUBLIC        ?C?FCASTI
+  C:019BH         PUBLIC        ?C?FCASTL
+  -------         ENDMOD        ?C?FCAST
+
+  -------         MODULE        ?C?LNEG
+  C:0223H         PUBLIC        ?C?LNEG
+  -------         ENDMOD        ?C?LNEG
+
+Program Size: data=35.0 xdata=0 code=829
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

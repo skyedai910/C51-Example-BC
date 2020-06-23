@@ -1,0 +1,168 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        06/28/2010  16:02:22  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE 1zijie.obj TO 1zijie
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  1zijie.obj (1ZIJIE)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  1zijie (1ZIJIE)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0002H     UNIT         ?DT?1ZIJIE
+            IDATA   000AH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     001DH     UNIT         ?PR?INIT?1ZIJIE
+                    0020H     0003H                  *** GAP ***
+            CODE    0023H     0003H     ABSOLUTE     
+            CODE    0026H     008CH     UNIT         ?C_C51STARTUP
+            CODE    00B2H     0018H     UNIT         ?PR?MAIN?1ZIJIE
+            CODE    00CAH     000EH     UNIT         ?PR?_DELAY?1ZIJIE
+            CODE    00D8H     000CH     UNIT         ?PR?UART?1ZIJIE
+            CODE    00E4H     000AH     UNIT         ?PR?_SEND?1ZIJIE
+            CODE    00EEH     0004H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   1zijie (1ZIJIE)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?1ZIJIE
+  +--> ?C_INITSEG
+
+?PR?MAIN?1ZIJIE
+  +--> ?PR?INIT?1ZIJIE
+  +--> ?PR?_DELAY?1ZIJIE
+  +--> ?PR?_SEND?1ZIJIE
+
+
+
+SYMBOL TABLE OF MODULE:  1zijie (1ZIJIE)
+
+  VALUE           TYPE          NAME
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/28/2010  16:02:22  PAGE 2
+
+
+  ----------------------------------
+
+  -------         MODULE        1ZIJIE
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+  C:00E4H         PUBLIC        _send
+  D:00A8H         PUBLIC        IE
+  B:00A8H.4       PUBLIC        ES
+  D:00B8H         PUBLIC        IP
+  B:0098H.0       PUBLIC        RI
+  B:0098H.1       PUBLIC        TI
+  B:00B0H.4       PUBLIC        s2
+  C:00B2H         PUBLIC        main
+  D:0099H         PUBLIC        SBUF
+  D:0087H         PUBLIC        PCON
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  C:0003H         PUBLIC        init
+  C:00D8H         PUBLIC        uart
+  D:0008H         PUBLIC        zifu
+  D:008DH         PUBLIC        TH1
+  D:008BH         PUBLIC        TL1
+  B:0088H.6       PUBLIC        TR1
+  B:0098H.4       PUBLIC        REN
+  D:00C8H         PUBLIC        T2CON
+  D:0009H         PUBLIC        sending
+  C:00CAH         PUBLIC        _delay
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          _DELAY
+  D:0007H         SYMBOL        i
+  -------         DO            
+  D:0007H         SYMBOL        j
+  D:0006H         SYMBOL        k
+  -------         ENDDO         
+  C:00CAH         LINE#         21
+  C:00CAH         LINE#         22
+  C:00CAH         LINE#         24
+  C:00D0H         LINE#         25
+  C:00D7H         LINE#         26
+  -------         ENDPROC       _DELAY
+  -------         PROC          INIT
+  C:0003H         LINE#         27
+  C:0003H         LINE#         28
+  C:0003H         LINE#         29
+  C:0005H         LINE#         30
+  C:0008H         LINE#         31
+  C:000BH         LINE#         32
+  C:000EH         LINE#         33
+  C:0011H         LINE#         34
+  C:0014H         LINE#         35
+  C:0017H         LINE#         36
+  C:0019H         LINE#         37
+  C:001BH         LINE#         38
+  C:001DH         LINE#         39
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/28/2010  16:02:22  PAGE 3
+
+
+  C:001FH         LINE#         40
+  -------         ENDPROC       INIT
+  -------         PROC          _SEND
+  D:0007H         SYMBOL        d
+  C:00E4H         LINE#         42
+  C:00E4H         LINE#         43
+  C:00E4H         LINE#         45
+  C:00E6H         LINE#         46
+  C:00E9H         LINE#         47
+  C:00EDH         LINE#         48
+  -------         ENDPROC       _SEND
+  -------         PROC          MAIN
+  C:00B2H         LINE#         50
+  C:00B2H         LINE#         51
+  C:00B2H         LINE#         52
+  C:00B5H         LINE#         53
+  C:00B5H         LINE#         54
+  C:00B5H         LINE#         55
+  C:00B8H         LINE#         56
+  C:00B8H         LINE#         57
+  C:00BDH         LINE#         58
+  C:00C0H         LINE#         59
+  C:00C0H         LINE#         60
+  C:00C3H         LINE#         61
+  C:00C8H         LINE#         62
+  C:00C8H         LINE#         63
+  C:00C8H         LINE#         64
+  -------         ENDPROC       MAIN
+  -------         PROC          UART
+  C:00D8H         LINE#         67
+  C:00D8H         LINE#         69
+  C:00DBH         LINE#         70
+  C:00DBH         LINE#         71
+  C:00DDH         LINE#         72
+  C:00DEH         LINE#         74
+  C:00DEH         LINE#         75
+  C:00E0H         LINE#         76
+  C:00E3H         LINE#         77
+  C:00E3H         LINE#         78
+  -------         ENDPROC       UART
+  -------         ENDMOD        1ZIJIE
+
+Program Size: data=11.0 xdata=0 code=239
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

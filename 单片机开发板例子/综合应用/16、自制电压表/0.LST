@@ -1,0 +1,128 @@
+C51 COMPILER V8.02   0                                                                     07/06/2010 08:35:32 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 0
+OBJECT MODULE PLACED IN 0.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE 0.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /****************************************************************************
+   2                                                  “天祥电子”    倾情奉献
+   3                                                                  www.txmcu.cn
+   4                                                                  www.txmcu.com
+   5          *****************************************************************************
+   6          程序功能：      制作一量程为5V的电压表，且显示与数码管上。
+   7                                  本电压表测量的是位于ADC与DAC芯片之间的滑动变阻器之间的电压，拧动
+   8                                  滑动变阻器，可以发现数码管显示的电压值变化。
+   9          ****************************************************************************/
+  10          #include<reg51.h>
+  11          #include <intrins.h>
+  12          #define uint unsigned int
+  13          #define uchar unsigned char
+  14          sbit adrd=P3^7;                          //IO口定义
+  15          sbit adwr=P3^6;
+  16          sbit diola=P2^5;
+  17          sbit dula=P2^6;
+  18          sbit wela=P2^7;
+  19          unsigned char j,k,adval,zheng,xiao1,xiao2,xiao3;
+  20          unsigned int value0;
+  21          float value;
+  22          void delay(unsigned char i)             //延时程序
+  23          {
+  24   1        for(j=i;j>0;j--)
+  25   1          for(k=125;k>0;k--);
+  26   1      }
+  27          
+  28          uchar code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,                         //数码管编码
+  29                                  0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};
+  30          
+  31          void display(uchar bai_c,uchar sh_c,uchar g_c)                  //显示程序
+  32          {  
+  33   1         P0=table[bai_c]|0x80;                //显示百位
+  34   1         dula=1;
+  35   1         dula=0;
+  36   1      
+  37   1         P0=0xfe;
+  38   1         wela=1;
+  39   1         wela=0;
+  40   1         delay(5);
+  41   1      
+  42   1         dula=0;
+  43   1         P0=table[sh_c];              //显示十位
+  44   1         dula=1;
+  45   1         dula=0;
+  46   1      
+  47   1         wela=0;
+  48   1         P0=0xfd;
+  49   1         wela=1;
+  50   1         wela=0;
+  51   1         delay(5);
+  52   1      
+  53   1         P0=table[g_c];               //显示个位
+  54   1         dula=1;
+  55   1         dula=0;
+C51 COMPILER V8.02   0                                                                     07/06/2010 08:35:32 PAGE 2   
+
+  56   1      
+  57   1         P0=0xfb;
+  58   1         wela=1;
+  59   1         wela=0;
+  60   1         delay(5);
+  61   1      }
+  62          
+  63          void main()             //      主程序
+  64          {
+  65   1              uchar a;
+  66   1          while(1)
+  67   1        {
+  68   2          wela=1;
+  69   2          P0=0;                       //选通ADCS
+  70   2          adwr=0;                     //AD写入（随便写个什么都行，主要是为了启动AD转换）
+  71   2          _nop_();
+  72   2          adwr=1;
+  73   2          P0=0xff;                    //关闭ADCS
+  74   2          delay(10);
+  75   2          wela=0;                     //关闭有AD片选信号锁存器的锁存端以防止在操作数码管时使AD的片选发生变化
+  76   2      
+  77   2           wela=1;                   //重新打开有AD片选信号锁存器的锁存端
+  78   2           P1=0xff;                    //读取P1口之前先给其写全1
+  79   2           P0=0;                       //选通ADCS
+  80   2           adrd=0;                     //AD读使能
+  81   2           adval=P1;                  //AD数据读取赋给P1口
+  82   2           adrd=1;
+  83   2          P0=0xff;                     //关闭ADCS
+  84   2           adwr=0;
+  85   2           P1=adval;                    //同时把AD的值送八个发光二极显示
+  86   2              value=adval*5.0/255.0;            //转换。
+  87   2      
+  88   2              value0=(unsigned int)(value*1000);//强制类型转换，而后取出各位的值。
+  89   2              zheng=value0/1000;
+  90   2              xiao1=value0/100%10;
+  91   2              xiao2=value0/10%10;
+  92   2              xiao3=value0%10;   //四舍五入的处理
+  93   2              if(xiao3>=5)
+  94   2                      xiao2++;
+  95   2              
+  96   2               for(a=20;a>0;a--)        //需要注意的是ADC0804在写和读之间的时间间隔要足够长否则无法读出数据
+  97   2          {                           //这里把显示部分放这里的原因也是为了增加写读之间的时间间隔                
+             -                                                                                                                        
+             -                                                                                   
+  98   3              display(zheng,xiao1,xiao2);
+  99   3           }  //送去显示各位。
+ 100   2         }
+ 101   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    281    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     13       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

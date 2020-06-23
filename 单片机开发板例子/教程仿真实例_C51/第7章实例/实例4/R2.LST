@@ -1,0 +1,61 @@
+C51 COMPILER V7.50   R2                                                                    06/02/2012 23:12:13 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE R2
+OBJECT MODULE PLACED IN R2.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE R2.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          //多机通信（2#子机）
+   2          
+   3          #include <reg51.h>
+   4          #define NODE2_ADDR 2
+   5          #define uchar unsigned char
+   6          
+   7          uchar i,j;
+   8          sbit P3_7=P3^7;
+   9          uchar code table[16]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,
+  10                                                    0x80,0x90,0x88,0x83,0xc6,0xa1,0x86,0x8e};
+  11          
+  12          void display(uchar ch){
+  13   1              if((ch>=48)&&(ch<=57)) P2=table[ch-48];
+  14   1              else if((ch>=65)&&(ch<=70)) P2=table[ch-55];
+  15   1      }                                         
+  16          
+  17          main(){
+  18   1              SCON=0xf0;              //串口方式3、多机通信、禁止接收、中断标志清零
+  19   1              TMOD=0x20;              //T1定时方式2
+  20   1              TH1=TL1=0xfd;   //9600bps
+  21   1              TR1=1;                  //启动T1
+  22   1              ES=1;EA=1;              //开中断
+  23   1              while(1);
+  24   1      }
+  25          
+  26          void receive(void) interrupt 4 {
+  27   1              RI=0;
+  28   1              if(RB8==1){
+  29   2                      if(SBUF==NODE2_ADDR){
+  30   3                              SM2=0;
+  31   3                              P3_7=!P3_7;
+  32   3                      }
+  33   2                      return;
+  34   2              }
+  35   1              display(SBUF);
+  36   1              SM2=1;
+  37   1      }
+  38          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    105    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

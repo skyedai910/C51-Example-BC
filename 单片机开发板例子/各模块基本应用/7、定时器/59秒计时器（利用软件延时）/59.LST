@@ -1,0 +1,106 @@
+C51 COMPILER V8.02   59                                                                    06/28/2010 09:45:59 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 59
+OBJECT MODULE PLACED IN 59.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE 59.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /********************************************************************
+   2                                          “天祥电子”            倾情奉献
+   3                                                          www.txmcu.com
+   4                                                          www.txmcu.cn
+   5          **********************************************************************
+   6          
+   7          程序功能：      利用delay（）函数，通过单片机自身的“数数”来延时。
+   8                                  这个方法不但占用了单片机的资源，计时不精确，而且在动态显示
+   9                                  数码管时，也有个缺点，即数码管的第二位由于扫描间隔过大，出现闪动的
+  10                                  现象。（故这个方法只是用于和用定时器的方法延时做比较。要求精
+  11                                  密的场合，并不提倡。）
+  12          
+  13          **********************************************************************/
+  14          #include <reg51.h>
+  15          #include <intrins.h>
+  16          
+  17          #define uchar unsigned char 
+  18          #define uint unsigned int
+  19          
+  20          uchar j,k,i,a,A1,A2,second;
+  21          
+  22          
+  23          sbit dula=P2^6;
+  24          sbit wela=P2^7;
+  25          uchar code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,
+  26                              0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};
+  27          
+  28          
+  29          sbit beep=P2^3;
+  30          sbit kaiguan=P3^4;
+  31          
+  32          void delay()               //大概0.5ms左右的延时
+  33          {
+  34   1              uchar a;
+  35   1              for(a=450;a>0;a--)
+  36   1              {
+  37   2                      _nop_();
+  38   2              }
+  39   1      }
+  40          
+  41          void display(uchar sh_c,uchar g_c)
+  42          {
+  43   1         dula=0;
+  44   1         P0=table[sh_c];
+  45   1         dula=1;
+  46   1         dula=0;
+  47   1         
+  48   1         wela=0;
+  49   1         P0=0xfe;
+  50   1         wela=1;
+  51   1         wela=0;
+  52   1         delay();
+  53   1         
+  54   1         P0=table[g_c];
+  55   1         dula=1;
+C51 COMPILER V8.02   59                                                                    06/28/2010 09:45:59 PAGE 2   
+
+  56   1         dula=0;
+  57   1         
+  58   1         P0=0xfd;
+  59   1         wela=1;
+  60   1         wela=0;
+  61   1         delay();
+  62   1      }
+  63          
+  64          void main()
+  65            {
+  66   1           while(1)
+  67   1             { unsigned int m;
+  68   2                       for(m=0;m<2000;m++)
+  69   2                       {
+  70   3                              delay();
+  71   3                       }      
+  72   2               second++;
+  73   2               if(second==60)
+  74   2               second=0;
+  75   2               A1=second/10;
+  76   2               A2=second%10;
+  77   2               for(a=50;a>0;a--)
+  78   2               { display(A1,A2);};
+  79   2               }
+  80   1      
+  81   1          }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    122    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      7       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,13 @@
+Processing LCDDEMO.ASM...
+ASEM51 LCDDEMO.ASM
+Invalid keyboard code specified
+
+MCS-51 Family Cross Assembler ASEM-51 V1.2
+
+             no errors
+
+Extracting debug data from LCDDEMO.LST...
+Processed 499 lines.
+
+Build completed OK.
+

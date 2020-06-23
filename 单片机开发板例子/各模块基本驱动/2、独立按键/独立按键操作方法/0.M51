@@ -1,0 +1,72 @@
+BL51 BANKED LINKER/LOCATER V6.00                                                        06/25/2010  16:20:57  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.00, INVOKED BY:
+D:\处理软件\KEIL\C51\BIN\BL51.EXE 0.obj TO 0
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  0.obj (0)
+  D:\处理软件\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  0 (0)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     000CH     UNIT         ?C_C51STARTUP
+            CODE    000FH     000BH     UNIT         ?PR?MAIN?0
+
+
+
+OVERLAY MAP OF MODULE:   0 (0)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?0
+
+
+
+SYMBOL TABLE OF MODULE:  0 (0)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        0
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  B:00B0H.4       PUBLIC        s2
+  C:000FH         PUBLIC        main
+  B:0090H.0       PUBLIC        led
+  -------         PROC          MAIN
+  C:000FH         LINE#         6
+  C:000FH         LINE#         7
+  C:000FH         LINE#         8
+  C:000FH         LINE#         9
+  C:000FH         LINE#         10
+BL51 BANKED LINKER/LOCATER V6.00                                                      06/25/2010  16:20:57  PAGE 2
+
+
+  C:0012H         LINE#         11
+  C:0016H         LINE#         13
+  C:0018H         LINE#         14
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        0
+
+Program Size: data=9.0 xdata=0 code=26
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

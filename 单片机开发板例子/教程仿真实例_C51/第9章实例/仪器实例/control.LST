@@ -1,0 +1,52 @@
+C51 COMPILER V9.56.0.0   CONTROL                                                           02/22/2018 15:00:50 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE CONTROL
+OBJECT MODULE PLACED IN control.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE control.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <reg51.h>
+   2          
+   3          sbit P36 = P3^6;
+   4          sbit P37 = P3^7;
+   5          
+   6          unsigned char ad();
+   7          void print(char name, unsigned int value);
+   8          extern unsigned char param_value[2];
+   9          extern char menu_status;
+  10          
+  11          void control_thread() {
+  12   1        //第1步:A/D转换
+  13   1        unsigned char value = ad();
+  14   1        //第2步:根据采样值控制LED灯
+  15   1        if (value > param_value[1]) {
+  16   2          P36 = 0;
+  17   2          P37 = 1;
+  18   2        } else if (value <= param_value[1] && value >= param_value[0]) {
+  19   2          P36 = 1;
+  20   2          P37 = 1;
+  21   2        } else {
+  22   2          P36 = 1;
+  23   2          P37 = 0;
+  24   2        }
+  25   1        //第3步:如果菜单是关闭的，显示采集到的数值
+  26   1        if (menu_status == 1) {
+  27   2          print(' ', value);
+  28   2        }
+  29   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     52    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

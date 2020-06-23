@@ -1,0 +1,227 @@
+C51 COMPILER V9.00   JVZHENJIANPAN                                                         09/30/2019 01:01:54 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE JVZHENJIANPAN
+OBJECT MODULE PLACED IN jvzhenjianpan.OBJ
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE jvzhenjianpan.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          //4*4键盘检测程序,按下键后相应的代码显示在数码管上
+   2          #include<reg51.h>
+   3          sbit beep=P2^3;
+   4          sbit dula=P2^6;
+   5          sbit wela=P2^7;
+   6                   unsigned char i=100;
+   7          unsigned char j,k,temp,key;
+   8          void delay(unsigned char i)
+   9          {
+  10   1        for(j=i;j>0;j--)
+  11   1          for(k=112;k>0;k--);
+  12   1      }
+  13          unsigned char code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,
+  14                                  0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};
+  15          void display(unsigned char num)
+  16          {
+  17   1               P0=table[num];
+  18   1               dula=1;
+  19   1               dula=0;
+  20   1               P0=0xc0;       //11000000      六位全亮
+  21   1               wela=1;
+  22   1               wela=0;
+  23   1      }
+  24          void main()
+  25          {
+  26   1        dula=0;
+  27   1        wela=0;
+  28   1        while(1)
+  29   1        {
+  30   2      
+  31   2          P3=0xfe;    //P.0=0;第一行输出1
+  32   2          temp=P3;
+  33   2          temp=temp&0xf0;      //清P3低四位 ,保留高四位列线
+  34   2               if(temp!=0xf0)
+  35   2      //       if((temp==0xe0)||(temp==0xd0)||(temp==0xb0)||(temp==0x70))                        
+  36   2          {
+  37   3            delay(10);
+  38   3            if(temp!=0xf0)  //去抖
+  39   3       //      if((temp==0xe0)||(temp==0xd0)||(temp==0xb0)||(temp==0x70))                        
+  40   3           {  
+  41   4              temp=P3;         //读P3 列线
+  42   4              switch(temp)
+  43   4              {
+  44   5                case 0xee:  //1110 1 110 ,1行1列
+  45   5                     key=0;
+  46   5                     break;
+  47   5      
+  48   5                case 0xde:  //1101 1110  ，1行2列
+  49   5                     key=1;
+  50   5                     break;
+  51   5      
+  52   5                case 0xbe:   //1011 1110  ，1行3列
+  53   5                     key=2;
+  54   5                     break;
+  55   5      
+C51 COMPILER V9.00   JVZHENJIANPAN                                                         09/30/2019 01:01:54 PAGE 2   
+
+  56   5                case 0x7e:   //0111 1110  ，1行4列
+  57   5                     key=3;
+  58   5                     break;
+  59   5               }
+  60   4       /*        while(temp!=0xfe)
+  61   4               {
+  62   4                 temp=P3;
+  63   4                 temp=temp&0xfe;
+  64   4                 beep=0;
+  65   4               } 
+  66   4               beep=1; */
+  67   4              display(key);
+  68   4               P1=0xfe;
+  69   4            }
+  70   3          }
+  71   2      
+  72   2          P3=0xfd;            //1111 1101，扫描第二行
+  73   2          temp=P3;
+  74   2          temp=temp&0xf0;
+  75   2          if(temp!=0xf0)
+  76   2      //       if((temp==0xed)||(temp==0xdd)||(temp==0xbd)||(temp==0x7d))                        
+  77   2          {
+  78   3            delay(10);
+  79   3            if(temp!=0xf0)     //读列线
+  80   3      //       if((temp==0xed)||(temp==0xdd)||(temp==0xbd)||(temp==0x7d))                        
+  81   3            {
+  82   4              temp=P3;
+  83   4              switch(temp)
+  84   4              {
+  85   5                case 0xed:
+  86   5                     key=4;
+  87   5                     break;
+  88   5      
+  89   5                case 0xdd:
+  90   5                     key=5;
+  91   5                     break;
+  92   5      
+  93   5                case 0xbd:
+  94   5                     key=6;
+  95   5                     break;
+  96   5      
+  97   5                case 0x7d:
+  98   5                     key=7;
+  99   5                     break;
+ 100   5               }
+ 101   4         /*      while(temp!=0xf0)
+ 102   4               {
+ 103   4                 temp=P3;
+ 104   4                 temp=temp&0xf0;
+ 105   4                 beep=0;
+ 106   4               }
+ 107   4               beep=1;  */
+ 108   4               display(key);  
+ 109   4               P1=0xfd;
+ 110   4            }
+ 111   3            }
+ 112   2      
+ 113   2          P3=0xfb;     //1111 1011扫第三行
+ 114   2          temp=P3;
+ 115   2          temp=temp&0xf0;
+ 116   2          if(temp!=0xf0)
+ 117   2      //       if((temp==0xeb)||(temp==0xdb)||(temp==0xbb)||(temp==0x7b))                        
+C51 COMPILER V9.00   JVZHENJIANPAN                                                         09/30/2019 01:01:54 PAGE 3   
+
+ 118   2         { 
+ 119   3            delay(10);
+ 120   3            if(temp!=0xf0)
+ 121   3      //       if((temp==0xeb)||(temp==0xdb)||(temp==0xbb)||(temp==0x7b))                        
+ 122   3            {   
+ 123   4              temp=P3;
+ 124   4              switch(temp)
+ 125   4              {
+ 126   5                case 0xeb:
+ 127   5                     key=8;
+ 128   5                     break;
+ 129   5      
+ 130   5                case 0xdb:
+ 131   5                     key=9;
+ 132   5                     break;
+ 133   5      
+ 134   5                case 0xbb:
+ 135   5                     key=10;
+ 136   5                     break;
+ 137   5      
+ 138   5                case 0x7b:
+ 139   5                     key=11;
+ 140   5                     break;
+ 141   5               }
+ 142   4       /*        while(temp!=0xf0)
+ 143   4               {
+ 144   4                 temp=P3;
+ 145   4                 temp=temp&0xf0;
+ 146   4                 beep=0;
+ 147   4              }
+ 148   4               beep=1; */
+ 149   4               display(key);
+ 150   4               P1=0xfb;  
+ 151   4            }
+ 152   3            }
+ 153   2      
+ 154   2                 P3=0xff;       //1111 0111扫第四行
+ 155   2                 temp=P3;
+ 156   2                 temp=temp&0xf0;       //0xf0
+ 157   2                  if(temp!=0xf0)       //0xf0
+ 158   2      //       if((temp==0xef)||(temp==0xdf)||(temp==0xbf)||(temp==0x7f))                        
+ 159   2          {
+ 160   3            delay(10);
+ 161   3            if(temp!=0xf0)  // 0xf0
+ 162   3      //       if((temp==0xef)||(temp==0xdf)||(temp==0xbf)||(temp==0x7f))                        
+ 163   3       
+ 164   3            { 
+ 165   4              temp=P3;
+ 166   4              switch(temp)
+ 167   4              {
+ 168   5                case 0xef:
+ 169   5                     key=12;
+ 170   5                     break;
+ 171   5      
+ 172   5                case 0xdf:
+ 173   5                     key=13;
+ 174   5                     break;
+ 175   5      
+ 176   5                case 0xbf:
+ 177   5                     key=14;
+ 178   5                     break;
+ 179   5      
+C51 COMPILER V9.00   JVZHENJIANPAN                                                         09/30/2019 01:01:54 PAGE 4   
+
+ 180   5                case 0x7f:
+ 181   5                     key=15;
+ 182   5                     break;
+ 183   5               }
+ 184   4              while(temp!=0xf0)
+ 185   4       //             while   ((temp==0xef)||(temp==0xdf)||(temp==0xbf)||(temp==0x7f))
+ 186   4               { P3=0xff;
+ 187   5                 temp=P3;
+ 188   5                 temp=temp&0xf0;
+ 189   5                 beep=0;
+ 190   5                      display(key);
+ 191   5                      P1=0xf7;        
+ 192   5               } 
+ 193   4               beep=1; 
+ 194   4            }
+ 195   3          }
+ 196   2      
+ 197   2        }
+ 198   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    365    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      5    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

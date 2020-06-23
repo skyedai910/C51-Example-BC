@@ -1,0 +1,109 @@
+C51 COMPILER V8.02   59                                                                    06/28/2010 09:55:20 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 59
+OBJECT MODULE PLACED IN 59.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE 59.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /********************************************************************
+   2                                          “天祥电子”            倾情奉献
+   3                                                          www.txmcu.com
+   4                                                          www.txmcu.cn
+   5          **********************************************************************
+   6          
+   7          程序功能：      与上个软件延时的计时相比，此采用定时器的方法，不但节省了单片机的
+   8                                  资源，而且定时精度高。故做精确定时或者单片机资源有限时，提倡用定时器
+   9                                  的方法。
+  10                                  这里采用的是定时器0工作于模式1。
+  11          
+  12          **********************************************************************/
+  13          //注意晶振需为11.0592M。
+  14          //若为其他数值晶振，请改变TH0与TL0参数值，否则计时会有很大误差 。
+  15          
+  16          #include<reg51.h>
+  17          
+  18          #define uchar unsigned char
+  19          
+  20          sbit dula=P2^6;
+  21          sbit wela=P2^7;
+  22          unsigned char j,k,c1,c0,m,n=255;
+  23          unsigned char pp;
+  24          unsigned char code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,
+  25                                  0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};
+  26          
+  27          void delay(unsigned char i)
+  28          {
+  29   1        for(j=i;j>0;j--)
+  30   1          for(k=125;k>0;k--);
+  31   1      }
+  32          
+  33          void display(uchar a,uchar b)
+  34          {
+  35   1         P0=table[a];
+  36   1         dula=1;
+  37   1         dula=0;
+  38   1         
+  39   1         P0=0xef;
+  40   1         wela=1;
+  41   1         wela=0;
+  42   1         delay(5);
+  43   1         
+  44   1         P0=table[b];
+  45   1         dula=1;
+  46   1         dula=0;
+  47   1         
+  48   1         P0=0xdf;
+  49   1         wela=1;
+  50   1         wela=0;
+  51   1         delay(5);
+  52   1      }
+  53          
+  54          void main()
+  55          {
+C51 COMPILER V8.02   59                                                                    06/28/2010 09:55:20 PAGE 2   
+
+  56   1              TMOD=0x01;
+  57   1              TR0=1;
+  58   1              TH0=(65536-46080)/256;// 由于晶振为11.0592,故所记次数应为46080，计时器每隔50000微秒发起一次中断。
+  59   1              TL0=(65536-46080)%256;//46080的来历，为50000*11.0592/12
+  60   1              ET0=1;
+  61   1              EA=1;
+  62   1              while(1)
+  63   1              {
+  64   2                      if(pp==20)
+  65   2                      {       pp=0;
+  66   3                              m++;
+  67   3                              n--;
+  68   3                              P1=n;//闪烁灯
+  69   3                              if(m==60)
+  70   3                              {
+  71   4                                      m=0;
+  72   4                              }
+  73   3                      }
+  74   2                      c0=m%10;
+  75   2                      c1=m/10;
+  76   2                      display(c1,c0);
+  77   2              }
+  78   1      }
+  79          
+  80          void time0() interrupt 1
+  81          {TH0=(65536-46080)/256;
+  82   1              TL0=(65536-46080)%256;
+  83   1              pp++;
+  84   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    135    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      7    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

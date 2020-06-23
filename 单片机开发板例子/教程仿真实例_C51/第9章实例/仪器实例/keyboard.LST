@@ -1,0 +1,70 @@
+C51 COMPILER V9.56.0.0   KEYBOARD                                                          02/22/2018 15:00:50 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE KEYBOARD
+OBJECT MODULE PLACED IN keyboard.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE keyboard.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <reg51.h>
+   2          
+   3          #define CHECK_KEY_DOWN  0    //处在检测按键压下阶段标志
+   4          #define CHECK_KEY_UP    1    //处在检测按键抬起阶段标志
+   5          #define KEY_UP      0    //按键抬起标志
+   6          #define KEY_DOWN    1    //按键压下标志
+   7          
+   8          sbit _p32 = P3^2;
+   9          
+  10          
+  11          char _key_status = CHECK_KEY_DOWN; //按键检测状态（初值为检测压下阶段）
+  12          char _key_idx = 0;           //按键序号
+  13          
+  14          void serial(char byte);
+  15          
+  16          char _check_key(unsigned char _key_idx) { //检查按键状态
+  17   1        serial(~(0x01<<_key_idx));    //将待查按键键码转换成扫描码后输出
+  18   1        if (_p32 == 0) {            //根据P32状态决定返回值
+  19   2          return KEY_DOWN;
+  20   2        } else {
+  21   2          return KEY_UP;
+  22   2        }
+  23   1      }
+  24          
+  25          char get_key(void) {              
+  26   1        char result = -1;             //无键按下时键值为-1
+  27   1        if (_key_status == CHECK_KEY_DOWN) {    //如果当前处于检查压下阶段，进行以下操作
+  28   2          if (_check_key(_key_idx) == KEY_DOWN) { //判断当前扫描键的状态，若为压下标志则
+  29   3            _key_status = CHECK_KEY_UP;     //将检查阶段标志设置为抬起
+  30   3          } else {                //否则，将检查阶段标志设置为压下
+  31   3            if (++_key_idx == 4) {        //判断是否4个按键已经轮流扫描一遍
+  32   4              _key_idx = 0;         //是，则将待扫描按键号设为0
+  33   4            }
+  34   3          }
+  35   2        } else if (_key_status == CHECK_KEY_UP) { //如果当前处于检查抬起阶段，进行以下操作
+  36   2          if (_check_key(_key_idx) == KEY_UP) { //判断当前扫描键的状态，若为抬起标志则
+  37   3            result = _key_idx;          //键值输出
+  38   3            _key_status = CHECK_KEY_DOWN;   //按键检查阶段标志改为压下
+  39   3            if (++_key_idx == 4) {        //判断是否4个按键已经轮流扫描一遍
+  40   4              _key_idx = 0;         //是，则将待扫描按键号设为0
+  41   4            }
+  42   3          }
+  43   2        }
+  44   1        return result;
+  45   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     88    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+C51 COMPILER V9.56.0.0   KEYBOARD                                                          02/22/2018 15:00:50 PAGE 2   
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

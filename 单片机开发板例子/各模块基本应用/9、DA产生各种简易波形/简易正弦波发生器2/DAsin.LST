@@ -1,0 +1,59 @@
+C51 COMPILER V9.00   DASIN                                                                 11/12/2019 14:30:36 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE DASIN
+OBJECT MODULE PLACED IN DAsin.OBJ
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE DAsin.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          //可观察到发光二极管由灭到亮，而后由亮到灭。
+   2          //若用示波器观察IOUT引脚电平，可看到正弦波波形。
+   3          #include<reg51.h>
+   4          #include <math.h>
+   5          sbit wela=P2^7;
+   6          sbit dula=P2^6;
+   7          sbit dawr=P3^6;
+   8          sbit csda=P3^2;
+   9          unsigned char j,k;
+  10          unsigned char  dat[90];
+  11          
+  12          void delay(unsigned char i)
+  13          {
+  14   1        for(j=i;j>0;j--)
+  15   1          for(k=125;k>0;k--);
+  16   1      } 
+  17          void main()
+  18          {
+  19   1        unsigned char m;
+  20   1        wela=0;
+  21   1        dula=0;
+  22   1        csda=0;
+  23   1        dawr=0;
+  24   1       for(m=0;m<90;m++)
+  25   1       { unsigned char d;
+  26   2        d=127*(sin(2*m*3.1415926/90)+1);       //
+  27   2        dat[m]=d;             
+  28   2        }
+  29   1      
+  30   1        while(1)
+  31   1        {
+  32   2              for(m=0;m<90;m++)
+  33   2              {P0=dat[m];
+  34   3              delay(10);}
+  35   2        }     
+  36   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    135    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     92       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

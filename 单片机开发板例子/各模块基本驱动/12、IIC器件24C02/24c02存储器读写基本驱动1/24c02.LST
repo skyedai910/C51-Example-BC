@@ -1,0 +1,171 @@
+C51 COMPILER V9.00   24C02                                                                 11/25/2019 00:44:35 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE 24C02
+OBJECT MODULE PLACED IN 24c02.OBJ
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE 24c02.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*****************************************************************
+   2          ³ÌÐò¹¦ÄÜ£º  ÏòIIC×ÜÏßÆ÷¼þ24c02EEPROMÖÐµØÖ·Îª0µÄ´æ´¢µ¥ÔªÖÐÐ´ÈëÊý¾Ý0xaa
+   3                                  ²¢½«Æä¶Á³ö²¢ËÍÈëP1¿Ú£¬¿É¹Û²ìµ½P1¿ÚÏàÁ¬µÄLED½»Ìæ±»µãÁÁ¡£
+   4                                  Ö÷ÒªÎªÁËÁ·Ï°IIC×ÜÏßµÄÇý¶¯³ÌÐòÒÔ¼°24C02µÄ²Ù×÷·½·¨¡£
+   5          ***************************************************************/
+   6          //ÊÔÑéAT24C02EEPROMÐ¾Æ¬³ÌÐò
+   7          #include<reg51.h>
+   8          #include <intrins.h>
+   9          #define uint unsigned int
+  10          #define uchar unsigned char
+  11          sbit sda=P2^0;                          //IO¿Ú¶¨Òå
+  12          sbit scl=P2^1;
+  13          
+  14          void nop()
+  15          {
+  16   1              _nop_();
+  17   1              _nop_();
+  18   1      }
+  19          /////////24C02¶ÁÐ´Çý¶¯³ÌÐò////////////////////
+  20          void delay1(unsigned int m)
+  21          {       unsigned int n;
+  22   1              for(n=0;n<m;n++);
+  23   1      }
+  24          
+  25          void init()  //24c02³õÊ¼»¯×Ó³ÌÐò
+  26          {
+  27   1              scl=1;
+  28   1              nop();
+  29   1              sda=1;
+  30   1              nop();
+  31   1      }
+  32          
+  33          void start()        //Æô¶¯I2C×ÜÏß
+  34          {
+  35   1              sda=1;
+  36   1              nop();
+  37   1              scl=1;
+  38   1              nop();
+  39   1              sda=0;
+  40   1              nop();
+  41   1              scl=0;
+  42   1              nop();
+  43   1      }
+  44          
+  45          void stop()         //Í£Ö¹I2C×ÜÏß
+  46          {
+  47   1              sda=0;
+  48   1              nop();
+  49   1              scl=1;
+  50   1              nop();
+  51   1              sda=1;
+  52   1              nop();
+  53   1      }
+  54          
+  55          void writebyte(unsigned char j)  //Ð´Ò»¸ö×Ö½Ú
+C51 COMPILER V9.00   24C02                                                                 11/25/2019 00:44:35 PAGE 2   
+
+  56          {
+  57   1              unsigned char i,temp;
+  58   1              temp=j;
+  59   1              for (i=0;i<8;i++)
+  60   1         {
+  61   2                 temp=temp<<1;
+  62   2                 scl=0;
+  63   2                 nop();
+  64   2                 sda=CY;              //temp×óÒÆÊ±£¬ÒÆ³öµÄÖµ·ÅÈëÁËCYÖÐ
+  65   2                 nop();
+  66   2                 scl=1;               //´ýsdaÏßÉÏµÄÊý¾ÝÎÈ¶¨ºó£¬½«sclÀ­¸ß
+  67   2                 nop();
+  68   2         }
+  69   1         scl=0;
+  70   1         nop();
+  71   1         sda=1;
+  72   1         nop();
+  73   1      }
+  74          
+  75          unsigned char readbyte()   //¶ÁÒ»¸ö×Ö½Ú
+  76          {
+  77   1         unsigned char i,j,k=0;
+  78   1         scl=0; nop(); sda=1;
+  79   1         for (i=0;i<8;i++)
+  80   1         {  
+  81   2                      nop(); scl=1; nop();
+  82   2              if(sda==1) 
+  83   2                      j=1;
+  84   2              else
+  85   2                      j=0;
+  86   2              k=(k<<1)|j;
+  87   2                      scl=0;
+  88   2              }
+  89   1              nop();
+  90   1              return(k);
+  91   1      }
+  92          
+  93          void clock()         //I2C×ÜÏßÊ±ÖÓ
+  94          {
+  95   1         unsigned char i=0;
+  96   1         scl=1;
+  97   1         nop();
+  98   1         while((sda==1)&&(i<255))
+  99   1                i++;
+ 100   1         scl=0;
+ 101   1         nop();
+ 102   1      }
+ 103          
+ 104          ////////´Ó24c02µÄµØÖ·addressÖÐ¶ÁÈ¡Ò»¸ö×Ö½ÚÊý¾Ý/////
+ 105          unsigned char read24c02(unsigned char address)
+ 106          {
+ 107   1         unsigned char i;
+ 108   1         start();
+ 109   1                 writebyte(0xa0);     //¿ØÖÆ×Ö10100000£¬Ð´
+ 110   1                 clock();
+ 111   1                 writebyte(address);// ´ÓÆ¬ÄÚ¿ªÊ¼µØÖ·
+ 112   1                 clock();
+ 113   1                 start();
+ 114   1                 writebyte(0xa1);       //¿ØÖÆ×Ö10100001£¬¶Á
+ 115   1                 clock();
+ 116   1                 i=readbyte();          //¶ÁÒ»×Ö½Ú
+ 117   1         stop();
+C51 COMPILER V9.00   24C02                                                                 11/25/2019 00:44:35 PAGE 3   
+
+ 118   1         delay1(100);
+ 119   1         return(i);
+ 120   1      }
+ 121          
+ 122          //////Ïò24c02µÄaddressµØÖ·ÖÐÐ´ÈëÒ»×Ö½ÚÊý¾Ýinfo/////
+ 123          void write24c02(unsigned char address,unsigned char info) //adderss=0£¬info=0xaa
+ 124          {
+ 125   1         start();
+ 126   1         writebyte(0xa0);             //¿ØÖÆ×Ö£¬Ð´
+ 127   1         clock();
+ 128   1         writebyte(address);  //Ð´ÈëµØÖ·0
+ 129   1         clock();
+ 130   1         writebyte(info);             //Ð´Êý¾Ý1010_1010
+ 131   1         clock();
+ 132   1         stop();
+ 133   1         delay1(5000); //Õâ¸öÑÓÊ±Ò»¶¨Òª×ã¹»³¤£¬·ñÔò»á³ö´í¡£ÒòÎª24c02ÔÚ´ÓsdaÉÏÈ¡µÃÊý¾Ýºó£¬»¹ÐèÒªÒ»¶¨Ê±¼äµÄÉÕÂ¼¹ý³
+             -Ì¡£
+ 134   1      }
+ 135          
+ 136          void main()
+ 137          {
+ 138   1              init();        //³õÊ¼»¯24C02
+ 139   1              write24c02(0,0xaa);//Ïò24c02ÖÐµÄµØÖ·Îª0µÄ´æ´¢µ¥ÔªÐ´Èë16½øÖÆÊý×Öaa
+ 140   1              P1=read24c02(0);//È»ºóÔÙ½«Êý¾Ý¶Á³ö¸³¸øP1¿Ú£¬Í¨¹ýledÁÁÃðÇé¿öÏÔÊ¾¡£
+ 141   1              while(1);
+ 142   1      }
+ 143          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    251    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

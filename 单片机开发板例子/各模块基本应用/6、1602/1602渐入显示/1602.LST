@@ -1,0 +1,114 @@
+C51 COMPILER V9.00   1602                                                                  11/14/2019 22:25:02 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE 1602
+OBJECT MODULE PLACED IN 1602.OBJ
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE 1602.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg52.h>
+   2          #define uchar unsigned char
+   3          #define uint unsigned int
+   4          sbit rs=P3^5;
+   5          sbit lcden=P3^4;
+   6          sbit dula=P2^6;
+   7          sbit wela=P2^7;
+   8          uchar table1[]="TX-51STAR MCU";
+   9          uchar table2[]="WWW.TXMCU.COM";
+  10          void delay(uint x)
+  11          {
+  12   1              uint a,b;
+  13   1              for(a=x;a>0;a--)
+  14   1                      for(b=10;b>0;b--); 
+  15   1      }
+  16          
+  17          void delay1(uint x)
+  18          {
+  19   1              uint a,b;
+  20   1              for(a=x;a>0;a--)
+  21   1                      for(b=100;b>0;b--); 
+  22   1      }
+  23          
+  24          void write_com(uchar com)
+  25          {
+  26   1              P0=com;
+  27   1              rs=0;
+  28   1              lcden=0;
+  29   1              delay(10);
+  30   1              lcden=1;
+  31   1              delay(10);
+  32   1              lcden=0;
+  33   1              
+  34   1      }
+  35          
+  36          void write_date(uchar date)
+  37          {
+  38   1              P0=date;
+  39   1              rs=1;
+  40   1              lcden=0;
+  41   1              delay(10);
+  42   1              lcden=1;
+  43   1              delay(10);
+  44   1              lcden=0;
+  45   1              
+  46   1      }
+  47          
+  48          void init()
+  49          {
+  50   1              dula=0;
+  51   1              wela=0;
+  52   1              write_com(0x38);   //显示模式设置：16×2显示，5×7点阵，8位数据接口
+  53   1              delay(20);
+  54   1              write_com(0x0f);   //00001111显示模式设置
+  55   1              delay(20);
+C51 COMPILER V9.00   1602                                                                  11/14/2019 22:25:02 PAGE 2   
+
+  56   1              write_com(0x06);   //00000110显示模式设置：光标右移，字符不移
+  57   1              delay(20);
+  58   1              write_com(0x01);   //清屏幕指令，将以前的显示内容清除
+  59   1              delay(20);      
+  60   1      }
+  61          
+  62          void main()
+  63          {
+  64   1              uchar a;
+  65   1              init();
+  66   1      
+  67   1              write_com(0x80+17);      //将第一个字符写在向右偏移17个字符处，为后面的由右向左划入做准备。
+  68   1              delay(20);
+  69   1              for(a=0;a<13;a++)
+  70   1              {
+  71   2              write_date(table1[a]);
+  72   2              delay(20);              
+  73   2              }
+  74   1      
+  75   1              write_com(0xc0+17);
+  76   1              delay(50);
+  77   1              for(a=0;a<13;a++)
+  78   1              {
+  79   2              write_date(table2[a]);
+  80   2              delay(40);              
+  81   2              }
+  82   1      
+  83   1              for(a=0;a<16;a++)
+  84   1              {
+  85   2                      write_com(0x18); //左移00011000
+  86   2                      delay1(600);
+  87   2              }
+  88   1              while(1);
+  89   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    228    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     28    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

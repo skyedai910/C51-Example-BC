@@ -1,0 +1,32 @@
+#include <reg51.h>
+char led_mod[] = {0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,	  //led字模
+				  0x7f,0x6f,0x77,0x7c,0x58,0x5e,0x79,0x71};	  
+char key_buf[] = {0xee, 0xde, 0xbe, 0x7e,0xed, 0xdd, 0xbd, 0x7d,//键值
+				  0xeb, 0xdb, 0xbb, 0x7b,0xe7, 0xd7, 0xb7, 0x77};
+
+void getKey () interrupt 0{						   //中断函数
+	char key_scan[] = {0xef, 0xdf, 0xbf, 0x7f};	   //键扫描码
+	char i = 0, j = 0;
+	for (i = 0; i < 4 ; i++) {
+		P2= key_scan[i];  			//输出扫描码 
+		for (j = 0 ; j < 16 ;j++) {
+			if (key_buf[j]== P2){ //读键值,并判断键号
+			   P0= led_mod[j];		//显示闭合键键号
+			   break;
+}}}
+	P2=0x0f;			 //为下次中断做准备
+}
+ 
+void main(void) {
+   P0 = 0x00; 			 //开机黑屏
+   IT0=1;				 //脉冲触发
+   EX0=1;				 //INT0允许
+   EA=1;				 //总中断允许
+   P2 = 0x0f;			 //为首次中断做准备,列线全为0,行线全为1
+   while(1);			 //模拟其他程序功能
+}
+
+
+
+
+

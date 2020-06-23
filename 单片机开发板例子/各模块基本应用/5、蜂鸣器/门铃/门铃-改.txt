@@ -1,0 +1,33 @@
+我改的如下，任何时刻可以关掉：
+#include<reg52.h>
+sbit beep=P2^3;
+sbit s2=P3^4;
+sbit s3=P3^5;
+unsigned char z;
+bit ok=1;
+
+
+void delay(unsigned int i)
+{
+  unsigned int a;
+  unsigned int b;
+  for(a=i;a>0;a--)
+    for(b=250;b>0;b--)
+	 {
+	   	if(s3==0)
+		  {
+		      while(s3==0);
+			  ok=~ok;
+		  }
+	}
+}
+void main()
+{
+  while(1)
+  {
+	   	if(s3==0)
+		  {
+		      while(s3==0);
+			  ok=~ok;
+		  }
+

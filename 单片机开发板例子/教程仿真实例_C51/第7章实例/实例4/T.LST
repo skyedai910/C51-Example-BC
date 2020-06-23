@@ -1,0 +1,93 @@
+C51 COMPILER V7.50   T                                                                     06/02/2012 19:30:34 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE T
+OBJECT MODULE PLACED IN T.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE T.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          //多机通信（主机）程序
+   2          #include <reg51.h>
+   3          #define uchar unsigned char
+   4          #define NODE1_ADDR 1
+   5          #define NODE2_ADDR 2
+   6          
+   7          bit flag=0;
+   8          bit flag_send=0;
+   9          uchar KeyValue=0;               //键值
+  10          uchar code str[]="0123456789ABCDEF";
+  11          uchar pointer_1=0,pointer_2=0;
+  12          
+  13          void delay(uchar time){
+  14   1              uchar i,j;
+  15   1              for(i=0;i<200;i++)
+  16   1                      for(j=0;j<time;j++);
+  17   1      } 
+  18          
+  19          void proc_key(uchar node_number){
+  20   1              delay(200);
+  21   1              SCON=0xc0;                      //初始化串行口和波特率发生器
+  22   1              TMOD=0x20;
+  23   1              TH1=TL1=0xfd;
+  24   1              TR1=1;          //打开T1                
+  25   1              ES=1;EA=1;      //允许串行口中断
+  26   1              TB8=1;          //发送地址帧
+  27   1              SBUF=node_number;
+  28   1              while(flag_send==0);//发送完毕
+  29   1              ES=0;EA=0;                      //关中断
+  30   1              flag_send=0;
+  31   1              KeyValue=0;
+  32   1      }
+  33          
+  34          main(){
+  35   1              while(1){
+  36   2                      P1=0xff;
+  37   2                      while(P1==0xff);
+  38   2                      KeyValue=P1;
+  39   2                      switch(KeyValue){
+  40   3                              case 0xfe: proc_key(NODE1_ADDR);break;
+  41   3                              case 0xef: proc_key(NODE2_ADDR);break;
+  42   3                              default: break;
+  43   3      }}}  
+  44          
+  45          void send(void) interrupt 4 {   //发送数据帧
+  46   1              TI=0;
+  47   1              if(flag==1){
+  48   2                      flag_send=1;
+  49   2                      flag=0;
+  50   2                      return;
+  51   2              }
+  52   1              else{
+  53   2                      TB8=0;
+  54   2                      switch(KeyValue){
+  55   3                              case 0xfe: {
+C51 COMPILER V7.50   T                                                                     06/02/2012 19:30:34 PAGE 2   
+
+  56   4                                      SBUF=str[++pointer_1];
+  57   4                                      if(pointer_1>=16) pointer_1=0;
+  58   4                                      break;
+  59   4                              }
+  60   3                              case 0xef: {
+  61   4                                      SBUF=str[++pointer_2];
+  62   4                                      if(pointer_2>=16) pointer_2=0;
+  63   4                                      break;
+  64   4                              }
+  65   3                              default: break;
+  66   3                      }
+  67   2                      flag=1;
+  68   2      }}
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    178    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

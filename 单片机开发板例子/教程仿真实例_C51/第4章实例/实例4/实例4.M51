@@ -1,0 +1,84 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/23/2017  08:44:47  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE exa4.obj TO 实例4
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  exa4.obj (EXA4)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  实例4 (EXA4)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0018H     UNIT         ?PR?MAIN?EXA4
+            CODE    001BH     0010H     UNIT         ?PR?DELAY?EXA4
+            CODE    002BH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   实例4 (EXA4)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?EXA4
+
+?PR?MAIN?EXA4
+  +--> ?PR?DELAY?EXA4
+
+
+
+SYMBOL TABLE OF MODULE:  实例4 (EXA4)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        EXA4
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:00A0H         PUBLIC        P2
+  C:001BH         PUBLIC        delay
+  C:0003H         PUBLIC        main
+  -------         PROC          DELAY
+  -------         DO            
+  D:0007H         SYMBOL        i
+  D:0006H         SYMBOL        j
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/23/2017  08:44:47  PAGE 2
+
+
+  -------         ENDDO         
+  C:001BH         LINE#         5
+  C:001BH         LINE#         6
+  C:001BH         LINE#         7
+  C:001DH         LINE#         8
+  C:002AH         LINE#         9
+  -------         ENDPROC       DELAY
+  -------         PROC          MAIN
+  C:0003H         LINE#         11
+  C:0003H         LINE#         12
+  C:0006H         LINE#         13
+  C:0009H         LINE#         14
+  C:0009H         LINE#         15
+  C:0016H         LINE#         16
+  C:0019H         LINE#         17
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        EXA4
+
+Program Size: data=9.0 xdata=0 code=55
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

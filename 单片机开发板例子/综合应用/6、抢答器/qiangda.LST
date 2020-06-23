@@ -1,0 +1,273 @@
+C51 COMPILER V8.02   QIANGDA                                                               06/24/2010 10:18:26 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE QIANGDA
+OBJECT MODULE PLACED IN qiangda.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE qiangda.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg51.h>
+   2          
+   3          #define uchar unsigned char
+   4          
+   5          sbit dula=P2^6;
+   6          sbit wela=P2^7;
+   7          sbit beep=P2^3;
+   8          uchar key,j,k,temp,daojishi=5,wei;
+   9          bit begin,end,clear,fangui;
+  10          uchar a0,b0=16;c0=16;d0=16;e0=16;f0=5;
+  11          unsigned int pp;
+  12          unsigned char code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,
+  13                                  0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71,0x00};
+  14          
+  15          void delay(unsigned char i)
+  16          {
+  17   1        for(j=i;j>0;j--)
+  18   1          for(k=125;k>0;k--);
+  19   1      }
+  20          void display(uchar a,uchar b,uchar c,uchar d,uchar e,uchar f)
+  21          {
+  22   1         dula=0;
+  23   1         P0=table[a];
+  24   1         dula=1;
+  25   1         dula=0;
+  26   1         
+  27   1         wela=0;
+  28   1         P0=0xfe;
+  29   1         wela=1;
+  30   1         wela=0;
+  31   1         delay(5);
+  32   1         
+  33   1         P0=table[b];
+  34   1         dula=1;
+  35   1         dula=0;
+  36   1         
+  37   1         P0=0xfd;
+  38   1         wela=1;
+  39   1         wela=0;
+  40   1         delay(5);
+  41   1      
+  42   1         P0=table[c];
+  43   1         dula=1;
+  44   1         dula=0;
+  45   1         
+  46   1         P0=0xfb;
+  47   1         wela=1;
+  48   1         wela=0;
+  49   1         delay(5);
+  50   1         
+  51   1         P0=table[d];
+  52   1         dula=1;
+  53   1         dula=0;
+  54   1         
+  55   1         P0=0xf7;
+C51 COMPILER V8.02   QIANGDA                                                               06/24/2010 10:18:26 PAGE 2   
+
+  56   1         wela=1;
+  57   1         wela=0;
+  58   1         delay(5);
+  59   1         
+  60   1         P0=table[e];
+  61   1         dula=1;
+  62   1         dula=0;
+  63   1         
+  64   1         P0=0xef;
+  65   1         wela=1;
+  66   1         wela=0;
+  67   1         delay(5);
+  68   1         
+  69   1         P0=table[f];
+  70   1         dula=1;
+  71   1         dula=0;
+  72   1         
+  73   1         P0=0xdf;
+  74   1         wela=1;
+  75   1         wela=0;
+  76   1         delay(5);
+  77   1      }
+  78          
+  79          void keyscan()
+  80          {
+  81   1              P3=0xfe;
+  82   1          temp=P3;
+  83   1          temp=temp&0xf0;
+  84   1          if(temp!=0xf0)
+  85   1          {
+  86   2            delay(10);
+  87   2            if(temp!=0xf0)
+  88   2            {
+  89   3              temp=P3;
+  90   3              switch(temp)
+  91   3              {
+  92   4                case 0xee:
+  93   4                     key=1;
+  94   4                                 wei++;
+  95   4                     break;
+  96   4      
+  97   4                case 0xde:
+  98   4                     key=2;
+  99   4                                 wei++;
+ 100   4                     break;
+ 101   4      
+ 102   4                case 0xbe:
+ 103   4                     key=3;
+ 104   4                                 wei++;
+ 105   4                     break;
+ 106   4      
+ 107   4                case 0x7e:
+ 108   4                     key=4;
+ 109   4                                 wei++;
+ 110   4                     break;
+ 111   4               }
+ 112   3               while(temp!=0xf0)
+ 113   3               {
+ 114   4                 temp=P3;
+ 115   4                 temp=temp&0xf0;
+ 116   4                 beep=0;
+ 117   4               }
+C51 COMPILER V8.02   QIANGDA                                                               06/24/2010 10:18:26 PAGE 3   
+
+ 118   3               beep=1;
+ 119   3            }
+ 120   2          }
+ 121   1          P3=0xfd;
+ 122   1          temp=P3;
+ 123   1          temp=temp&0xf0;
+ 124   1          if(temp!=0xf0)
+ 125   1          {
+ 126   2            delay(10);
+ 127   2            if(temp!=0xf0)
+ 128   2            {
+ 129   3              temp=P3;
+ 130   3              switch(temp)
+ 131   3              {
+ 132   4                case 0xed:
+ 133   4                     key=5;
+ 134   4                                 wei++;
+ 135   4                     break;
+ 136   4      
+ 137   4                case 0xdd:
+ 138   4                     key=6;
+ 139   4                                 wei++;
+ 140   4                     break;
+ 141   4      
+ 142   4                case 0xbd:
+ 143   4                     clear=1;
+ 144   4                                 //key=7;
+ 145   4                     break;
+ 146   4      
+ 147   4                case 0x7d:
+ 148   4                                 begin=1;
+ 149   4                     //key=8;
+ 150   4                     break;
+ 151   4               }
+ 152   3               while(temp!=0xf0)
+ 153   3               {
+ 154   4                 temp=P3;
+ 155   4                 temp=temp&0xf0;
+ 156   4                 beep=0;
+ 157   4               }
+ 158   3               beep=1;
+ 159   3            }
+ 160   2            }
+ 161   1      }
+ 162          
+ 163          void main()
+ 164          {
+ 165   1              TMOD=0x01;
+ 166   1              
+ 167   1              TH0=(65536-46080)/256;// 由于晶振为11.0592,故所记次数应为46080，计时器每隔50000微秒发起一次中断。
+ 168   1              TL0=(65536-46080)%256;//46080的来历，为50000*11.0592/12
+ 169   1              ET0=1;
+ 170   1              EA=1;
+ 171   1              while(1)
+ 172   1              {
+ 173   2                      keyscan();
+ 174   2                      if(begin)
+ 175   2                      {
+ 176   3                              if(!end)
+ 177   3                              {
+ 178   4                                      TR0=1;
+ 179   4                                      //if(!daojishi) daojishi=5;
+C51 COMPILER V8.02   QIANGDA                                                               06/24/2010 10:18:26 PAGE 4   
+
+ 180   4                                      //begin=0;
+ 181   4                                      //daojishi=5;
+ 182   4                                      if(pp==20)
+ 183   4                                      {
+ 184   5                                              pp=0;
+ 185   5                                              daojishi--;
+ 186   5                                              
+ 187   5                                      }
+ 188   4      
+ 189   4                              f0=daojishi;
+ 190   4                              if(key!=0)
+ 191   4                              a0=key;
+ 192   4                      //      a1=a0;
+ 193   4                              
+ 194   4                              //if(a0!=0)     end=1;
+ 195   4                              if(!daojishi|a0)
+ 196   4                              {
+ 197   5                                      end=1;
+ 198   5                                      TR0=0;
+ 199   5                                      //daojishi=5;
+ 200   5                              //      begin=0;
+ 201   5                                      pp=0;
+ 202   5                              }
+ 203   4                              }
+ 204   3                              
+ 205   3              }
+ 206   2              else
+ 207   2              {       
+ 208   3                              if(key!=0)
+ 209   3                      {
+ 210   4                              switch(wei)
+ 211   4                              {
+ 212   5                                      case 1: a0=key;break;
+ 213   5                                      case 2: b0=key;break;
+ 214   5                                      case 3: c0=key;break;
+ 215   5                                      case 4: d0=key;break;
+ 216   5                                      case 5: e0=key;break;
+ 217   5                              }
+ 218   4                              //if(!fangui)
+ 219   4                                      fangui=1;
+ 220   4                                      beep=0;
+ 221   4                      }
+ 222   3              }
+ 223   2              if(clear)
+ 224   2              {
+ 225   3                      a0=0;key=0;begin=0;end=0;fangui=0;beep=1;daojishi=5;f0=5;clear=0;
+ 226   3                      b0=16;c0=16;d0=16;e0=16;wei=0; P1=0xff;
+ 227   3              }
+ 228   2              display(a0,b0,c0,d0,e0,f0);
+ 229   2              if(fangui)      
+ 230   2              {
+ 231   3                      beep=0;
+ 232   3                      P1=0x00;;
+ 233   3              }
+ 234   2      
+ 235   2      }
+ 236   1      }
+ 237          
+ 238          void time0() interrupt 1
+ 239          {       TH0=(65536-46080)/256;
+ 240   1              TL0=(65536-46080)%256;
+ 241   1              pp++;
+C51 COMPILER V8.02   QIANGDA                                                               06/24/2010 10:18:26 PAGE 5   
+
+ 242   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    538    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     18       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      4    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

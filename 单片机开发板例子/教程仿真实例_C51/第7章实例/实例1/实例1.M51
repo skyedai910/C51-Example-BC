@@ -1,0 +1,91 @@
+BL51 BANKED LINKER/LOCATER V5.12                                                        02/27/2014  15:15:18  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V5.12, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE 实例1.obj TO 实例1
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例1.obj (实例1)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  实例1 (实例1)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     001DH     UNIT         ?PR?MAIN?实例1
+            CODE    0020H     000FH     UNIT         ?PR?DELAY?实例1
+            CODE    002FH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   实例1 (实例1)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?实例1
+
+?PR?MAIN?实例1
+  +--> ?PR?DELAY?实例1
+
+
+
+SYMBOL TABLE OF MODULE:  实例1 (实例1)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        实例1
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:0020H         PUBLIC        delay
+  B:0098H.1       PUBLIC        TI
+  C:0003H         PUBLIC        main
+  D:0099H         PUBLIC        SBUF
+  D:0098H         PUBLIC        SCON
+  -------         PROC          DELAY
+  -------         DO            
+BL51 BANKED LINKER/LOCATER V5.12                                                      02/27/2014  15:15:18  PAGE 2
+
+
+  D:0006H         SYMBOL        i
+  -------         ENDDO         
+  C:0020H         LINE#         2
+  C:0020H         LINE#         4
+  C:002EH         LINE#         5
+  -------         ENDPROC       DELAY
+  -------         PROC          MAIN
+  -------         DO            
+  D:0004H         SYMBOL        index
+  D:0005H         SYMBOL        LED
+  -------         ENDDO         
+  C:0003H         LINE#         7
+  C:0003H         LINE#         9
+  C:0006H         LINE#         10
+  C:0006H         LINE#         11
+  C:0008H         LINE#         12
+  C:000AH         LINE#         13
+  C:000CH         LINE#         14
+  C:000FH         LINE#         15
+  C:0015H         LINE#         16
+  C:0017H         LINE#         17
+  C:001AH         LINE#         18
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        实例1
+
+Program Size: data=9.0 xdata=0 code=59
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

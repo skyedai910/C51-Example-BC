@@ -1,0 +1,99 @@
+C51 COMPILER V9.00   1602                                                                  11/14/2019 22:16:21 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE 1602
+OBJECT MODULE PLACED IN 1602.OBJ
+COMPILER INVOKED BY: D:\Keil\C51\BIN\C51.EXE 1602.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg52.h>
+   2          #define uchar unsigned char
+   3          #define uint unsigned int
+   4          sbit rs=P3^5;
+   5          sbit lcden=P3^4;
+   6          sbit dula=P2^6;
+   7          sbit wela=P2^7;
+   8          uchar table1[]="TX-51STAR MCU";
+   9          uchar table2[]="WWW.TXMCU.COM";
+  10          void delay(uint x)
+  11          {
+  12   1              uint a,b;
+  13   1              for(a=x;a>0;a--)
+  14   1                      for(b=10;b>0;b--); 
+  15   1      }
+  16          
+  17          void write_com(uchar com)        //些命令，RS=0
+  18          {
+  19   1              P0=com;
+  20   1              rs=0;
+  21   1              lcden=0;
+  22   1              delay(10);
+  23   1              lcden=1;
+  24   1              delay(10);
+  25   1              lcden=0;
+  26   1              
+  27   1      }
+  28          
+  29          void write_data(uchar dat)         //写数据，RS=1
+  30          {
+  31   1              P0=dat;
+  32   1              rs=1;
+  33   1              lcden=0;
+  34   1              delay(10);
+  35   1              lcden=1;
+  36   1              delay(10);
+  37   1              lcden=0;
+  38   1              
+  39   1      }
+  40          
+  41          void init()
+  42          {
+  43   1              dula=0;
+  44   1              wela=0;
+  45   1              write_com(0x38);   //00111000工作方式设置：16×2显示，5×7点阵，8位数据接口
+  46   1              delay(20);
+  47   1              write_com(0x0f);   //00001111显示模式设置
+  48   1              delay(20);
+  49   1              write_com(0x06);   //00000110输入方式设置：光标右移，字符不移
+  50   1              delay(20);
+  51   1      //      write_com(0x01);   //清屏幕指令，将以前的显示内容清除
+  52   1              delay(20);      
+  53   1      }
+  54          void main()
+  55          {
+C51 COMPILER V9.00   1602                                                                  11/14/2019 22:16:21 PAGE 2   
+
+  56   1              uchar a;
+  57   1              init();                   //1602初始化
+  58   1              write_com(0x80);  //设置所要显示字符的位置为第一行第一列
+  59   1              a=0;
+  60   1              while(table1[a]!='\0')  //只要没有写到结束标志，就继续写
+  61   1                      {                                       //这是写字符的第一种方法，用while循环。
+  62   2                      write_data(table1[a]);
+  63   2                      delay(1000);
+  64   2                      a++;
+  65   2                      }
+  66   1              write_com(0x80+0x40);  //设置第二行首字符显示的位置，为第二行，第一列
+  67   1              a=0;
+  68   1              for(a=0;a<13;a++)          //总共要显示13个字符，故循环十三次。
+  69   1              {                                          //这是写字符的第二种方法，用for循环
+  70   2              write_data(table2[a]);
+  71   2              delay(1000);            
+  72   2              }
+  73   1              while(1);
+  74   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    172    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     28    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,114 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        11/18/2019  12:29:59  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE ad.obj TO ad
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  ad.obj (AD)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  ad (AD)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0003H     UNIT         ?DT?AD
+            IDATA   000BH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     07FDH                  *** GAP ***
+            CODE    0800H     0034H     UNIT         ?PR?MAIN?AD
+            CODE    0834H     0014H     UNIT         ?PR?_DELAY?AD
+            CODE    0848H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   ad (AD)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?AD
+
+?PR?MAIN?AD
+  +--> ?PR?_DELAY?AD
+
+
+
+SYMBOL TABLE OF MODULE:  ad (AD)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        AD
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  D:0008H         PUBLIC        adval
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/18/2019  12:29:59  PAGE 2
+
+
+  B:00A0H.5       PUBLIC        diola
+  C:0834H         PUBLIC        _delay
+  B:00B0H.7       PUBLIC        adrd
+  C:0800H         PUBLIC        main
+  B:00A0H.7       PUBLIC        wela
+  B:00B0H.6       PUBLIC        adwr
+  D:0009H         PUBLIC        j
+  D:000AH         PUBLIC        k
+  -------         PROC          _DELAY
+  D:0007H         SYMBOL        i
+  C:0834H         LINE#         15
+  C:0834H         LINE#         16
+  C:0834H         LINE#         17
+  C:083DH         LINE#         18
+  C:0847H         LINE#         19
+  -------         ENDPROC       _DELAY
+  -------         PROC          MAIN
+  C:0800H         LINE#         22
+  C:0800H         LINE#         23
+  C:0800H         LINE#         25
+  C:0800H         LINE#         26
+  C:0800H         LINE#         27
+  C:0802H         LINE#         28
+  C:0805H         LINE#         29
+  C:0807H         LINE#         30
+  C:0808H         LINE#         31
+  C:080AH         LINE#         32
+  C:080DH         LINE#         33
+  C:0812H         LINE#         34
+  C:0814H         LINE#         35
+  C:0819H         LINE#         37
+  C:081BH         LINE#         38
+  C:081EH         LINE#         39
+  C:0821H         LINE#         40
+  C:0823H         LINE#         41
+  C:0826H         LINE#         42
+  C:0828H         LINE#         43
+  C:082BH         LINE#         45
+  C:082DH         LINE#         46
+  C:082FH         LINE#         47
+  C:0832H         LINE#         48
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        AD
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0048H BYTE ( 3%) *
+******************************************************************************
+
+Program Size: data=12.0 xdata=0 code=87
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

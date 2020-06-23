@@ -1,0 +1,159 @@
+C51 COMPILER V8.02   单____乐                                                              06/19/2010 14:29:57 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE 单____乐
+OBJECT MODULE PLACED IN 单音音乐.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE 单音音乐.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <at89x52.h>
+   2          #define uchar unsigned char
+   3          bit flag; //标志音乐输出脚电平的高低
+   4          uchar ptr = 0x00; //取音符
+   5          uchar high; //计数器高位
+   6          uchar low; //计数器低位
+   7          // 本曲谱为 "新年好",前两个十六进制表示发声频率,后一个表示发声时间,0xFF,0xFF 表示休止符
+   8          // 0x00 表示结束
+   9          // 1 _ 1_ 1 .5
+  10          uchar code music[] = {
+  11          0xFC,0x44,0x7F, 0xFC,0x44,0x7F, 0xFC,0x44,0xFF, 0xFA,0x68,0xFF,
+  12          // 3 _ 3_ 3 1
+  13          0xFD,0x23,0x7F, 0xFD,0x23,0x7F, 0xFD,0x23,0xFF, 0xFC,0x44,0xFF,
+  14          // 1_ 3_ 5 5
+  15          0xFC,0x44,0x7F, 0xFD,0x23,0x7F, 0xFD,0x82,0xFF, 0xFD,0x82,0xFF,
+  16          // 4_ 3_ 2 -
+  17          0xFD,0x23,0x7F, 0xFD,0x23,0x7F, 0xFC,0xAC,0xFF, 0xFF,0xFF,0xFF,
+  18          // 2_ 3_ 4 4
+  19          0xFC,0xAC,0x7F, 0xFD,0x23,0x7F, 0xFD,0x34,0xFF, 0xFD,0x34,0xFF,
+  20          // 3_ 2_ 3 1
+  21          0xFD,0x23,0x7F, 0xFC,0xAC,0x7F, 0xFD,0x23,0xFF, 0xFC,0x44,0xFF,
+  22          // 1_ 3_ 2 .5
+  23          0xFC,0x44,0x7F, 0xFD,0x23,0x7F, 0xFC,0xAC,0xFF, 0xFA,0x68,0xFF,
+  24           // .7_ 2_ 1 -
+  25          0xFC,0x0C,0x7F, 0xFC,0xAC,0x7F, 0xFC,0x44,0xFF, 0xFF,0xFF,0xFF,
+  26          0x00//结束
+  27          
+  28                   
+  29          
+  30          };
+  31          void Init(void); //初始化函数
+  32          void DelayMs(unsigned int time); //毫秒级延时函数
+  33          main()
+  34          {
+  35   1      uchar time;
+  36   1      Init();
+  37   1      TH0 = high;
+  38   1      TL0 = low;
+  39   1      while (1)
+  40   1      {
+  41   2      if (music[ptr] != 0xFF && music[ptr] != 0x00)//判断是否是正常音符
+  42   2      {
+  43   3      TR0 = 0;
+  44   3      P2_3 = 1;
+  45   3      DelayMs(10); //间歇
+  46   3      TR0 = 1;
+  47   3      high = music[ptr]; //取设置频率数值的高8 位
+  48   3      low = music[ptr + 1]; //取设置频率数值的低8 位
+  49   3      time = music[ptr + 2]; //取发声时间
+  50   3      DelayMs(time);
+  51   3      ptr += 3;
+  52   3      }
+  53   2      else if (music[ptr] == 0xFF) //判断是否是休止符
+  54   2      {
+  55   3      time = music[ptr + 2];
+C51 COMPILER V8.02   单____乐                                                              06/19/2010 14:29:57 PAGE 2   
+
+  56   3      DelayMs(time);
+  57   3      ptr += 3;
+  58   3      }
+  59   2      
+  60   2      else //结束符,停止2 秒后继续
+  61   2      {
+  62   3      TR0 = 0;
+  63   3      P2_3 = 1;
+  64   3      DelayMs(2000);
+  65   3      ptr = 0;
+  66   3      }
+  67   2      }
+  68   1      }
+  69          /*********************************************************************************
+  70          * 名称：Count1(void) interrupt 1
+  71          * 功能：设置计时器0 溢出中断,每中断一次改变P2_3 引脚电平
+  72          *********************************************************************************/
+  73          void Count1(void) interrupt 1
+  74          {
+  75   1      TH0 = high;
+  76   1      TL0 = low;
+  77   1      if (flag == 0) //改变P2_3 引脚电平
+  78   1      {
+  79   2      P2_3 = 0;
+  80   2      flag = 1;
+  81   2      }
+  82   1      else
+  83   1      {
+  84   2      P2_3 = 1;
+  85   2      flag = 0;
+  86   2      }
+  87   1      }
+  88          /*********************************************************************************
+  89          * 名称：Init()
+  90          * 功能：设置计数器0 工作方式,16 位计数,溢出中断方式
+  91          **********************************************************************************/
+  92          void Init()
+  93          {
+  94   1      TMOD = 0x01; //定时器0 处于计时方式,16 位
+  95   1      EA = 1;
+  96   1      ET0 = 1; //定时器0 溢出中断
+  97   1      }
+  98          /*********************************************************************************
+  99          * 名称：DelayMs(unsigned int time)
+ 100          * 功能：延时time * 1ms 时间
+ 101          *********************************************************************************/
+ 102          void DelayMs(unsigned int time)
+ 103          {
+ 104   1      unsigned int i;
+ 105   1      unsigned int j;
+ 106   1      for (j =0; j < time; j++) //每个循环 约 3ms
+ 107   1      {
+ 108   2      for (i =0; i < 363; i++)
+ 109   2      {;}
+ 110   2      }
+ 111   1      }
+ 112          
+ 113          
+ 114          
+ 115          
+ 116          
+ 117          
+C51 COMPILER V8.02   单____乐                                                              06/19/2010 14:29:57 PAGE 3   
+
+ 118          
+ 119          
+ 120          
+ 121          
+ 122          
+ 123          
+ 124          
+ 125          
+ 126          
+ 127          
+ 128          
+ 129          
+ 130          
+ 131          
+ 132          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    160    ----
+   CONSTANT SIZE    =     97    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

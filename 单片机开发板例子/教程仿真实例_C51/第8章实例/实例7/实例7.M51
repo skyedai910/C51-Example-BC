@@ -1,0 +1,70 @@
+BL51 BANKED LINKER/LOCATER V5.12                                                        11/29/2012  19:30:57  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V5.12, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE 实例7.obj TO 实例7
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  实例7.obj (实例7)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  实例7 (实例7)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     001DH     UNIT         ?PR?MAIN?实例7
+            CODE    0020H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   实例7 (实例7)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?实例7
+
+
+
+SYMBOL TABLE OF MODULE:  实例7 (实例7)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        实例7
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:0003H         PUBLIC        main
+  -------         PROC          MAIN
+  -------         DO            
+  D:0007H         SYMBOL        num
+  -------         ENDDO         
+  C:0003H         LINE#         6
+  C:0003H         LINE#         8
+  C:0003H         LINE#         9
+  C:0005H         LINE#         10
+  C:000AH         LINE#         11
+  C:0012H         LINE#         12
+BL51 BANKED LINKER/LOCATER V5.12                                                      11/29/2012  19:30:57  PAGE 2
+
+
+  C:0017H         LINE#         13
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        实例7
+
+Program Size: data=9.0 xdata=0 code=44
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

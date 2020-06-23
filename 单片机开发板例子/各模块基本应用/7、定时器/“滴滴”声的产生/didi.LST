@@ -1,0 +1,82 @@
+C51 COMPILER V8.02   DIDI                                                                  06/28/2010 14:54:24 PAGE 1   
+
+
+C51 COMPILER V8.02, COMPILATION OF MODULE DIDI
+OBJECT MODULE PLACED IN didi.OBJ
+COMPILER INVOKED BY: D:\处理软件\keil\C51\BIN\C51.EXE didi.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /***********************************************************************
+   2                                                  “天祥电子”            倾情奉献
+   3                                                                  www.txmcu.cn
+   4                                                                  www.txmcu.com
+   5          ***********************************************************************
+   6          程序功能：      本程序延时用定时器的方法产生一PWM方波，其周期为1000ms(1s)；
+   7                                  占空比为1/5(高电平持续200ms)。若产生其他参数的PWM波，只需更改
+   8                                  程序中的相关参数即可。
+   9                                  pwm波由P1^0口输出。可观察到其对应发光二极管在闪烁
+  10                                  （熄灭持续时间为200ms，点亮持续时间为800ms，闪烁周期为1s）。
+  11          **************************************************************************/
+  12          
+  13          #include<reg52.h>
+  14          
+  15          #define uint unsigned int 
+  16          uint aa;
+  17          unsigned char pp;
+  18          bit close;
+  19          
+  20          sbit didi=P2^3;
+  21          
+  22          
+  23          void main()
+  24          {
+  25   1              TMOD=0x01;               //模式设置，00000001，可见采用的是定时器0，工作与模式1（M1=0，M0=1）。
+  26   1              TR0=1;                   //打开定时器
+  27   1              TH0=0xff;//计时器每隔100微秒(0.1ms)发起一次中断。
+  28   1              TL0=0x9c;
+  29   1              ET0=1;                   //开定时器0中断
+  30   1              EA=1;                    //开总中断
+  31   1              while(1)
+  32   1              {
+  33   2                      if(pp==10)
+  34   2                      {
+  35   3                              pp=0;
+  36   3                              if(!close)
+  37   3                                      didi=~didi;
+  38   3                              aa++;
+  39   3                      }       
+  40   2                      if(aa==200)
+  41   2                      {
+  42   3                              didi=1;
+  43   3                              close=1;
+  44   3                      }
+  45   2                      if(aa==300)
+  46   2                      {
+  47   3                              close=0;
+  48   3                              aa=0;
+  49   3                      }
+  50   2              }
+  51   1      }
+  52          
+  53          void time0() interrupt 1
+  54          {       TH0=0xff;
+  55   1              TL0=0x9c;
+C51 COMPILER V8.02   DIDI                                                                  06/28/2010 14:54:24 PAGE 2   
+
+  56   1              pp++;
+  57   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     76    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

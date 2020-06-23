@@ -1,0 +1,175 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        11/12/2019  14:30:36  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL\C51\BIN\BL51.EXE DAsin.obj TO DAsin RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL WITH FLOATING POINT ARITHMETIC
+
+
+INPUT MODULES INCLUDED:
+  DAsin.obj (DASIN)
+  D:\KEIL\C51\LIB\C51FPS.LIB (?C?FPADD)
+  D:\KEIL\C51\LIB\C51FPS.LIB (?C?FPMUL)
+  D:\KEIL\C51\LIB\C51FPS.LIB (?C?FPDIV)
+  D:\KEIL\C51\LIB\C51FPS.LIB (?C?FCAST)
+  D:\KEIL\C51\LIB\C51FPS.LIB (?C?CASTF)
+  D:\KEIL\C51\LIB\C51FPS.LIB (SIN)
+  D:\KEIL\C51\LIB\C51FPS.LIB (?C?FPGETOPN)
+  D:\KEIL\C51\LIB\C51FPS.LIB (?C?FPSERIES)
+  D:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\KEIL\C51\LIB\C51S.LIB (?C?LNEG)
+  D:\KEIL\C51\LIB\C51S.LIB (?C?LLDCODE)
+  D:\KEIL\C51\LIB\C51S.LIB (?C?LLDCODE0)
+
+
+LINK MAP OF MODULE:  DAsin (DASIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0006H     UNIT         _DATA_GROUP_
+                    000EH     0012H                  *** GAP ***
+            BIT     0020H.0   0000H.1   UNIT         _BIT_GROUP_
+                    0020H.1   0000H.7                *** GAP ***
+            DATA    0021H     005CH     UNIT         ?DT?DASIN
+            IDATA   007DH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     07FDH                  *** GAP ***
+            CODE    0800H     03D8H     UNIT         ?C?LIB_CODE
+            CODE    0BD8H     016EH     UNIT         ?PR?SIN?SIN
+            CODE    0D46H     0073H     UNIT         ?PR?MAIN?DASIN
+            CODE    0DB9H     0014H     UNIT         ?PR?_DELAY?DASIN
+            CODE    0DCDH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   DAsin (DASIN)
+
+
+SEGMENT                           BIT_GROUP          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH     START    LENGTH
+------------------------------------------------------------------
+?C_C51STARTUP                  -----    -----      -----    -----
+  +--> ?PR?MAIN?DASIN
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/12/2019  14:30:36  PAGE 2
+
+
+?PR?MAIN?DASIN                 -----    -----      0008H    0002H
+  +--> ?PR?SIN?SIN
+  +--> ?PR?_DELAY?DASIN
+
+?PR?SIN?SIN                    0020H.0  0000H.1    000AH    0004H
+
+
+
+SYMBOL TABLE OF MODULE:  DAsin (DASIN)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        DASIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  C:0DB9H         PUBLIC        _delay
+  B:00B0H.2       PUBLIC        csda
+  C:0D46H         PUBLIC        main
+  B:00A0H.6       PUBLIC        dula
+  B:00A0H.7       PUBLIC        wela
+  B:00B0H.6       PUBLIC        dawr
+  D:0021H         PUBLIC        dat
+  D:007BH         PUBLIC        j
+  D:007CH         PUBLIC        k
+  -------         PROC          _DELAY
+  D:0007H         SYMBOL        i
+  C:0DB9H         LINE#         12
+  C:0DB9H         LINE#         13
+  C:0DB9H         LINE#         14
+  C:0DC2H         LINE#         15
+  C:0DCCH         LINE#         16
+  -------         ENDPROC       _DELAY
+  -------         PROC          MAIN
+  -------         DO            
+  D:0008H         SYMBOL        m
+  -------         DO            
+  D:0009H         SYMBOL        d
+  -------         ENDDO         
+  -------         ENDDO         
+  C:0D46H         LINE#         17
+  C:0D46H         LINE#         18
+  C:0D46H         LINE#         20
+  C:0D48H         LINE#         21
+  C:0D4AH         LINE#         22
+  C:0D4CH         LINE#         23
+  C:0D4EH         LINE#         24
+  C:0D51H         LINE#         25
+  C:0D51H         LINE#         26
+  C:0D8EH         LINE#         27
+  C:0D95H         LINE#         28
+  C:0D9EH         LINE#         30
+  C:0D9EH         LINE#         31
+  C:0D9EH         LINE#         32
+  C:0DA1H         LINE#         33
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/12/2019  14:30:36  PAGE 3
+
+
+  C:0DA9H         LINE#         34
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        DASIN
+
+  -------         MODULE        ?C?FPADD
+  C:0807H         PUBLIC        ?C?FPADD
+  C:0803H         PUBLIC        ?C?FPSUB
+  -------         ENDMOD        ?C?FPADD
+
+  -------         MODULE        ?C?FPMUL
+  C:08F8H         PUBLIC        ?C?FPMUL
+  -------         ENDMOD        ?C?FPMUL
+
+  -------         MODULE        ?C?FPDIV
+  C:0A01H         PUBLIC        ?C?FPDIV
+  -------         ENDMOD        ?C?FPDIV
+
+  -------         MODULE        ?C?FCAST
+  C:0AA8H         PUBLIC        ?C?FCASTC
+  C:0AA3H         PUBLIC        ?C?FCASTI
+  C:0A9EH         PUBLIC        ?C?FCASTL
+  -------         ENDMOD        ?C?FCAST
+
+  -------         MODULE        ?C?CASTF
+  C:0ADCH         PUBLIC        ?C?CASTF
+  -------         ENDMOD        ?C?CASTF
+
+  -------         MODULE        SIN
+  C:0C20H         PUBLIC        _COS
+  C:0C36H         PUBLIC        _SIN
+  C:0C68H         PUBLIC        _TAN
+  -------         ENDMOD        SIN
+
+  -------         MODULE        ?C?LNEG
+  C:0BAAH         PUBLIC        ?C?LNEG
+  -------         ENDMOD        ?C?LNEG
+
+  -------         MODULE        ?C?LLDCODE
+  C:0BB8H         PUBLIC        ?C?LLDCODE
+  -------         ENDMOD        ?C?LLDCODE
+
+  -------         MODULE        ?C?LLDCODE0
+  C:0BC8H         PUBLIC        ?C?LLDCODE0
+  -------         ENDMOD        ?C?LLDCODE0
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0087H BYTE ( 6%) *
+******************************************************************************
+
+Program Size: data=107.1 xdata=0 code=1500
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)
