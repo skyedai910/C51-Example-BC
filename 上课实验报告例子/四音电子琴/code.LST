@@ -1,0 +1,225 @@
+C51 COMPILER V9.01   CODE                                                                  04/03/2020 15:57:45 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE CODE
+OBJECT MODULE PLACED IN code.OBJ
+COMPILER INVOKED BY: D:\Keli\C51\BIN\C51.EXE code.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*
+   2          encoding:utf-8
+   3          name:89c51四音电子琴
+   4          author:https://www.mrskye.cn
+   5          */
+   6          #include<reg51.h>
+   7          #include<intrins.h>
+   8          
+   9          //sbit button0 = P3^4;
+  10          //sbit button1 = P3^5;
+  11          //sbit button2 = P3^6;
+  12          //sbit button3 = P3^7;
+  13          sbit buzz = P2^3;
+  14          unsigned char m;    //持续时间变量
+  15          
+  16          /*
+  17          void delay_buzz()
+  18          {
+  19              unsigned int a;
+  20              for(a=55;a>0;a--)
+  21              {
+  22                  _nop_();
+  23              }
+  24          }
+  25          */
+  26          
+  27          void delay(unsigned int i)  //消抖延迟函数
+  28          {
+  29   1          unsigned int j;
+  30   1          unsigned char k;
+  31   1          for(j=i;j>0;j--)
+  32   1          {
+  33   2              for(k=125;k>0;k--);
+  34   2          }
+  35   1      }
+  36          
+  37          void delay130us(void)   //do:误差 -0.055500567537us
+  38          {
+  39   1          unsigned char a,b;
+  40   1          for(b=13;b>0;b--)
+  41   1              for(a=3;a>0;a--);
+  42   1      }
+  43          
+  44          void delay146us(void)   //re:误差 -0.820108967083us
+  45          {
+  46   1          unsigned char a,b;
+  47   1          for(b=1;b>0;b--)
+  48   1              for(a=64;a>0;a--);
+  49   1      }
+  50          
+  51          void delay164us(void)   //mi:误差 -0.277704880817us
+  52          {
+  53   1          unsigned char a;
+  54   1          for(a=74;a>0;a--);
+  55   1      }
+C51 COMPILER V9.01   CODE                                                                  04/03/2020 15:57:45 PAGE 2   
+
+  56          
+  57          void delay174us(void)   //fa:误差 -0.271167423383us
+  58          {
+  59   1          unsigned char a,b;
+  60   1          for(b=1;b>0;b--)
+  61   1              for(a=77;a>0;a--);
+  62   1      }
+  63          
+  64          void main() //switch 改造升级
+  65          {
+  66   1          while(1)
+  67   1          {
+  68   2              if(P3 != 0xff)
+  69   2              {
+  70   3                  delay(30);  //消抖
+  71   3                  if(P3 != 0xff)
+  72   3                  {
+  73   4                      switch(P3)
+  74   4                      {
+  75   5                          case 0xef:
+  76   5                          {
+  77   6                              while(P3==0xef)
+  78   6                              {
+  79   7                                  for(m=3823;m>0;m--)//0.130816ms*3823=0.5s
+  80   7                                  {
+  81   8                                      buzz =~buzz;
+  82   8                                      delay146us();
+  83   8                                  }
+  84   7                              }
+  85   6                              break;
+  86   6                          }
+  87   5                          case 0xdf:
+  88   5                          {
+  89   6                              while(P3==0xdf)
+  90   6                              {
+  91   7                                  for(m=3405;m>0;m--)//0.146836ms*3405=0.5s
+  92   7                                  {
+  93   8                                      buzz =~buzz;
+  94   8                                      delay130us();
+  95   8                                  }
+  96   7                              }
+  97   6                              break;
+  98   6                          }
+  99   5                          case 0xbf:
+ 100   5                          {
+ 101   6                              while(P3==0xbf)
+ 102   6                              {
+ 103   7                                  for(m=3037;m>0;m--)//0.164818ms*3037=0.5s
+ 104   7                                  {
+ 105   8                                      buzz =~buzz;
+ 106   8                                      delay164us();
+ 107   8                                  }
+ 108   7                              }
+ 109   6                              break;
+ 110   6                          }
+ 111   5                          case 0x7f:
+ 112   5                          {
+ 113   6                              while(P3==0x7f)
+ 114   6                              {
+ 115   7                                  for(m=2863;m>0;m--)//0.1746185ms*2863=0.5s
+ 116   7                                  {
+ 117   8                                      buzz =~buzz;
+C51 COMPILER V9.01   CODE                                                                  04/03/2020 15:57:45 PAGE 3   
+
+ 118   8                                      delay174us();
+ 119   8                                  }
+ 120   7                              }
+ 121   6                              break;
+ 122   6                          }
+ 123   5                      }
+ 124   4                  }
+ 125   3              }
+ 126   2          }
+ 127   1      }
+ 128          
+ 129          /*
+ 130          void main()
+ 131          {
+ 132              while(1)
+ 133              {
+ 134                  if(!button0)    //do
+ 135                  {
+ 136                      delay(30);  //消抖
+ 137                      if(!button0)
+ 138                      {
+ 139                          while(!button0)
+ 140                          {
+ 141                              for(m=3823;m>0;m--)//0.130816ms*3823=0.5s
+ 142                              {
+ 143                              buzz =~buzz;
+ 144                              delay146us();
+ 145                              }
+ 146                          }
+ 147                      }
+ 148                  }
+ 149                  if(!button1)    //re
+ 150                  {
+ 151                      delay(30);  //消抖
+ 152                      if(!button1)
+ 153                      {
+ 154                          while(!button1)
+ 155                          {
+ 156                              for(m=3405;m>0;m--)//0.146836ms*3405=0.5s
+ 157                              {
+ 158                              buzz =~buzz;
+ 159                              delay130us();
+ 160                              }
+ 161                          }
+ 162                      }
+ 163                  }
+ 164                  if(!button2)    //mi
+ 165                  {
+ 166                      delay(30);  //消抖
+ 167                      if(!button2)
+ 168                      {
+ 169                          while(!button2)
+ 170                          {
+ 171                              for(m=3037;m>0;m--)//0.164818ms*3037=0.5s
+ 172                              {
+ 173                              buzz =~buzz;
+ 174                              delay164us();
+ 175                              }
+ 176                          }
+ 177                      }
+ 178                  }
+ 179                  if(!button3)    //fa
+C51 COMPILER V9.01   CODE                                                                  04/03/2020 15:57:45 PAGE 4   
+
+ 180                  {
+ 181                      delay(30);  //消抖
+ 182                      if(!button3)
+ 183                      {
+ 184                          while(!button3)
+ 185                          {
+ 186                              for(m=2863;m>0;m--)//0.1746185ms*2863=0.5s
+ 187                              {
+ 188                              buzz =~buzz;
+ 189                              delay174us();
+ 190                              }
+ 191                          }
+ 192                      }
+ 193                  }
+ 194              }
+ 195          }
+ 196          */
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    187    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

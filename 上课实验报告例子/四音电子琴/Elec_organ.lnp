@@ -1,0 +1,4 @@
+"STARTUP.obj",
+"code.obj" 
+TO "Elec_organ" 
+RAMSIZE(256) 

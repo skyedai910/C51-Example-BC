@@ -1,0 +1,223 @@
+C51 COMPILER V9.01   串口通信__骰_                                                         05/17/2020 19:14:50 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE 串口通信__骰_
+OBJECT MODULE PLACED IN 串口通信-主机.OBJ
+COMPILER INVOKED BY: D:\Keli\C51\BIN\C51.EXE 串口通信-主机.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*
+   2          proj:多机通信（主机）程序
+   3          desc:基于80c51通过串口实现多机通信，主机具备校验返回信息功能。主机接收信息使用定时器中断完成。
+   4          author:mrskye
+   5          website:https://www.mrskye.cn/
+   6          */
+   7          
+   8          #include <reg51.h>
+   9          #define uchar unsigned char
+  10          #define NODE0_ADDR 0        //0#主机地址
+  11          #define NODE1_ADDR 1            //1#子机地址
+  12          
+  13          /*测试引脚*/
+  14          sbit P1_4=P1^4;
+  15          sbit P1_7=P1^7;
+  16          
+  17          /*矩阵键盘全局变量*/
+  18          unsigned char flag_int0 = 0;
+  19          //行列式键盘键值
+  20          unsigned char key_buf[] = {0xee, 0xde, 0xbe, 0x7e,0xed, 0xdd, 0xbd, 0x7d,0xeb, 0xdb, 0xbb, 0x7b,0xe7, 0xd7
+             -, 0xb7, 0x77};
+  21          
+  22          /*led显示全局变量*/
+  23          sbit DULA = P1^0;
+  24          sbit WELA = P1^1;
+  25          //7led显示字形码(阴极)
+  26          unsigned char wordlist[] = {0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x7
+             -1,0x00};
+  27          //led灯位
+  28          unsigned char ledlist[] = {0xfe,0xfd,0xfb,0xf7,0xef,0xdf,0xbf,0x7f};
+  29          //默认显示列表
+  30          unsigned char display_list[] = {0x40,0x40};
+  31          
+  32          
+  33          /*串口通信全局变量*/
+  34          uchar KeyValue=0;                                       //键值
+  35          uchar send_str[]="HELLO";                   //发送字符存储列表
+  36          uchar recv_str[]="AAAAA";                   //接受字符存储列表
+  37          uchar flag_sms = 0;                         //收发信息正确标志
+  38          uchar pointer_recv = 0;                         //主机当前接收字符指针
+  39          uchar flag_recv_done = 0;                   //接收完成标志
+  40          
+  41          void delay(unsigned int i)                  //可控时间延迟函数
+  42          {
+  43   1          unsigned int j;
+  44   1          unsigned char k;
+  45   1          for(j=i;j>0;j--)
+  46   1          {
+  47   2              for(k=125;k>0;k--);
+  48   2          }
+  49   1      }
+  50          
+  51          void display(unsigned char display_list[],unsigned int time)//led显示函数
+  52          {
+  53   1          unsigned char i;
+C51 COMPILER V9.01   串口通信__骰_                                                         05/17/2020 19:14:50 PAGE 2   
+
+  54   1          for(i=0;*(display_list+i);i++)
+  55   1          {
+  56   2              //选择显示位
+  57   2              P0=*(ledlist+i);
+  58   2              WELA=1;
+  59   2              WELA=0;
+  60   2              //输出字符码
+  61   2              P0=*(display_list+i);
+  62   2              DULA=1;
+  63   2              DULA=0;
+  64   2              delay(time);
+  65   2          }
+  66   1      }
+  67          
+  68          void service_int0(void) interrupt 0         //外部中断0：启动键盘扫描
+  69          {
+  70   1          flag_int0 = 1;
+  71   1      }
+  72          
+  73          unsigned char getKey()                      //矩阵键盘取值函数
+  74          {       unsigned char key_scan[] = {0xef, 0xdf, 0xbf, 0x7f};       //键扫描码
+  75   1          unsigned char i = 0, j = 0;
+  76   1          for (i = 0;key_scan[i]; i++) 
+  77   1          {   
+  78   2              P2 = key_scan[i];                                                  //P2送出键扫描码
+  79   2              if ((P2 & 0x0f) != 0x0f)                                   //取P2低四位判断有无键闭合
+  80   2              {       
+  81   3                  delay(100);//消抖
+  82   3                  if ((P2 & 0x0f) != 0x0f)               //再次判断键闭合
+  83   3                  {
+  84   4                      for (j = 0 ; j < 16 ;j++) //低效而方便地遍历查找闭合键键号
+  85   4                      {       
+  86   5                          if (key_buf[j]==P2)
+  87   5                          {
+  88   6                              while ((P2 & 0x0f) != 0x0f);//松开按键
+  89   6                              return j;
+  90   6                          } 
+  91   5                      }       
+  92   4                  }
+  93   3              }
+  94   2          }
+  95   1          return -1;//无键闭合                                                                   
+  96   1      }
+  97          
+  98          void receive(void) interrupt 4              //定时器中断1：串口接收
+  99          {    
+ 100   1              RI=0;
+ 101   1              if(RB8==1)
+ 102   1          {
+ 103   2                      if(SBUF==NODE0_ADDR)
+ 104   2              {
+ 105   3                              SM2=0;
+ 106   3                      }
+ 107   2                      return;
+ 108   2              }
+ 109   1          //存储到列表
+ 110   1          *(recv_str+pointer_recv)=SBUF;
+ 111   1          if(++pointer_recv>4)
+ 112   1          {
+ 113   2              flag_recv_done=1;
+ 114   2              pointer_recv=0;
+ 115   2          }
+C51 COMPILER V9.01   串口通信__骰_                                                         05/17/2020 19:14:50 PAGE 3   
+
+ 116   1              P1_4=!P1_4;
+ 117   1              SM2=1;
+ 118   1      }
+ 119          
+ 120          void proc_key(uchar node_number,uchar str[])//发送程序
+ 121          {
+ 122   1          switch(node_number)                     //切换子机
+ 123   1          {
+ 124   2              case 1: 
+ 125   2              {
+ 126   3                  uchar pointer_1;                    //子机当前发送字符指针
+ 127   3                  for(pointer_1=0;*(str+pointer_1);pointer_1++)
+ 128   3                  {
+ 129   4                      
+ 130   4                      TB8=1;                                  //发送地址帧
+ 131   4                      SBUF=node_number;           //子机地址
+ 132   4                      while(TI==0);                   //等待地址帧发送结束
+ 133   4                      TI=0;                                   //清TI标志
+ 134   4                      TB8=0;                                  //准备发送数据帧
+ 135   4                      SBUF=*(str+pointer_1);      //1#子机字符帧
+ 136   4                      while(TI==0);                   //等待地址帧发送结束
+ 137   4                      TI=0;                                   //清TI标志
+ 138   4                      delay(1200);                //发送延时
+ 139   4                  }
+ 140   3              }
+ 141   2              default: break;
+ 142   2          }
+ 143   1      }
+ 144          
+ 145          void main()
+ 146          {
+ 147   1          /*中断服务初始化*/
+ 148   1          IE = 0x81;                              //10000001|总中断、外部中断0
+ 149   1          TCON = 0x00;                            //00000000|中断触发方式
+ 150   1          /*串口服务初始化*/
+ 151   1          SCON=0xf0;                                      //串口方式3、多机通信、允许接收、中断标志清零
+ 152   1          TMOD=0x20;                                      //T1定时方式2
+ 153   1          TH1=TL1=0xfd;                                   //9600bps
+ 154   1          TR1=1;                                                  //启动T1
+ 155   1          ES=1;EA=1;                                  //开中断
+ 156   1          /*其余服务初始化*/
+ 157   1          P1=0xff;                                //复位关闭全部LED
+ 158   1          P2=0x0f;                                //键盘待触发状态
+ 159   1          while (1)
+ 160   1          {
+ 161   2              if(flag_int0)
+ 162   2              {
+ 163   3                  unsigned char key;
+ 164   3                  key = getKey();                 //获取子机序号
+ 165   3                  switch(key)                     //切换子机
+ 166   3                  {                     
+ 167   4                      case 0x00: proc_key(NODE1_ADDR,send_str);break;
+ 168   4                      default: break;
+ 169   4                  }
+ 170   3                  P2=0x0f;                        //键盘待触发状态
+ 171   3                  flag_int0 = 0;                  //flag_int0复位
+ 172   3              }
+ 173   2              if(flag_recv_done)
+ 174   2              {
+ 175   3                  unsigned char i;                //校验指针
+ 176   3                  for(i=0;send_str[i];i++)
+ 177   3                  {
+C51 COMPILER V9.01   串口通信__骰_                                                         05/17/2020 19:14:50 PAGE 4   
+
+ 178   4                      if(send_str[i]!=recv_str[i])//收发不一致
+ 179   4                      {
+ 180   5                          display_list[0] = 0x54;
+ 181   5                          display_list[1] = 0x5c;
+ 182   5                          flag_recv_done = 0;     //标志位置零
+ 183   5                          break;
+ 184   5                      }
+ 185   4                  }
+ 186   3                  display_list[0] = 0x76;         //收发一致
+ 187   3                  display_list[1] = 0x06;
+ 188   3                  flag_recv_done = 0;             //标志位置零
+ 189   3              }
+ 190   2              display(display_list,20);
+ 191   2          }    
+ 192   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    423    ----
+   CONSTANT SIZE    =      4    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     60      14
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

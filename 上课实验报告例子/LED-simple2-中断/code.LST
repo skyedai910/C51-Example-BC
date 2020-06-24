@@ -1,0 +1,116 @@
+C51 COMPILER V9.01   CODE                                                                  04/24/2020 23:05:19 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE CODE
+OBJECT MODULE PLACED IN code.OBJ
+COMPILER INVOKED BY: D:\Keli\C51\BIN\C51.EXE code.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*
+   2          encoding:utf-8
+   3          name:led-simple2
+   4          function:
+   5          1.上电复位后，全部LED不亮。
+   6          2.当按下S2并弹起后，按D1-D7的顺序依次从上到下点亮LED。
+   7          3.当按下S3并弹起后，按D7-D1的顺序依次从下到上点亮LED。
+   8          4.当按下S4并弹起后，全部灯熄灭；再次当按下S4并弹起后，全部灯点亮。
+   9          author : https://www.mrskye.cn
+  10          */
+  11          #include<reg51.h>
+  12          #include<intrins.h>
+  13          
+  14          sbit LE=P2^5;
+  15          unsigned char n;    //全局循环次数
+  16          unsigned char flag = 0; //启动标志位
+  17          
+  18          void delay(unsigned int i)  //延迟函数
+  19          {
+  20   1          unsigned int j;
+  21   1          unsigned char k;
+  22   1          for(j=i;j>0;j--)
+  23   1          {
+  24   2              for(k=125;k>0;k--);
+  25   2          }
+  26   1      }
+  27          
+  28          void service_int0(void) interrupt 0
+  29          {
+  30   1          flag = 1;
+  31   1      }
+  32          
+  33          void main()
+  34          {
+  35   1          //中断服务初始化
+  36   1          IE = 0x81;   //开启中断服务
+  37   1          TCON = 0x1; //设置中断触发方式
+  38   1          P1=0xff;   //复位关闭全部LED
+  39   1          while(1)
+  40   1          {
+  41   2              if(flag)
+  42   2              {
+  43   3                  switch (P2&0xf)
+  44   3                  {
+  45   4                      case 0xe:  //S2
+  46   4                      {
+  47   5                          P1=0xfe;    //D0
+  48   5                          delay(2500);    //D0亮时间
+  49   5                          for(n=0;n<7;n++)    //循环8-1次
+  50   5                          {
+  51   6                              P1=_crol_(P1,1);//循环左移
+  52   6                              delay(2500);
+  53   6                          }                    
+  54   5                          P1=0xff;   //复位关闭全部LED
+  55   5                          break;
+C51 COMPILER V9.01   CODE                                                                  04/24/2020 23:05:19 PAGE 2   
+
+  56   5                      }
+  57   4                      case 0xd:  //S3
+  58   4                      {
+  59   5                          P1=0x7f;    //D7
+  60   5                          delay(2500);    //D7亮时间
+  61   5                          for(n=0;n<7;n++)    //循环8-1次
+  62   5                          {
+  63   6                              P1=_cror_(P1,1);//循环右移
+  64   6                              delay(2500);
+  65   6                          }
+  66   5                          P1=0xff;   //复位关闭全部LED
+  67   5                          break;
+  68   5                      }
+  69   4                      case 0xb:  //S4
+  70   4                      {
+  71   5                          P1=~P1; //取反
+  72   5                          break;
+  73   5                      }
+  74   4                      /*
+  75   4                      case 0x7:  //S5
+  76   4                      {
+  77   4                          while(P2&0xf==0x7f); //判断按键状态
+  78   4                          for(P1=0x0;;P1--)
+  79   4                          {
+  80   4                              if(P2==0x7f)break;  //再次按下退出跑马灯
+  81   4                              delay(1000);
+  82   4                          }
+  83   4                          break;
+  84   4                      }
+  85   4                      */
+  86   4                      default: break;
+  87   4                  }
+  88   3                  flag = 0;
+  89   3              }        
+  90   2          }
+  91   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    138    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

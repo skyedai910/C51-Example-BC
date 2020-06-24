@@ -1,0 +1,172 @@
+C51 COMPILER V9.01   胈_胨_                                                                04/18/2020 12:02:58 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE 胈_胨_
+OBJECT MODULE PLACED IN 密码锁.OBJ
+COMPILER INVOKED BY: D:\Keli\C51\BIN\C51.EXE 密码锁.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*
+   2          proj:两位可修改密码密码锁
+   3          author:mrskye
+   4          website:https://www.mrskye.cn/
+   5          encoding:gbk
+   6          */
+   7          #include<reg52.h>
+   8          
+   9          sbit DULA = P3^0;
+  10          sbit WELA = P3^1;
+  11          
+  12          //7led显示字形码
+  13          unsigned char wordlist[] = {0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x7
+             -1,0x00};
+  14          //led灯位
+  15          unsigned char ledlist[] = {0xfe,0xfd};
+  16          //行列式键盘键值
+  17          unsigned char key_buf[] = {0xee, 0xde, 0xbe, 0x7e,0xed, 0xdd, 0xbd, 0x7d,0xeb, 0xdb, 0xbb, 0x7b,0xe7, 0xd7
+             -, 0xb7, 0x77};
+  18          //显示字符列表
+  19          unsigned char display_list[] = {0x00,0x00};
+  20          //锁状态(默认锁)
+  21          unsigned char lock = 1;
+  22          //密文(初始密码08)
+  23          unsigned char c[] = {0x3f,0x7f};
+  24          //初始化key
+  25          unsigned char key = 0;
+  26          //初始化led显示位
+  27          unsigned char led_set = 0;
+  28          
+  29          void delay(unsigned int i)
+  30          {
+  31   1          unsigned int m,n;
+  32   1          for(m=i;m>0;m--)
+  33   1                      for(n=90;n>0;n--);
+  34   1      }
+  35          
+  36          unsigned char getKey() 
+  37          {       unsigned char key_scan[] = {0xef, 0xdf, 0xbf, 0x7f};       //键扫描码
+  38   1              unsigned char i = 0, j = 0;
+  39   1              for (i = 0; i < 4 ; i++) 
+  40   1              {       P2 = key_scan[i];                                                  //P2送出键扫描码
+  41   2                      if ((P2 & 0x0f) != 0x0f)                                   //判断有无键闭合
+  42   2                      {       
+  43   3                  delay(100);//消抖
+  44   3                  if ((P2 & 0x0f) != 0x0f)
+  45   3                  {
+  46   4                      for (j = 0 ; j < 16 ;j++) //低效而方便地遍历查找闭合键键号
+  47   4                                  {   
+  48   5                          if (key_buf[j]==P2)
+  49   5                          {
+  50   6                              while ((P2 & 0x0f) != 0x0f);//松开按键
+  51   6                              return j;
+  52   6                          } 
+  53   5                                  }   
+C51 COMPILER V9.01   胈_胨_                                                                04/18/2020 12:02:58 PAGE 2   
+
+  54   4                  }
+  55   3                      }
+  56   2              }
+  57   1          return -1;//无键闭合                                                                   
+  58   1      }
+  59          
+  60          void display(unsigned char display_list[],unsigned int time)
+  61          {
+  62   1          unsigned char i;
+  63   1          //for(i=0;*(display_list+i);i++)
+  64   1          for(i=0;i<2;i++)//2对应led显示位数
+  65   1          {
+  66   2              //选择显示位
+  67   2              P0=*(ledlist+i);
+  68   2              WELA=1;
+  69   2              WELA=0;
+  70   2              //输出字符码
+  71   2              P0=*(display_list+i);
+  72   2              DULA=1;
+  73   2              DULA=0;
+  74   2              delay(time);
+  75   2          }
+  76   1      }
+  77          
+  78          void fini(unsigned char word)
+  79          {
+  80   1          unsigned char i;
+  81   1          for(i=0;i<2;i++)//2对应led显示位数
+  82   1          {
+  83   2              *(display_list+i)=word;
+  84   2          }
+  85   1      }
+  86          
+  87          void setDisplayList(unsigned char key)
+  88          {
+  89   1          if(key!=-1)
+  90   1          {
+  91   2              *(display_list+led_set)=wordlist[key];
+  92   2              ++led_set;
+  93   2          }
+  94   1      }
+  95          
+  96          void main(void) {
+  97   1          fini(0x40);//初始化led
+  98   1          while (1)
+  99   1          {  
+ 100   2              key = getKey();//获取键值
+ 101   2              setDisplayList(key);//设定显示列表
+ 102   2              display(display_list,10);//驱动led显示
+ 103   2              if (led_set==2)//输入两位密码
+ 104   2              {
+ 105   3                  if(lock)
+ 106   3                  //有锁操作
+ 107   3                  {
+ 108   4                      if(display_list[0]==c[0] && display_list[1]==c[1])
+ 109   4                      {
+ 110   5                          lock=0;
+ 111   5                          fini(0x73);
+ 112   5                          display(display_list,10);//驱动led显示
+ 113   5                      }
+ 114   4                  }
+ 115   3                  led_set=0;//灯位初始化
+C51 COMPILER V9.01   胈_胨_                                                                04/18/2020 12:02:58 PAGE 3   
+
+ 116   3              }
+ 117   2              //修改密码部分
+ 118   2              if(!lock)
+ 119   2              {
+ 120   3                  do
+ 121   3                  {
+ 122   4                      display(display_list,10);//驱动led显示
+ 123   4                  }while(getKey()!=15);
+ 124   3                  fini(0x40);//初始化led
+ 125   3                  while(led_set<2)
+ 126   3                  {
+ 127   4                      if((key = getKey())!=-1)//获取键值
+ 128   4                      {
+ 129   5                          setDisplayList(key);//设定显示列表
+ 130   5                      }
+ 131   4                      display(display_list,10);//驱动led显示
+ 132   4                  }
+ 133   3                  do
+ 134   3                  {
+ 135   4                      display(display_list,10);//驱动led显示
+ 136   4                  }while (getKey()!=14);//等待按下确定
+ 137   3                  c[0]=display_list[0];//修改密码
+ 138   3                  c[1]=display_list[1];
+ 139   3                  lock=1;//上锁
+ 140   3                  fini(0x40);//初始化led
+ 141   3              }
+ 142   2          }
+ 143   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    338    ----
+   CONSTANT SIZE    =      4    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     42      10
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

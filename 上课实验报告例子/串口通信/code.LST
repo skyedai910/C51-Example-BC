@@ -1,0 +1,148 @@
+C51 COMPILER V9.01   CODE                                                                  05/17/2020 01:00:59 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE CODE
+OBJECT MODULE PLACED IN code.OBJ
+COMPILER INVOKED BY: D:\Keli\C51\BIN\C51.EXE code.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*
+   2          proj:两位可修改密码密码锁
+   3          author:mrskye
+   4          website:https://www.mrskye.cn/
+   5          encoding:gbk
+   6          */
+   7          #include<reg52.h>
+   8          
+   9          sbit P1_4=P1^4;
+  10          sbit DULA = P1^0;
+  11          sbit WELA = P1^1;
+  12          
+  13          unsigned char flag_int0 = 0;
+  14          
+  15          //7led显示字形码
+  16          unsigned char wordlist[] = {0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x7
+             -1,0x00};
+  17          //led灯位
+  18          unsigned char ledlist[] = {0xfe,0xfd,0xfb,0xf7,0xef,0xdf,0xbf,0x7f};
+  19          //行列式键盘键值
+  20          unsigned char key_buf[] = {0xee, 0xde, 0xbe, 0x7e,0xed, 0xdd, 0xbd, 0x7d,0xeb, 0xdb, 0xbb, 0x7b,0xe7, 0xd7
+             -, 0xb7, 0x77};
+  21          
+  22          void delay(unsigned int i)  //可控时间延迟函数
+  23          {
+  24   1          unsigned int j;
+  25   1          unsigned char k;
+  26   1          for(j=i;j>0;j--)
+  27   1          {
+  28   2              for(k=125;k>0;k--);
+  29   2          }
+  30   1      }
+  31          
+  32          void display(unsigned char display_list[],unsigned int time)//led显示函数
+  33          {
+  34   1          unsigned char i;
+  35   1          for(i=0;display_list[i];i++)
+  36   1          {
+  37   2              //选择显示位
+  38   2              P0=*(ledlist+i);
+  39   2              WELA=1;
+  40   2              WELA=0;
+  41   2              //输出字符码
+  42   2              P0=*(display_list+i);
+  43   2              DULA=1;
+  44   2              DULA=0;
+  45   2              delay(time);
+  46   2          }
+  47   1      }
+  48          
+  49          unsigned char getKey() //矩阵键盘取值函数
+  50          {       unsigned char key_scan[] = {0xef, 0xdf, 0xbf, 0x7f};       //键扫描码
+  51   1              unsigned char i = 0, j = 0;
+  52   1              for (i = 0;key_scan[i]; i++) 
+  53   1              {       
+C51 COMPILER V9.01   CODE                                                                  05/17/2020 01:00:59 PAGE 2   
+
+  54   2              P2 = key_scan[i];                                                  //P2送出键扫描码
+  55   2                      if ((P2 & 0x0f) != 0x0f)                                   //取P2低四位判断有无键闭合
+  56   2                      {       
+  57   3                  delay(100);//消抖
+  58   3                  if ((P2 & 0x0f) != 0x0f)               //再次判断键闭合
+  59   3                  {
+  60   4                      for (j = 0 ; j < 16 ;j++) //低效而方便地遍历查找闭合键键号
+  61   4                                  {   
+  62   5                          if (key_buf[j]==P2)
+  63   5                          {
+  64   6                              while ((P2 & 0x0f) != 0x0f);//松开按键
+  65   6                              return j;
+  66   6                          } 
+  67   5                                  }   
+  68   4                  }
+  69   3                      }
+  70   2              }
+  71   1          return -1;//无键闭合                                                                   
+  72   1      }
+  73          
+  74          void service_int0(void) interrupt 0//外部中断0：启动键盘扫描
+  75          {
+  76   1          flag_int0 = 1;
+  77   1      }
+  78          
+  79          
+  80          void main()
+  81          {
+  82   1          /*中断服务初始化*/
+  83   1          IE = 0x81;   //10000001|总中断、外部中断0
+  84   1          TCON = 0x00; //00000000|中断触发方式
+  85   1          /*串口服务初始化*/
+  86   1          /*SCON=0xd0;                //串口工作在方式3，允许接收
+  87   1          PCON=0x00;          //SMOD=0，波特率不翻倍
+  88   1          TMOD=0x20;                  //T1定时方式2
+  89   1          TH1=TL1=0xfd;               //9600bps
+  90   1          TR1=1;                              //启动T1*/
+  91   1          /*其余服务初始化*/
+  92   1          P1=0xff;   //复位关闭全部LED
+  93   1          P2=0x0f;    //键盘待触发状态
+  94   1          while (1)
+  95   1          {
+  96   2              if(flag_int0)
+  97   2              {
+  98   3                  unsigned char key;
+  99   3                  key = getKey();
+ 100   3                  if(key == 3)//按下S2
+ 101   3                  {
+ 102   4                      /*
+ 103   4                      P1_4 = !P1_4;       //运行状态
+ 104   4                      SBUF = 97;              //发送数据
+ 105   4                      while(TI==0);           //等待发送完成
+ 106   4                      TI = 0;                         //清TI标志位
+ 107   4                      while(RI==0);           //等待乙机回答
+ 108   4                      RI = 0;             //清RI标志位
+ 109   4                      if(SBUF==97)
+ 110   4                      */
+ 111   4                      //test
+ 112   4                          P1_4 = !P1_4;
+ 113   4                      
+ 114   4                  }
+ 115   3                  P2=0x0f;    //键盘待触发状态
+C51 COMPILER V9.01   CODE                                                                  05/17/2020 01:00:59 PAGE 3   
+
+ 116   3                  flag_int0 = 0;//flag复位
+ 117   3              }
+ 118   2          }    
+ 119   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    203    ----
+   CONSTANT SIZE    =      4    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     42      10
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

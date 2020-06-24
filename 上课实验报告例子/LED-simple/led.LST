@@ -1,0 +1,81 @@
+C51 COMPILER V9.01   LED                                                                   03/25/2020 15:14:01 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN led.OBJ
+COMPILER INVOKED BY: D:\Keli\C51\BIN\C51.EXE led.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*
+   2          design for: at80c51 leds alternate open
+   3          author:https://www.mrskye.cn
+   4          */
+   5          #include<reg51.h>
+   6          
+   7          sbit led0 = P1^0;
+   8          sbit led1 = P1^1;
+   9          sbit led2 = P1^2;
+  10          sbit led3 = P1^3;
+  11          sbit led4 = P1^4;
+  12          sbit led5 = P1^5;
+  13          sbit led6 = P1^6;
+  14          sbit led7 = P1^7;
+  15          
+  16          //自定义延迟函数
+  17          void delay(unsigned int i)
+  18          {
+  19   1          unsigned int j;
+  20   1          unsigned char k;
+  21   1          for(j=i;j>0;j--)
+  22   1          {
+  23   2              for(k=125;k>0;k--);
+  24   2          }
+  25   1      }
+  26          
+  27          //switch led status
+  28          void switch_led()
+  29          {
+  30   1          led0 = ~led0;
+  31   1          led1 = ~led1;
+  32   1          led2 = ~led2;
+  33   1          led3 = ~led3;
+  34   1          led4 = ~led4;
+  35   1          led5 = ~led5;
+  36   1          led6 = ~led6;
+  37   1          led7 = ~led7;
+  38   1      }
+  39          
+  40          void main()
+  41          {
+  42   1          //init led status
+  43   1          led0 = 1;
+  44   1          led2 = 1;
+  45   1          led4 = 1;
+  46   1          led6 = 1;
+  47   1              led1 = 0;
+  48   1              led3 = 0;
+  49   1              led5 = 0;
+  50   1              led7 = 0;
+  51   1          while(1)
+  52   1          {
+  53   2              delay(3000);
+  54   2                      switch_led();
+  55   2          }
+C51 COMPILER V9.01   LED                                                                   03/25/2020 15:14:01 PAGE 2   
+
+  56   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     66    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

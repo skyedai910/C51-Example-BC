@@ -1,0 +1,135 @@
+C51 COMPILER V9.01   CODE                                                                  05/01/2020 19:42:59 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE CODE
+OBJECT MODULE PLACED IN code.OBJ
+COMPILER INVOKED BY: D:\Keli\C51\BIN\C51.EXE code.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg52.h>
+   2          
+   3          sbit DULA = P3^0;
+   4          sbit WELA = P3^1;
+   5          sbit flag = P1^0;
+   6          
+   7          unsigned char flag_int0 = 0;
+   8          unsigned char flag_time0 = 0;
+   9          
+  10          //7led显示字形码
+  11          unsigned char wordlist[] = {0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x7
+             -1,0x00};
+  12          //led灯位
+  13          unsigned char ledlist[] = {0xfe,0xfd,0xfb,0xf7,0xef,0xdf,0xbf,0x7f};
+  14          //行列式键盘键值
+  15          unsigned char key_buf[] = {0xee, 0xde, 0xbe, 0x7e,0xed, 0xdd, 0xbd, 0x7d,0xeb, 0xdb, 0xbb, 0x7b,0xe7, 0xd7
+             -, 0xb7, 0x77};
+  16          //时间码
+  17          unsigned char time_index[] = {0,0};
+  18          unsigned char time_list[] = {0x00,0x00};
+  19          
+  20          
+  21          void delay(unsigned int i)  //延迟函数
+  22          {
+  23   1          unsigned int j;
+  24   1          unsigned char k;
+  25   1          for(j=i;j>0;j--)
+  26   1          {
+  27   2              for(k=125;k>0;k--);
+  28   2          }
+  29   1      }
+  30          
+  31          void display(unsigned char display_list[],unsigned int time)
+  32          {
+  33   1          unsigned char i;
+  34   1          //for(i=0;*(display_list+i);i++)
+  35   1          for(i=0;i<2;i++)//2对应led显示位数
+  36   1          {
+  37   2              //选择显示位
+  38   2              P0=*(ledlist+i);
+  39   2              WELA=1;
+  40   2              WELA=0;
+  41   2              //输出字符码
+  42   2              P0=*(display_list+i);
+  43   2              DULA=1;
+  44   2              DULA=0;
+  45   2              delay(time);
+  46   2          }
+  47   1      }
+  48          
+  49          void service_int0(void) interrupt 0//外部中断0中断服务函数
+  50          {
+  51   1          flag_int0 = 1;
+  52   1      }
+  53          
+C51 COMPILER V9.01   CODE                                                                  05/01/2020 19:42:59 PAGE 2   
+
+  54          void service_time0(void) interrupt 1//定时器中断0中断服务函数
+  55          {
+  56   1          flag_time0++;
+  57   1      }
+  58          
+  59          void main()
+  60          {
+  61   1          /*中断服务初始化*/
+  62   1          IE = 0x83;   //10000011|中断服务
+  63   1          TCON = 0x11; //00010001|中断触发方式
+  64   1          TMOD = 0X1; //00000001|定时器工作方式
+  65   1          TH0=0Xb0;//定时器装载初值
+  66   1          TH1=0x3c;//50ms定时器
+  67   1          P1=0xff;   //复位关闭全部LED
+  68   1          P2=0x0f;    //键盘待触发状态
+  69   1          while (1)
+  70   1          {
+  71   2              if(flag_int0)//紧急情况中断
+  72   2              {
+  73   3                  unsigned char i = 0;
+  74   3                  for(i=0;i<5;i++)
+  75   3                  {
+  76   4                      unsigned char j;
+  77   4                      for (j = 0; j < 90; j++)
+  78   4                      {
+  79   5                          unsigned char display_list[] = {0x79,0x3f};
+  80   5                          display(display_list,10);
+  81   5                      }
+  82   4                      for (j = 0; j < 90; j++)
+  83   4                      {
+  84   5                          unsigned char display_list[] = {0x00,0x00};
+  85   5                          display(display_list,10);
+  86   5                      }
+  87   4                  }
+  88   3                  flag_int0 = 0;
+  89   3              }
+  90   2              if(flag_time0>=13)//定时器中断服务
+  91   2              {
+  92   3                  while(!flag);
+  93   3                  time_index[1] = time_index[1]+1;
+  94   3                  if(!(time_index[1]%10))
+  95   3                  {
+  96   4                      time_index[1] = time_index[1]%10;
+  97   4                      time_index[0] = (time_index[0]+1)%10;
+  98   4                  }
+  99   3                  flag_time0=0;
+ 100   3                  time_list[0] = wordlist[time_index[0]];
+ 101   3                  time_list[1] = wordlist[time_index[1]];
+ 102   3              }
+ 103   2              display(time_list,20);
+ 104   2          }
+ 105   1          
+ 106   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    261    ----
+   CONSTANT SIZE    =      4    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     47       9
+   IDATA SIZE       =   ----    ----
+C51 COMPILER V9.01   CODE                                                                  05/01/2020 19:42:59 PAGE 3   
+
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

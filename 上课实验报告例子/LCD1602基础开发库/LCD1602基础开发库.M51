@@ -1,0 +1,239 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        05/30/2020  00:14:19  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KELI\C51\BIN\BL51.EXE STARTUP.obj, LCD1602基础开发库.obj TO LCD1602基础开发库
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  STARTUP.obj (?C_STARTUP)
+  LCD1602基础开发库.obj (LCD1602籣础开发縚)
+
+
+LINK MAP OF MODULE:  LCD1602基础开发库 (?C_STARTUP)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            REG     0008H     0008H     ABSOLUTE     "REG BANK 1"
+            IDATA   0010H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0003H     ABSOLUTE     
+                    0006H     0005H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     0046H     UNIT         ?PR?DISPLAY?LCD1602籣础开发縚
+            CODE    0054H     0021H     UNIT         ?CO?LCD1602籣础开发縚
+            CODE    0075H     001BH     UNIT         ?PR?INIT?LCD1602籣础开发縚
+            CODE    0090H     0019H     UNIT         ?PR?_DELAY?LCD1602籣础开发縚
+            CODE    00A9H     0011H     UNIT         ?PR?CLEAR?LCD1602籣础开发縚
+            CODE    00BAH     0010H     UNIT         ?PR?MAIN?LCD1602籣础开发縚
+            CODE    00CAH     000CH     UNIT         ?C_C51STARTUP
+            CODE    00D6H     0008H     UNIT         ?PR?_WRITE_DATE?LCD1602籣础开发縚
+            CODE    00DEH     0008H     UNIT         ?PR?_WRITE_COM?LCD1602籣础开发縚
+
+
+
+OVERLAY MAP OF MODULE:   LCD1602基础开发库 (?C_STARTUP)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?LCD1602籣础开发縚
+
+?PR?MAIN?LCD1602籣础开发縚
+  +--> ?PR?INIT?LCD1602籣础开发縚
+  +--> ?PR?_DELAY?LCD1602籣础开发縚
+
+?PR?INIT?LCD1602籣础开发縚
+  +--> ?PR?_WRITE_COM?LCD1602籣础开发縚
+
+?PR?_WRITE_COM?LCD1602籣础开发縚
+  +--> ?PR?_DELAY?LCD1602籣础开发縚
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/30/2020  00:14:19  PAGE 2
+
+
+
+*** NEW ROOT ***************************************************
+
+?PR?DISPLAY?LCD1602籣础开发縚
+  +--> ?CO?LCD1602籣础开发縚
+  +--> ?PR?_WRITE_DATE?LCD1602籣础开发縚
+  +--> ?PR?_DELAY?LCD1602籣础开发縚
+  +--> ?PR?_WRITE_COM?LCD1602籣础开发縚
+
+?PR?_WRITE_DATE?LCD1602籣础开发縚
+  +--> ?PR?_DELAY?LCD1602籣础开发縚
+
+*** NEW ROOT ***************************************************
+
+?PR?CLEAR?LCD1602籣础开发縚
+  +--> ?PR?_WRITE_COM?LCD1602籣础开发縚
+
+
+
+SYMBOL TABLE OF MODULE:  LCD1602基础开发库 (?C_STARTUP)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ?C_STARTUP
+  C:00CAH         SEGMENT       ?C_C51STARTUP
+  I:0010H         SEGMENT       ?STACK
+  C:0000H         PUBLIC        ?C_STARTUP
+  D:00E0H         SYMBOL        ACC
+  D:00F0H         SYMBOL        B
+  D:0083H         SYMBOL        DPH
+  D:0082H         SYMBOL        DPL
+  N:0000H         SYMBOL        IBPSTACK
+  N:0100H         SYMBOL        IBPSTACKTOP
+  N:0080H         SYMBOL        IDATALEN
+  C:00CDH         SYMBOL        IDATALOOP
+  N:0000H         SYMBOL        PBPSTACK
+  N:0100H         SYMBOL        PBPSTACKTOP
+  N:0000H         SYMBOL        PDATALEN
+  N:0000H         SYMBOL        PDATASTART
+  N:0000H         SYMBOL        PPAGE
+  N:0000H         SYMBOL        PPAGEENABLE
+  D:00A0H         SYMBOL        PPAGE_SFR
+  D:0081H         SYMBOL        SP
+  C:00CAH         SYMBOL        STARTUP1
+  N:0000H         SYMBOL        XBPSTACK
+  N:0000H         SYMBOL        XBPSTACKTOP
+  N:0000H         SYMBOL        XDATALEN
+  N:0000H         SYMBOL        XDATASTART
+  C:0000H         LINE#         126
+  C:00CAH         LINE#         133
+  C:00CCH         LINE#         134
+  C:00CDH         LINE#         135
+  C:00CEH         LINE#         136
+  C:00D0H         LINE#         185
+  C:00D3H         LINE#         196
+  -------         ENDMOD        ?C_STARTUP
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/30/2020  00:14:19  PAGE 3
+
+
+
+  -------         MODULE        LCD1602籣础开发縚
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+  D:00A8H         PUBLIC        IE
+  C:0075H         PUBLIC        Init
+  D:00B8H         PUBLIC        IP
+  C:00BAH         PUBLIC        main
+  C:00D6H         PUBLIC        _write_date
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  C:0054H         PUBLIC        table1
+  C:0064H         PUBLIC        table2
+  B:00A8H.0       PUBLIC        EX0
+  B:00A8H.2       PUBLIC        EX1
+  C:00DEH         PUBLIC        _write_com
+  B:00B0H.4       PUBLIC        en
+  C:000EH         PUBLIC        Display
+  B:00B0H.5       PUBLIC        rs
+  D:00C8H         PUBLIC        T2CON
+  C:00A9H         PUBLIC        Clear
+  C:009BH         PUBLIC        _Delay
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          L?0022
+  -------         ENDPROC       L?0022
+  -------         PROC          _DELAY
+  D:0007H         SYMBOL        m
+  -------         DO            
+  D:0007H         SYMBOL        i
+  D:0006H         SYMBOL        j
+  -------         ENDDO         
+  C:009BH         LINE#         13
+  C:009BH         LINE#         14
+  C:009BH         LINE#         16
+  C:00A1H         LINE#         17
+  C:00A8H         LINE#         18
+  -------         ENDPROC       _DELAY
+  -------         PROC          _WRITE_DATE
+  D:0007H         SYMBOL        date
+  C:00D6H         LINE#         20
+  C:00D6H         LINE#         21
+  C:00D6H         LINE#         23
+  C:00D8H         LINE#         24
+  C:00D8H         LINE#         25
+  C:00D8H         LINE#         26
+  C:00D8H         LINE#         27
+  C:00DBH         LINE#         28
+  C:00DDH         LINE#         29
+  -------         ENDPROC       _WRITE_DATE
+  -------         PROC          _WRITE_COM
+  D:0007H         SYMBOL        com
+  C:00DEH         LINE#         31
+  C:00DEH         LINE#         32
+  C:00DEH         LINE#         34
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/30/2020  00:14:19  PAGE 4
+
+
+  C:00E0H         LINE#         35
+  C:00E0H         LINE#         36
+  C:00E0H         LINE#         37
+  C:00E0H         LINE#         38
+  C:00E3H         LINE#         39
+  C:00E5H         LINE#         40
+  -------         ENDPROC       _WRITE_COM
+  -------         PROC          INIT
+  C:0075H         LINE#         42
+  C:0075H         LINE#         43
+  C:0075H         LINE#         44
+  C:0077H         LINE#         45
+  C:007CH         LINE#         46
+  C:0081H         LINE#         47
+  C:0086H         LINE#         48
+  C:008BH         LINE#         49
+  -------         ENDPROC       INIT
+  -------         PROC          MAIN
+  C:00BAH         LINE#         51
+  C:00BAH         LINE#         52
+  C:00BAH         LINE#         54
+  C:00BDH         LINE#         55
+  C:00C2H         LINE#         57
+  C:00C4H         LINE#         58
+  C:00C6H         LINE#         59
+  C:00C8H         LINE#         61
+  -------         ENDPROC       MAIN
+  -------         PROC          DISPLAY
+  -------         DO            
+  D:000DH         SYMBOL        i
+  -------         ENDDO         
+  C:000EH         LINE#         63
+  C:0019H         LINE#         66
+  C:001BH         LINE#         67
+  C:001BH         LINE#         68
+  C:0024H         LINE#         69
+  C:0029H         LINE#         70
+  C:002DH         LINE#         71
+  C:0032H         LINE#         72
+  C:0037H         LINE#         73
+  C:0039H         LINE#         74
+  C:0039H         LINE#         75
+  C:0042H         LINE#         76
+  C:0047H         LINE#         77
+  C:004BH         LINE#         78
+  -------         ENDPROC       DISPLAY
+  -------         PROC          CLEAR
+  C:00A9H         LINE#         79
+  C:00B0H         LINE#         81
+  C:00B5H         LINE#         82
+  -------         ENDPROC       CLEAR
+  -------         ENDMOD        LCD1602籣础开发縚
+
+Program Size: data=17.0 xdata=0 code=225
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)
